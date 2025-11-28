@@ -115,9 +115,12 @@ const SimulationObject = () => {
 };
 
 export default function SimulationApp() {
+    const parentRef = useRef<HTMLDivElement>(null);
     return (
-        <Application background={"#1099bb"}>
-            <SimulationObject />
-        </Application>
+        <div ref={parentRef} style={{ width: "100%", height: "100vh" }}>
+            <Application background={"#1099bb"} resizeTo={parentRef}>
+                <SimulationObject />
+            </Application>
+        </div>
     );
 }
