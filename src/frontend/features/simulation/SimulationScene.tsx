@@ -1,6 +1,5 @@
 import { extend } from "@pixi/react";
-import { Container, Sprite, Texture } from "pixi.js";
-import { useState } from "react";
+import { Container, Sprite } from "pixi.js";
 import dummyHistory from "./dummySimulationHistory.json";
 import { SimulationEntity } from "./SimulationEntity";
 import { useSimulation } from "./useSimulation";
@@ -19,7 +18,7 @@ interface SimulationSceneProps {
 }
 
 export const SimulationScene = ({ isPlaying, speed }: SimulationSceneProps) => {
-    const { getTexture, isLoaded } = useAssets();
+    const { isLoaded } = useAssets();
 
     // Cast dummy data to typed history
     // In a real app, this would be validated or fetched
@@ -40,10 +39,12 @@ export const SimulationScene = ({ isPlaying, speed }: SimulationSceneProps) => {
             {entities.map((entity) => (
                 <SimulationEntity
                     key={entity.id}
+                    id={entity.id}
+                    type={entity.type}
                     x={entity.x}
                     y={entity.y}
                     angle={entity.angle}
-                    texture={getTexture(entity.type)}
+                    childNodes={entity.children}
                 />
             ))}
         </pixiContainer>

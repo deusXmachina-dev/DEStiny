@@ -18,4 +18,5 @@ export interface SimulationEntityState {
     x: number;
     y: number;
     angle: number;
+    children: SimulationEntityState[];
 }
