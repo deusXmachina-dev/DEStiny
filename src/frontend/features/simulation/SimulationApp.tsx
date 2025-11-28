@@ -3,53 +3,44 @@
 import { Application } from "@pixi/react";
 import { useRef, useState } from "react";
 import { SimulationScene } from "./SimulationScene";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function SimulationApp() {
     const parentRef = useRef<HTMLDivElement>(null);
     const [isPlaying, setIsPlaying] = useState(true);
-    const [speed, setSpeed] = useState(1);
+    const [speed, setSpeed] = useState("1");
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100vh" }}>
-            <div ref={parentRef} style={{ flex: 1, minHeight: 0, width: "100%" }}>
+        <div className="flex flex-col w-full h-screen">
+            <div ref={parentRef} className="flex-1 min-h-0 w-full">
                 <Application background={"#1099bb"} resizeTo={parentRef}>
-                    <SimulationScene isPlaying={isPlaying} speed={speed} />
+                    <SimulationScene isPlaying={isPlaying} speed={Number(speed)} />
                 </Application>
             </div>
-            <div style={{
-                padding: "10px",
-                display: "flex",
-                gap: "20px",
-                justifyContent: "center",
-                alignItems: "center",
-                background: "#f0f0f0",
-                borderTop: "1px solid #ccc"
-            }}>
-                <button
+            <div className="p-4 flex gap-5 justify-center items-center bg-muted border-t">
+                <Button
                     onClick={() => setIsPlaying(!isPlaying)}
-                    style={{
-                        padding: "8px 16px",
-                        fontSize: "16px",
-                        cursor: "pointer"
-                    }}
+                    variant="default"
                 >
                     {isPlaying ? "Pause" : "Play"}
-                </button>
+                </Button>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <label htmlFor="speed-select">Speed:</label>
-                    <select
-                        id="speed-select"
-                        value={speed}
-                        onChange={(e) => setSpeed(Number(e.target.value))}
-                        style={{ padding: "5px", fontSize: "14px" }}
-                    >
-                        <option value={0.1}>0.1x</option>
-                        <option value={0.5}>0.5x</option>
-                        <option value={1}>1x</option>
-                        <option value={2}>2x</option>
-                        <option value={5}>5x</option>
-                    </select>
+                <div className="flex items-center gap-3">
+                    <Label htmlFor="speed-select">Speed:</Label>
+                    <Select value={speed} onValueChange={setSpeed}>
+                        <SelectTrigger id="speed-select" className="w-[100px]">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="0.1">0.1x</SelectItem>
+                            <SelectItem value="0.5">0.5x</SelectItem>
+                            <SelectItem value="1">1x</SelectItem>
+                            <SelectItem value="2">2x</SelectItem>
+                            <SelectItem value="5">5x</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
         </div>
