@@ -1,9 +1,9 @@
 {
-  "python.defaultInterpreterPath": "${workspaceFolder}\\src\\backend\\.venv\\Scripts\\python.exe",
+  "python.defaultInterpreterPath": "${workspaceFolder}\\src\\engine\\.venv\\Scripts\\python.exe",
   "python.testing.pytestEnabled": true,
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestPath": "${workspaceFolder}\\src\\backend\\.venv\\Scripts\\pytest.exe",
-  "python.testing.cwd": "${workspaceFolder}\\src\\backend",
+  "python.testing.pytestPath": "${workspaceFolder}\\src\\engine\\.venv\\Scripts\\pytest.exe",
+  "python.testing.cwd": "${workspaceFolder}\\src\\engine",
   "python.testing.pytestArgs": [
     "--verbose",
     "--tb=short",
