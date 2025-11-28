@@ -9,16 +9,7 @@ extend({
     Sprite: PixiSprite,
 });
 
-interface SimulationEntityProps {
-    id: string;
-    type: string;
-    x: number;
-    y: number;
-    angle: number;
-    childNodes?: SimulationEntityState[];
-}
-
-export const SimulationEntity = ({ type, x, y, angle, childNodes }: SimulationEntityProps) => {
+export const SimulationEntity = ({ type, x, y, angle, children }: SimulationEntityState) => {
     const { getTexture } = useAssets();
     const texture = getTexture(type);
 
@@ -35,15 +26,10 @@ export const SimulationEntity = ({ type, x, y, angle, childNodes }: SimulationEn
                 y={0}
                 rotation={0}
             />
-            {childNodes?.map((child) => (
+            {children?.map((child) => (
                 <SimulationEntity
                     key={child.id}
-                    id={child.id}
-                    type={child.type}
-                    x={child.x}
-                    y={child.y}
-                    angle={child.angle}
-                    childNodes={child.children}
+                    {...child}
                 />
             ))}
         </pixiContainer>

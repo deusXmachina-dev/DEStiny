@@ -39,12 +39,7 @@ export const SimulationScene = ({ isPlaying, speed }: SimulationSceneProps) => {
             {entities.map((entity) => (
                 <SimulationEntity
                     key={entity.id}
-                    id={entity.id}
-                    type={entity.type}
-                    x={entity.x}
-                    y={entity.y}
-                    angle={entity.angle}
-                    childNodes={entity.children}
+                    {...entity}
                 />
             ))}
         </pixiContainer>
