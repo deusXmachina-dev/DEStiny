@@ -1,6 +1,6 @@
 import { useTick } from "@pixi/react";
 import { useRef, useState } from "react";
-import { SimulationEntityState, SimulationSnapshot } from "./types";
+import { SimulationComponent, SimulationEntityState, SimulationSnapshot } from "./types";
 
 interface UseSimulationOptions {
     loop?: boolean;
@@ -13,6 +13,45 @@ interface UseSimulationOptions {
  */
 const lerp = (a: number, b: number, t: number) => {
     return a + (b - a) * t;
+};
+
+const interpolateEntities = (
+    prevComponents: SimulationComponent[],
+    nextComponents: SimulationComponent[],
+    t: number
+): SimulationEntityState[] => {
+    const nextEntitiesMap = new Map(nextComponents.map(c => [c.id, c]));
+    const result: SimulationEntityState[] = [];
+
+    for (const prevEntity of prevComponents) {
+        const nextEntity = nextEntitiesMap.get(prevEntity.id);
+
+        // Recursive step for children
+        const nextChildren = nextEntity?.children || [];
+        const children = interpolateEntities(prevEntity.children || [], nextChildren, t);
+
+        if (nextEntity) {
+            result.push({
+                id: prevEntity.id,
+                type: prevEntity.type,
+                x: lerp(prevEntity.x, nextEntity.x, t),
+                y: lerp(prevEntity.y, nextEntity.y, t),
+                angle: lerp(prevEntity.angle, nextEntity.angle, t),
+                children
+            });
+        } else {
+            // Entity is disappearing. Keep at last known position.
+            result.push({
+                id: prevEntity.id,
+                type: prevEntity.type,
+                x: prevEntity.x,
+                y: prevEntity.y,
+                angle: prevEntity.angle,
+                children
+            });
+        }
+    }
+    return result;
 };
 
 /**
@@ -84,34 +123,7 @@ export const useSimulation = (
             ? (simTimeSeconds - prevSnapshot.time) / timeRange
             : 0;
 
-        // Map entities by ID for easy interpolation
-        const nextEntitiesMap = new Map(nextSnapshot.components.map(c => [c.id, c]));
-
-        const interpolatedEntities: SimulationEntityState[] = [];
-
-        for (const prevEntity of prevSnapshot.components) {
-            const nextEntity = nextEntitiesMap.get(prevEntity.id);
-
-            if (nextEntity) {
-                interpolatedEntities.push({
-                    id: prevEntity.id,
-                    type: prevEntity.type,
-                    x: lerp(prevEntity.x, nextEntity.x, t),
-                    y: lerp(prevEntity.y, nextEntity.y, t),
-                    angle: lerp(prevEntity.angle, nextEntity.angle, t),
-                });
-            } else {
-                // Entity is disappearing. Keep at last known position.
-                interpolatedEntities.push({
-                    id: prevEntity.id,
-                    type: prevEntity.type,
-                    x: prevEntity.x,
-                    y: prevEntity.y,
-                    angle: prevEntity.angle,
-                });
-            }
-        }
-
+        const interpolatedEntities = interpolateEntities(prevSnapshot.components, nextSnapshot.components, t);
         setEntities(interpolatedEntities);
     });
 
