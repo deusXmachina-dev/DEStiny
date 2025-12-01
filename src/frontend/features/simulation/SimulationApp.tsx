@@ -35,8 +35,7 @@ export default function SimulationApp() {
     useEffect(() => {
         if (fileName) {
             setSimulationName(fileName);
-            console.log("File Name:", fileName);
-            console.log("File Content:", fileContent);
+            setIsPlaying(false);
         }
     }, [fileName, fileContent]);
 

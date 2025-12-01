@@ -2,7 +2,7 @@ import { Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 
 const ASSET_MAP: Record<string, string> = {
-    agv: "/assets/bunny.png",
+    agv: "/assets/agv.png",
     box: "/assets/box.png",
     source: "/assets/store.png",
     sink: "/assets/store.png",
