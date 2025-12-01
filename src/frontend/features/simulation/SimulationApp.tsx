@@ -6,11 +6,18 @@ import { SimulationScene } from "./SimulationScene";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Upload, Play, Pause } from "lucide-react";
 
 export default function SimulationApp() {
     const parentRef = useRef<HTMLDivElement>(null);
     const [isPlaying, setIsPlaying] = useState(true);
     const [speed, setSpeed] = useState(1);
+    const [simulationName, setSimulationName] = useState("Simulation 1");
+
+    const handleUpload = () => {
+        // Placeholder for file upload functionality
+        console.log("Upload simulation history");
+    };
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -19,24 +26,60 @@ export default function SimulationApp() {
                     <SimulationScene isPlaying={isPlaying} speed={speed} />
                 </Application>
             </div>
-            <div className="p-4 flex gap-5 justify-center items-center bg-muted border-t">
-                <Button
-                    onClick={() => setIsPlaying(!isPlaying)}
-                    variant="default"
-                >
-                    {isPlaying ? "Pause" : "Play"}
-                </Button>
+            
+            {/* Bottom Navigation Bar - 2 Columns */}
+            <div className="bg-gray-100 border-t border-gray-300 shadow-lg">
+                <div className="grid grid-cols-2 gap-8 p-4 max-w-7xl mx-auto">
+                    {/* Left Column: Upload & Simulation Name */}
+                    <div className="flex items-center gap-4">
+                        <Button
+                            onClick={handleUpload}
+                            variant="outline"
+                            size="default"
+                            className="gap-2 bg-gray-800 border-gray-700 text-white"
+                        >
+                            <Upload className="size-4" />
+                            Upload History
+                        </Button>
+                        <span className="text-gray-900 font-semibold">{simulationName}</span>
+                    </div>
 
-                <div className="flex items-center gap-4 w-[300px]">
-                    <Label htmlFor="speed-slider" className="min-w-[80px]">Speed: {speed.toFixed(1)}x</Label>
-                    <Slider
-                        id="speed-slider"
-                        value={[speed]}
-                        min={0.1}
-                        max={5}
-                        step={0.1}
-                        onValueChange={(vals) => setSpeed(vals[0])}
-                    />
+                    {/* Right Column: Playback Controls */}
+                    <div className="flex items-center justify-end gap-6">
+                        <Button
+                            onClick={() => setIsPlaying(!isPlaying)}
+                            variant="outline"
+                            size="default"
+                            className="gap-2 bg-gray-800 border-gray-700 text-white min-w-[110px]"
+                        >
+                            {isPlaying ? (
+                                <>
+                                    <Pause className="size-4" />
+                                    Pause
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="size-4" />
+                                    Play
+                                </>
+                            )}
+                        </Button>
+
+                        <div className="flex items-center gap-3 min-w-[280px]">
+                            <Label htmlFor="speed-slider" className="text-gray-900 font-medium min-w-[90px]">
+                                Speed: {speed.toFixed(1)}x
+                            </Label>
+                            <Slider
+                                id="speed-slider"
+                                value={[speed]}
+                                min={0.1}
+                                max={5}
+                                step={0.1}
+                                onValueChange={(vals) => setSpeed(vals[0])}
+                                className="flex-1"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
