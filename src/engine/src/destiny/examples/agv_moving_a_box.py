@@ -38,11 +38,14 @@ def main():
 
     # Export recording
     recording = env.get_recording()
-    print(f"Recorded {len(recording.segments)} motion segments")
+    print(f"Recorded {len(recording.segments_by_entity)} entities")
 
-    with open("agv_box_recording.json", "w") as f:
+    import os
+    os.makedirs("simulation-records", exist_ok=True)
+
+    with open("simulation-records/agv_box_recording.json", "w") as f:
         json.dump(recording.to_dict(), f, indent=2)
-    print("Recording exported to agv_box_recording.json")
+    print("Recording exported to simulation-records/agv_box_recording.json")
 
 
 if __name__ == "__main__":

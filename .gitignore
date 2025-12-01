@@ -88,6 +88,5 @@ dmypy.json
 .pytype/
 cython_debug/
 
-simulation_snapshots.json
-bank_renege_snapshots.*
-grid_fleet_snapshots.json
+# Simulation Records
+simulation-records/

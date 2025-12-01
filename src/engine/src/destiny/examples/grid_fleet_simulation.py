@@ -67,9 +67,12 @@ def main():
     # Export recording
     recording = env.get_recording()
 
-    with open("grid_fleet_recording.json", "w") as f:
+    import os
+    os.makedirs("simulation-records", exist_ok=True)
+
+    with open("simulation-records/grid_fleet_recording.json", "w") as f:
         json.dump(recording.to_dict(), f, indent=2)
-    print("Recording exported to grid_fleet_recording.json")
+    print("Recording exported to simulation-records/grid_fleet_recording.json")
 
 
 if __name__ == "__main__":
