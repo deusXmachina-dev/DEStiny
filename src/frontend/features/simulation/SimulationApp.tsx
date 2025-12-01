@@ -1,8 +1,9 @@
 "use client";
 
 import { Application } from "@pixi/react";
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { SimulationScene } from "./SimulationScene";
+import { SimulationProvider, useSimulationController } from "./SimulationContext";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -11,33 +12,32 @@ import { Upload, Play, Pause } from "lucide-react";
 import { SimulationSnapshot } from "./types";
 import dummyHistory from "./dummySimulationHistory.json";
 
-export default function SimulationApp() {
+function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
-    const [isPlaying, setIsPlaying] = useState(true);
-    const [speed, setSpeed] = useState(1);
-    const [simulationName, setSimulationName] = useState("Simulation 1");
+    const { isPlaying, speed, simulationName, togglePlay, setSpeed, setHistory, setSimulationName, pause } = useSimulationController();
     const { fileName, fileContent, triggerFileUpload } = useFileUpload({ acceptFileTypes: ".json" });
 
-    // Parse file content into history, or use dummy history as fallback
-    const history = useMemo<SimulationSnapshot[]>(() => {
+    // Parse file content and update context when file is uploaded
+    const parsedHistory = useMemo<SimulationSnapshot[] | null>(() => {
         if (fileContent) {
             try {
                 const parsed = JSON.parse(fileContent);
                 return parsed as SimulationSnapshot[];
             } catch (error) {
                 console.error("Failed to parse file content:", error);
-                return dummyHistory as SimulationSnapshot[];
+                return null;
             }
         }
-        return dummyHistory as SimulationSnapshot[];
+        return null;
     }, [fileContent]);
 
     useEffect(() => {
-        if (fileName) {
+        if (parsedHistory && fileName) {
+            setHistory(parsedHistory);
             setSimulationName(fileName);
-            setIsPlaying(false);
+            pause();
         }
-    }, [fileName, fileContent]);
+    }, [parsedHistory, fileName, setHistory, setSimulationName, pause]);
 
     const handleUpload = () => {
         triggerFileUpload();
@@ -47,11 +47,7 @@ export default function SimulationApp() {
         <div className="flex flex-col w-full h-screen">
             <div ref={parentRef} className="flex-1 min-h-0 w-full">
                 <Application background={"#1099bb"} resizeTo={parentRef}>
-                    <SimulationScene
-                        isPlaying={isPlaying}
-                        speed={speed}
-                        history={history}
-                    />
+                    <SimulationScene />
                 </Application>
             </div>
 
@@ -75,7 +71,7 @@ export default function SimulationApp() {
                     {/* Right Column: Playback Controls */}
                     <div className="flex items-center justify-end gap-6">
                         <Button
-                            onClick={() => setIsPlaying(!isPlaying)}
+                            onClick={togglePlay}
                             variant="outline"
                             size="default"
                             className="gap-2 bg-gray-800 border-gray-700 text-white min-w-[110px]"
@@ -111,5 +107,13 @@ export default function SimulationApp() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SimulationApp() {
+    return (
+        <SimulationProvider>
+            <SimulationAppContent />
+        </SimulationProvider>
     );
 }

@@ -1,11 +1,13 @@
 import { useTick } from "@pixi/react";
 import { useEffect, useRef, useState } from "react";
 import { SimulationComponent, SimulationEntityState, SimulationSnapshot } from "./types";
+import { useSimulationController } from "./SimulationContext";
 
 interface UseSimulationOptions {
     loop?: boolean;
     speed?: number;
     isPlaying?: boolean;
+    history?: SimulationSnapshot[];
 }
 
 /**
@@ -57,12 +59,16 @@ const interpolateEntities = (
 /**
  * Hook to manage simulation playback.
  * Must be used within a Pixi Application context (because of useTick).
+ * By default, reads state from SimulationContext, but can be overridden via options.
  */
 export const useSimulation = (
-    history: SimulationSnapshot[],
     options: UseSimulationOptions = {}
 ) => {
-    const { loop = false, speed = 1, isPlaying = true } = options;
+    const contextController = useSimulationController();
+    
+    // Use context values as defaults, but allow overrides via options
+    const history = options.history ?? contextController.history;
+    const { loop = false, speed = options.speed ?? contextController.speed, isPlaying = options.isPlaying ?? contextController.isPlaying } = options;
     const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
     // Playback state

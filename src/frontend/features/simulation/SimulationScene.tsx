@@ -2,7 +2,6 @@ import { extend } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
 import { SimulationEntity } from "./SimulationEntity";
 import { useSimulation } from "./useSimulation";
-import { SimulationSnapshot } from "./types";
 import { useAssets } from "./useAssets";
 
 // Extend Pixi.js components for @pixi/react
@@ -11,20 +10,10 @@ extend({
     Sprite,
 });
 
-interface SimulationSceneProps {
-    isPlaying: boolean;
-    speed: number;
-    history: SimulationSnapshot[];
-}
-
-export const SimulationScene = ({ isPlaying, speed, history }: SimulationSceneProps) => {
+export const SimulationScene = () => {
     const { isLoaded } = useAssets();
 
-    const entities = useSimulation(history, {
-        loop: false,
-        speed,
-        isPlaying
-    });
+    const entities = useSimulation();
 
     if (!isLoaded) {
         return null; // Or a loading spinner
