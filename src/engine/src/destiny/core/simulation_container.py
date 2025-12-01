@@ -7,6 +7,8 @@ All motion recording goes through the environment.
 from abc import abstractmethod, ABC
 import uuid
 
+from destiny.core.environment import Environment
+
 
 class SimulationEntity(ABC):
     """

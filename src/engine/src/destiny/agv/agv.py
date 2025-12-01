@@ -18,7 +18,7 @@ class AGV(SimulationEntity):
     An Automated Guided Vehicle that moves along planned paths.
     """
     
-    def __init__(self, start_location: Location, speed: float = 1.0):
+    def __init__(self, env: Environment, start_location: Location, speed: float = 1.0):
         super().__init__()
         self._speed: float = speed
         self._is_available = True
@@ -27,28 +27,24 @@ class AGV(SimulationEntity):
         self._current_location: Location = start_location
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
-        self._has_initial_motion: bool = False
+        
+        env.record_motion(
+            entity=self,
+            start_time=env.now,
+            end_time=None,
+            start_x=self._current_location.x,
+            start_y=self._current_location.y,
+            end_x=self._current_location.x,
+            end_y=self._current_location.y,
+            start_angle=self._angle,
+            end_angle=self._angle,
+        )
 
     def _get_entity_type(self) -> str:
         return "agv"
 
     def schedule_plan(self, env: Environment, plan: TripPlan) -> None:
         """Schedule a plan for the AGV to execute."""
-        # Record initial static position if this is the first plan
-        if not self._has_initial_motion:
-            env.record_motion(
-                entity=self,
-                start_time=env.now,
-                end_time=env.now,  # Zero duration - just establishes initial position
-                start_x=self._current_location.x,
-                start_y=self._current_location.y,
-                end_x=self._current_location.x,
-                end_y=self._current_location.y,
-                start_angle=self._angle,
-                end_angle=self._angle,
-            )
-            self._has_initial_motion = True
-        
         self._planned_destination = plan[-1].location
         self._plan_queue.append(plan)
 
@@ -99,19 +95,12 @@ class AGV(SimulationEntity):
             )
             
             # If carrying an item, record its motion relative to AGV
-            if isinstance(self._carried_item, SimulationEntity):
-                env.record_motion(
-                    entity=self._carried_item,
-                    parent=self,  # Relative to AGV
-                    start_time=start_time,
-                    end_time=end_time,
-                    start_x=0,
-                    start_y=0,
-                    end_x=0,
-                    end_y=0,
-                    start_angle=0,
-                    end_angle=0,
-                )
+            env.record_motion(
+                entity=self._carried_item,
+                parent=self,  # Relative to AGV
+                start_time=start_time,
+                end_time=end_time,
+            )
             
             # Wait for the movement to complete
             if duration > 0:
@@ -125,18 +114,6 @@ class AGV(SimulationEntity):
 
             # Handle drop at SINK
             if isinstance(sink := waypoint.location, StoreLocation) and waypoint.type == WaypointType.SINK:
-                # Record box at its final absolute position (no parent)
-                if isinstance(self._carried_item, SimulationEntity):
-                    env.record_motion(
-                        entity=self._carried_item,
-                        parent=None,  # Now in world space
-                        start_time=env.now,
-                        end_time=None,  # Until simulation end
-                        start_x=sink.x,
-                        start_y=sink.y,
-                        end_x=sink.x,
-                        end_y=sink.y,
-                    )
                 yield sink.put_item(self._carried_item)
                 self._carried_item = None
 

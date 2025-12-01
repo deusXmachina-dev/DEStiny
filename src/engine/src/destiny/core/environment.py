@@ -1,6 +1,7 @@
 """
 Simulation environment with motion recording.
 """
+from typing import Any
 from simpy import RealtimeEnvironment
 
 from destiny.core.simulation_container import SimulationEntity
@@ -27,13 +28,13 @@ class Environment(RealtimeEnvironment):
 
     def record_motion(
         self,
-        entity: SimulationEntity,
+        entity: Any,
         start_time: float,
         end_time: float | None,
-        start_x: float,
-        start_y: float,
-        end_x: float,
-        end_y: float,
+        start_x: float = 0.0,
+        start_y: float = 0.0,
+        end_x: float = 0.0,
+        end_y: float = 0.0,
         start_angle: float = 0.0,
         end_angle: float = 0.0,
         parent: SimulationEntity | None = None,
@@ -50,6 +51,9 @@ class Environment(RealtimeEnvironment):
             start_angle, end_angle: Starting and ending rotation
             parent: If set, coordinates are relative to this parent entity
         """
+        if not isinstance(entity, SimulationEntity):
+            return None
+        
         segment = MotionSegment(
             entity_id=entity.id,
             entity_type=entity._get_entity_type(),
