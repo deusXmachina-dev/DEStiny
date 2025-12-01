@@ -122,7 +122,7 @@ function SimulationAppContent() {
                             max={duration || 1}
                             step={0.01}
                             onValueChange={(vals) => seek(vals[0])}
-                            className="flex-1 **:data-[slot=slider-track]:bg-gray-300 **:data-[slot=slider-range]:bg-blue-600"
+                            className="flex-1 **:data-[slot=slider-track]:bg-gray-300 **:data-[slot=slider-range]:bg-gray-700"
                         />
                         <span className="text-gray-900 font-medium min-w-[50px]">
                             {formatTime(duration)}
