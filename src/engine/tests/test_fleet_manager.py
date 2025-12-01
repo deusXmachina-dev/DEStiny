@@ -50,7 +50,7 @@ def test_fleet_manager_full_integration():
 
     fleet_manager = FleetManager(task_provider, graph)
 
-    agv = AGV(l1, speed=1.0)
+    agv = AGV(env, start_location=l1, speed=1.0)
     fleet_manager.add_agv(agv)
 
     env.process(fleet_manager.plan_indefinitely(env))

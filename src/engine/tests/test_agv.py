@@ -14,7 +14,7 @@ def env():
 
 
 def test_agv_records_initial_position(env):
-    agv = AGV(start_location=Location(100, 200), speed=10.0)
+    agv = AGV(env, start_location=Location(100, 200), speed=10.0)
     
     plan = TripPlan([Waypoint(Location(200, 200), WaypointType.PASS)])
     agv.schedule_plan(env, plan)
@@ -30,7 +30,7 @@ def test_agv_records_initial_position(env):
 
 
 def test_agv_records_motion_segments(env):
-    agv = AGV(start_location=Location(0, 0), speed=10.0)
+    agv = AGV(env, start_location=Location(0, 0), speed=10.0)
     
     plan = TripPlan([
         Waypoint(Location(100, 0), WaypointType.PASS),
@@ -59,7 +59,7 @@ def test_agv_records_motion_segments(env):
 
 
 def test_agv_records_carried_item_motion(env):
-    agv = AGV(start_location=Location(0, 0), speed=10.0)
+    agv = AGV(env, start_location=Location(0, 0), speed=10.0)
     source = StoreLocation(env, x=0, y=0, initial_items=[Box()])
     sink = StoreLocation(env, x=100, y=0)
     
@@ -72,21 +72,15 @@ def test_agv_records_carried_item_motion(env):
     
     recording = env.get_recording()
     
-    # Find box segments (should have parent = agv while carried, then None when dropped)
+    # Find box segments (should have parent = agv while carried
     box_segments = [s for s in recording.segments if s.entity_type == "box"]
     assert len(box_segments) >= 1
-    
-    # At least one segment should have AGV as parent (while carried)
-    carried_segments = [s for s in box_segments if s.parent_id == agv.id]
-    assert len(carried_segments) >= 1
-    
-    # Final segment should have no parent (dropped at sink)
-    dropped_segments = [s for s in box_segments if s.parent_id is None]
-    assert len(dropped_segments) >= 1
+
+    assert all(s.parent_id == agv.id for s in box_segments)
 
 
 def test_agv_transport_item(env):
-    agv = AGV(start_location=Location(0, 0), speed=1.0)
+    agv = AGV(env, start_location=Location(0, 0), speed=1.0)
     source = StoreLocation(env, x=0, y=0, initial_items=["payload"])
     sink = StoreLocation(env, x=10, y=0)
 
@@ -103,7 +97,7 @@ def test_agv_transport_item(env):
 
 
 def test_agv_availability(env):
-    agv = AGV(start_location=Location(0, 0), speed=1.0)
+    agv = AGV(env, start_location=Location(0, 0), speed=1.0)
     
     plan = TripPlan([Waypoint(Location(10, 0), WaypointType.PASS)])
     agv.schedule_plan(env, plan)

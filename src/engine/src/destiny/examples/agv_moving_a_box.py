@@ -15,7 +15,7 @@ def main():
     env = Environment(factor=0)
 
     start_loc = Location(x=500, y=500)
-    agv = AGV(start_location=start_loc, speed=100.0)
+    agv = AGV(env, start_location=start_loc, speed=100.0)
 
     source_loc = StoreLocation(env, x=150, y=500, initial_items=[Box(), Box(), Box()])
     sink_loc = StoreLocation(env, x=500, y=150)
