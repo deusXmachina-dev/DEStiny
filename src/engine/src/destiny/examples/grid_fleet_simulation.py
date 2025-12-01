@@ -52,7 +52,7 @@ def main():
     
     for i, (r, c) in enumerate(agv_start_coords):
         start_node = grid.get_node_at(r, c)
-        agv = AGV(start_location=start_node, speed=50.0)
+        agv = AGV(env=env, start_location=start_node, speed=50.0)
         fleet_manager.add_agv(agv)
         print(f"AGV {i+1} created at ({start_node.x}, {start_node.y})")
 
@@ -66,7 +66,6 @@ def main():
 
     # Export recording
     recording = env.get_recording()
-    print(f"Recorded {len(recording.segments)} motion segments")
 
     with open("grid_fleet_recording.json", "w") as f:
         json.dump(recording.to_dict(), f, indent=2)
