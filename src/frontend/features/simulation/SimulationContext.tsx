@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { SimulationSnapshot } from "./types";
 import dummyHistory from "./dummySimulationHistory.json";
 
@@ -33,9 +33,9 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [history, setHistory] = useState<SimulationSnapshot[]>(dummyHistory as SimulationSnapshot[]);
 
     // Actions
-    const play = () => setIsPlaying(true);
-    const pause = () => setIsPlaying(false);
-    const togglePlay = () => setIsPlaying(prev => !prev);
+    const play = useCallback(() => setIsPlaying(true), []);
+    const pause = useCallback(() => setIsPlaying(false), []);
+    const togglePlay = useCallback(() => setIsPlaying(prev => !prev), []);
 
     const value: SimulationContextValue = {
         history,

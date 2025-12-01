@@ -64,6 +64,8 @@ export const useSimulation = () => {
     // Reset simulation time when history changes
     useEffect(() => {
         accumulatedTimeRef.current = 0;
+        console.log("history changed, resetting simulation time");
+        console.log(isPlaying);
     }, [history]);
 
     useTick((ticker) => {

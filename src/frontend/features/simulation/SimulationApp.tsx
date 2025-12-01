@@ -35,7 +35,7 @@ function SimulationAppContent() {
         if (parsedHistory && fileName) {
             setHistory(parsedHistory);
             setSimulationName(fileName);
-            pause(); 
+            pause();
         }
     }, [parsedHistory, fileName, setHistory, setSimulationName, pause]);
 
