@@ -55,7 +55,7 @@ const interpolateEntities = (
  * Reads state from SimulationContext.
  */
 export const useSimulation = () => {
-    const { history, speed, isPlaying } = useSimulationController();
+    const { history, speed, isPlaying, currentTime, setCurrentTime } = useSimulationController();
     const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
     // Playback state
@@ -66,7 +66,14 @@ export const useSimulation = () => {
     useEffect(() => {
         accumulatedTimeRef.current = 0;
         hasRenderedInitialFrameRef.current = false;
-    }, [history]);
+        setCurrentTime(0);
+    }, [history, setCurrentTime]);
+
+    // Sync accumulated time when seeking
+    useEffect(() => {
+        accumulatedTimeRef.current = currentTime * 1000; // Convert to ms
+        hasRenderedInitialFrameRef.current = false; // Force re-render
+    }, [currentTime]);
 
 
     useTick((ticker) => {
@@ -95,6 +102,9 @@ export const useSimulation = () => {
 
         const currentSimTime = accumulatedTimeRef.current;
         const simTimeSeconds = currentSimTime / 1000;
+
+        // Update context with current time
+        setCurrentTime(simTimeSeconds);
 
         // Find surrounding snapshots
         // Optimization: Could track current index to avoid searching from 0 every time
