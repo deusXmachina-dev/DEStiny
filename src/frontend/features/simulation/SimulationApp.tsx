@@ -1,32 +1,60 @@
 "use client";
 
 import { Application } from "@pixi/react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { SimulationScene } from "./SimulationScene";
+import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Upload, Play, Pause } from "lucide-react";
+import { SimulationSnapshot } from "./types";
+import dummyHistory from "./dummySimulationHistory.json";
 
 export default function SimulationApp() {
     const parentRef = useRef<HTMLDivElement>(null);
     const [isPlaying, setIsPlaying] = useState(true);
     const [speed, setSpeed] = useState(1);
     const [simulationName, setSimulationName] = useState("Simulation 1");
+    const { fileName, fileContent, triggerFileUpload } = useFileUpload({ acceptFileTypes: ".json" });
+
+    // Parse file content into history, or use dummy history as fallback
+    const history = useMemo<SimulationSnapshot[]>(() => {
+        if (fileContent) {
+            try {
+                const parsed = JSON.parse(fileContent);
+                return parsed as SimulationSnapshot[];
+            } catch (error) {
+                console.error("Failed to parse file content:", error);
+                return dummyHistory as SimulationSnapshot[];
+            }
+        }
+        return dummyHistory as SimulationSnapshot[];
+    }, [fileContent]);
+
+    useEffect(() => {
+        if (fileName) {
+            setSimulationName(fileName);
+            console.log("File Name:", fileName);
+            console.log("File Content:", fileContent);
+        }
+    }, [fileName, fileContent]);
 
     const handleUpload = () => {
-        // Placeholder for file upload functionality
-        console.log("Upload simulation history");
+        triggerFileUpload();
     };
 
     return (
         <div className="flex flex-col w-full h-screen">
             <div ref={parentRef} className="flex-1 min-h-0 w-full">
                 <Application background={"#1099bb"} resizeTo={parentRef}>
-                    <SimulationScene isPlaying={isPlaying} speed={speed} />
+                    <SimulationScene
+                        isPlaying={isPlaying}
+                        speed={speed}
+                    />
                 </Application>
             </div>
-            
+
             {/* Bottom Navigation Bar - 2 Columns */}
             <div className="bg-gray-100 border-t border-gray-300 shadow-lg">
                 <div className="grid grid-cols-2 gap-8 p-4 max-w-7xl mx-auto">
@@ -76,7 +104,7 @@ export default function SimulationApp() {
                                 max={5}
                                 step={0.1}
                                 onValueChange={(vals) => setSpeed(vals[0])}
-                                className="flex-1"
+                                className="flex-1 **:data-[slot=slider-track]:bg-gray-300 **:data-[slot=slider-range]:bg-gray-700"
                             />
                         </div>
                     </div>
