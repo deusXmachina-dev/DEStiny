@@ -1,104 +1,115 @@
+"""Tests for AGV motion recording."""
 import pytest
 from destiny.agv.agv import AGV
+from destiny.agv.items import Box
 from destiny.agv.location import Location
 from destiny.agv.planning import TripPlan, Waypoint, WaypointType
 from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import TickingEnvironment
+from destiny.core.environment import Environment
+
 
 @pytest.fixture
 def env():
-    return TickingEnvironment(tick_interval=1.0, factor=0)
+    return Environment(factor=0)
 
 
-def test_agv_movement(env):
-    agv = AGV(start_location=Location(0, 0))
-    env.add_child(agv)
-
-    target_loc = Location(10, 0)
-    waypoint = Waypoint(target_loc, WaypointType.PASS)
-    plan = TripPlan([waypoint])
-
-    agv.schedule_plan(env, plan)
-    env.run(until=10.1)
+def test_agv_records_initial_position(env):
+    agv = AGV(start_location=Location(100, 200), speed=10.0)
     
-    # Check snapshot has data now
-    snap = agv.snapshot(env.now)
-    assert snap is not None
-    assert snap.x == 10.0
-    assert snap.y == 0.0
-
-    assert agv.is_available() is True
-
-def test_agv_mid_trip(env):    
-    agv = AGV(start_location=Location(0, 0), speed=1.0)
-    env.add_child(agv)
-    source_loc = StoreLocation(env, 0, 0, initial_items=["payload"])
-    sink_loc = StoreLocation(env, 10, 0)
-
-    plan = TripPlan([
-        Waypoint(source_loc, WaypointType.SOURCE),
-        Waypoint(sink_loc, WaypointType.SINK)])
-
+    plan = TripPlan([Waypoint(Location(200, 200), WaypointType.PASS)])
     agv.schedule_plan(env, plan)
-    env.run(until=5)
+    env.run(until=20)
+    
+    recording = env.get_recording()
+    agv_segments = [s for s in recording.segments if s.entity_id == agv.id]
+    
+    # First segment is initial position, second is the movement
+    assert len(agv_segments) >= 1
+    assert agv_segments[0].start_x == 100
+    assert agv_segments[0].start_y == 200
 
-    assert agv.is_available() is False
-    assert len(source_loc.store.items) == 0
-    assert len(sink_loc.store.items) == 0
 
-    snap = agv.snapshot(env.now)
-    assert snap is not None
-    assert snap.x == 5
-    assert snap.y == 0.0
+def test_agv_records_motion_segments(env):
+    agv = AGV(start_location=Location(0, 0), speed=10.0)
+    
+    plan = TripPlan([
+        Waypoint(Location(100, 0), WaypointType.PASS),
+        Waypoint(Location(100, 50), WaypointType.PASS),
+    ])
+    agv.schedule_plan(env, plan)
+    env.run(until=20)
+    
+    recording = env.get_recording()
+    agv_segments = [s for s in recording.segments if s.entity_id == agv.id]
+    
+    # Initial + 2 movements
+    assert len(agv_segments) == 3
+    
+    # Check second segment (first movement)
+    seg1 = agv_segments[1]
+    assert seg1.start_x == 0
+    assert seg1.end_x == 100
+    assert seg1.end_y == 0
+    
+    # Check third segment (second movement)
+    seg2 = agv_segments[2]
+    assert seg2.start_x == 100
+    assert seg2.end_x == 100
+    assert seg2.end_y == 50
+
+
+def test_agv_records_carried_item_motion(env):
+    agv = AGV(start_location=Location(0, 0), speed=10.0)
+    source = StoreLocation(env, x=0, y=0, initial_items=[Box()])
+    sink = StoreLocation(env, x=100, y=0)
+    
+    plan = TripPlan([
+        Waypoint(source, WaypointType.SOURCE),
+        Waypoint(sink, WaypointType.SINK),
+    ])
+    agv.schedule_plan(env, plan)
+    env.run(until=20)
+    
+    recording = env.get_recording()
+    
+    # Find box segments (should have parent = agv while carried, then None when dropped)
+    box_segments = [s for s in recording.segments if s.entity_type == "box"]
+    assert len(box_segments) >= 1
+    
+    # At least one segment should have AGV as parent (while carried)
+    carried_segments = [s for s in box_segments if s.parent_id == agv.id]
+    assert len(carried_segments) >= 1
+    
+    # Final segment should have no parent (dropped at sink)
+    dropped_segments = [s for s in box_segments if s.parent_id is None]
+    assert len(dropped_segments) >= 1
+
 
 def test_agv_transport_item(env):
     agv = AGV(start_location=Location(0, 0), speed=1.0)
-    env.add_child(agv)
-    source_loc = StoreLocation(env, 0, 0, initial_items=["payload"])
-    env.add_child(source_loc)
-    sink_loc = StoreLocation(env, 10, 0)
+    source = StoreLocation(env, x=0, y=0, initial_items=["payload"])
+    sink = StoreLocation(env, x=10, y=0)
 
     plan = TripPlan([
-        Waypoint(source_loc, WaypointType.SOURCE),
-        Waypoint(sink_loc, WaypointType.SINK)])
-
+        Waypoint(source, WaypointType.SOURCE),
+        Waypoint(sink, WaypointType.SINK),
+    ])
     agv.schedule_plan(env, plan)
     env.run()
-    # Verify item moved
-    # StoreLocation internal store checks
-    assert len(source_loc.store.items) == 0
-    assert len(sink_loc.store.items) == 1
-    assert sink_loc.store.items[0] == "payload"
+    
+    assert len(source.store.items) == 0
+    assert len(sink.store.items) == 1
+    assert sink.store.items[0] == "payload"
 
-def test_agv_queueing(env):
+
+def test_agv_availability(env):
     agv = AGV(start_location=Location(0, 0), speed=1.0)
-    env.add_child(agv)
-
-    # Plan 1: 0 -> 10 (10s)
-    target1 = Location(10, 0)
-    plan1 = TripPlan([Waypoint(target1, WaypointType.PASS)])
     
-    # Plan 2: 10 -> 20 (10s)
-    target2 = Location(20, 0)
-    plan2 = TripPlan([Waypoint(target2, WaypointType.PASS)])
-
-    # Execute Plan 1
-    agv.schedule_plan(env, plan1)
+    plan = TripPlan([Waypoint(Location(10, 0), WaypointType.PASS)])
+    agv.schedule_plan(env, plan)
     
-    # Execute Plan 2 immediately (should queue)
-    agv.schedule_plan(env, plan2)
-
-    # Run for 15s. Should be done with Plan 1 (10s) and midway Plan 2 (5s into Plan 2).
-    # Total distance: 10 + 5 = 15. Pos: 15, 0.
-    env.run(until=15)
-
-    snap = agv.snapshot(env.now)
-    assert snap.x == 15.0
-    assert snap.y == 0.0
+    env.run(until=5)
     assert agv.is_available() is False
-
-    # Run until completion
-    env.run(until=21)
-    snap = agv.snapshot(env.now)
-    assert snap.x == 20.0
+    
+    env.run(until=15)
     assert agv.is_available() is True

@@ -1,73 +1,75 @@
 """
-Core environment module for the simulation.
+Simulation environment with motion recording.
 """
-from collections.abc import Iterator
-
 from simpy import RealtimeEnvironment
 
-from destiny.core.simulation_container import SimulationContainer
-from destiny.core.snapshot import ComponentSnapshot, SimulationSnapshot
+from destiny.core.simulation_container import SimulationEntity
+from destiny.core.timeline import MotionSegment, SimulationRecording
 
 
-class TickingEnvironment(RealtimeEnvironment, SimulationContainer):
+class Environment(RealtimeEnvironment):
     """
-    A simulation environment that advances in discrete ticks and captures snapshots.
-
-    This environment extends simpy.RealtimeEnvironment to support periodic ticking
-    mechanisms, useful for synchronization with external systems or UI rendering.
-    It also acts as the root SimulationContainer.
+    Simulation environment that records motion segments.
+    
+    All motion recording goes through this class via record_motion().
     """
 
-    def __init__(self, tick_interval: float = 1.0, initial_time: float = 0, factor: float = 1.0):
+    def __init__(self, initial_time: float = 0, factor: float = 1.0):
         """
-        Initialize the TickingEnvironment.
+        Initialize the environment.
 
         Args:
-            tick_interval: The simulation time duration between ticks.
             initial_time: The starting simulation time.
-            factor: Real-time scaling factor (e.g. 1.0 = real time, 0.1 = fast).
+            factor: Real-time scaling factor (0 = as fast as possible).
         """
-        RealtimeEnvironment.__init__(self, initial_time=initial_time, factor=factor, strict=False)
-        SimulationContainer.__init__(self)
-        self.tick_interval = tick_interval
+        super().__init__(initial_time=initial_time, factor=factor, strict=False)
+        self._segments: list[MotionSegment] = []
 
-        self.last_tick_time = initial_time
-
-    def advance(self) -> SimulationSnapshot:
+    def record_motion(
+        self,
+        entity: SimulationEntity,
+        start_time: float,
+        end_time: float | None,
+        start_x: float,
+        start_y: float,
+        end_x: float,
+        end_y: float,
+        start_angle: float = 0.0,
+        end_angle: float = 0.0,
+        parent: SimulationEntity | None = None,
+    ) -> None:
         """
-        Advance the simulation by one tick interval and capture snapshots.
-
-        Returns:
-            A snapshot of the entire simulation at the new time.
-        """
-        time_to_advance = self.last_tick_time + self.tick_interval
-        self.run(until=time_to_advance)
-        self.last_tick_time = time_to_advance
-        return SimulationSnapshot(time=self.now, components=self._take_snapshots())
-
-    def iterate(self, until: float) -> Iterator[SimulationSnapshot]:
-        """
-        Iterator that yields snapshots by advancing the environment until the specified time.
-
+        Record a motion segment for an entity.
+        
         Args:
-            until: The simulation time to run until.
-            
-        Yields:
-            A snapshot of the entire simulation at each tick.
+            entity: The entity that is moving
+            start_time: When the motion begins
+            end_time: When the motion ends (None = until simulation end)
+            start_x, start_y: Starting position
+            end_x, end_y: Ending position
+            start_angle, end_angle: Starting and ending rotation
+            parent: If set, coordinates are relative to this parent entity
         """
-        while self.now < until:
-            yield self.advance()
+        segment = MotionSegment(
+            entity_id=entity.id,
+            entity_type=entity._get_entity_type(),
+            parent_id=parent.id if parent else None,
+            start_time=start_time,
+            end_time=end_time,
+            start_x=start_x,
+            start_y=start_y,
+            end_x=end_x,
+            end_y=end_y,
+            start_angle=start_angle,
+            end_angle=end_angle,
+        )
+        self._segments.append(segment)
 
-    def _take_snapshots(self) -> list[ComponentSnapshot]:
-        snapshots = []
-        for component in self._children:
-            snap = component.snapshot(self.now)
-            if snap is not None:
-                snapshots.append(snap)
-        return snapshots
-
-    def _get_snapshot_state(self, t: float) -> ComponentSnapshot | None:
+    def get_recording(self) -> SimulationRecording:
         """
-        The environment itself does not render as a component.
+        Get the complete recording of all motion segments.
         """
-        return None
+        return SimulationRecording(
+            duration=self.now,
+            segments=self._segments,
+        )
