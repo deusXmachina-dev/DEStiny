@@ -68,12 +68,6 @@ export const useSimulation = () => {
         hasRenderedInitialFrameRef.current = false;
     }, [history]);
 
-    // Reset flag when resuming playback
-    useEffect(() => {
-        if (isPlaying) {
-            hasRenderedInitialFrameRef.current = false;
-        }
-    }, [isPlaying]);
 
     useTick((ticker) => {
         if (history.length === 0) return;
@@ -98,7 +92,6 @@ export const useSimulation = () => {
             hasRenderedInitialFrameRef.current = true;
         }
 
-        console.log("currentSimTime");
 
         const currentSimTime = accumulatedTimeRef.current;
         const simTimeSeconds = currentSimTime / 1000;
