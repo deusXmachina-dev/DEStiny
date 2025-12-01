@@ -127,3 +127,112 @@ class SiteGraph:
             return path_length[target_idx]
         except (KeyError, IndexError):
             return float('inf')
+
+
+class GridSiteGraph(SiteGraph):
+    """
+    A SiteGraph that is initialized as a grid of nodes.
+    """
+    def __init__(self, width: int, height: int, spacing: float, diagonals: bool = True):
+        """
+        Initialize a grid-based site graph.
+
+        :param width: Number of columns.
+        :param height: Number of rows.
+        :param spacing: Distance between adjacent nodes.
+        :param diagonals: Whether to connect diagonal neighbors.
+        """
+        super().__init__()
+        self.width = width
+        self.height = height
+        self.spacing = spacing
+        self.diagonals = diagonals
+        self._grid_locations: Dict[tuple[int, int], Location] = {}
+        self._generate_grid()
+
+    def _generate_grid(self):
+        # Create nodes
+        for r in range(self.height):
+            for c in range(self.width):
+                loc = Location(x=c * self.spacing, y=r * self.spacing)
+                self.add_node(loc)
+                self._grid_locations[(r, c)] = loc
+
+        # Create edges
+        for r in range(self.height):
+            for c in range(self.width):
+                current_loc = self._grid_locations[(r, c)]
+
+                # Right neighbor
+                if c < self.width - 1:
+                    right_loc = self._grid_locations[(r, c + 1)]
+                    self.add_edge(current_loc, right_loc)
+
+                # Bottom neighbor
+                if r < self.height - 1:
+                    bottom_loc = self._grid_locations[(r + 1, c)]
+                    self.add_edge(current_loc, bottom_loc)
+
+                if self.diagonals:
+                    # Bottom-right neighbor
+                    if r < self.height - 1 and c < self.width - 1:
+                        br_loc = self._grid_locations[(r + 1, c + 1)]
+                        self.add_edge(current_loc, br_loc)
+
+                    # Bottom-left neighbor
+                    if r < self.height - 1 and c > 0:
+                        bl_loc = self._grid_locations[(r + 1, c - 1)]
+                        self.add_edge(current_loc, bl_loc)
+
+    def get_node_at(self, row: int, col: int) -> Optional[Location]:
+        """
+        Get the Location object at the specified grid coordinates.
+        """
+        return self._grid_locations.get((row, col))
+
+    def insert_location(self, location: Location, connect_to_k_nearest: int = 4) -> None:
+        """
+        Insert a location into the graph.
+        
+        - If a node with the same coordinates already exists, it is replaced 
+          (preserving edges but updating the Location object).
+        - If it is a new location, it is added as a new node and connected to the 
+          'connect_to_k_nearest' closest existing nodes.
+        
+        :param location: The Location to add.
+        :param connect_to_k_nearest: Number of neighbors to connect to if it's a new node.
+        """
+        node_id = _get_node_id_for_location(location)
+        
+        if node_id in self.node_indices:
+            # Case 1: Replace existing node
+            idx = self.node_indices[node_id]
+            self.graph[idx] = {'location': location}
+            
+            # Update _grid_locations if this matches a grid point
+            # We calculate expected grid indices to check efficiently
+            if self.spacing > 0:
+                c = int(round(location.x / self.spacing))
+                r = int(round(location.y / self.spacing))
+                if (r, c) in self._grid_locations:
+                    # Check if the existing one actually matches the ID we just replaced
+                    existing = self._grid_locations[(r, c)]
+                    if _get_node_id_for_location(existing) == node_id:
+                        self._grid_locations[(r, c)] = location
+        else:
+            # Case 2: Add new node and connect to nearest
+            # Gather candidates BEFORE adding the new node to avoid self-matching
+            candidates = []
+            for node_data in self.graph.nodes():
+                other_loc = node_data['location']
+                dist = location.distance_to(other_loc)
+                candidates.append((dist, other_loc))
+            
+            # Add the new node
+            super().add_node(location)
+            
+            # Connect to k nearest
+            candidates.sort(key=lambda x: x[0])
+            for i in range(min(len(candidates), connect_to_k_nearest)):
+                dist, target = candidates[i]
+                self.add_edge(location, target, weight=dist)

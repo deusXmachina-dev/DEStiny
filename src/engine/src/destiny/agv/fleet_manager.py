@@ -12,6 +12,18 @@ from destiny.core.simulation_container import SimulationContainer
 from destiny.core.snapshot import ComponentSnapshot
 
 
+
+class TaskProvider:
+    
+    def __init__(self, sources: list[StoreLocation], sinks: list[StoreLocation]):
+        self._sources = sources
+        self._sinks = sinks
+
+    def get_next_task(self, env: TickingEnvironment) -> Generator[Event, Any, AGVTask]:
+        yield env.timeout(20) # todo: implement actual logic for getting the next task
+        return AGVTask(source=random.choice(self._sources), sink=random.choice(self._sinks))
+
+
 class FleetManager(SimulationContainer):
     """
     A fleet manager that schedules plans for AGVs based on the task provider.
@@ -79,14 +91,3 @@ class FleetManager(SimulationContainer):
 
         plan = TripPlan(waypoints)
         agv.schedule_plan(env, plan)
-
-
-class TaskProvider:
-    
-    def __init__(self, sources: list[StoreLocation], sinks: list[StoreLocation]):
-        self._sources = sources
-        self._sinks = sinks
-
-    def get_next_task(self, env: TickingEnvironment) -> Generator[Event, Any, AGVTask]:
-        yield env.timeout(20) # todo: implement actual logic for getting the next task
-        return AGVTask(source=random.choice(self._sources), sink=random.choice(self._sinks))
