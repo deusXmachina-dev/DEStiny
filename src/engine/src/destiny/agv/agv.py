@@ -67,20 +67,15 @@ class AGV(SimulationEntity):
             start_location = self._current_location
             end_location = waypoint.location
             
-            # Calculate angle for this leg
             new_angle = start_location.angle_to(end_location)
-            start_angle = self._angle
-            if new_angle is not None:
-                end_angle = new_angle
-                self._angle = new_angle
-            else:
-                end_angle = self._angle
-            
+            end_angle = new_angle if new_angle is not None else self._angle
+            self._angle = end_angle  # update to face next destination
+
             # Calculate duration
             distance = start_location.distance_to(end_location)
             duration = distance / self._speed if distance > 0 else 0
             end_time = start_time + duration
-            
+
             # Record motion for AGV
             env.record_motion(
                 entity=self,
@@ -90,7 +85,7 @@ class AGV(SimulationEntity):
                 start_y=start_location.y,
                 end_x=end_location.x,
                 end_y=end_location.y,
-                start_angle=start_angle,
+                start_angle=end_angle,
                 end_angle=end_angle,
             )
             
