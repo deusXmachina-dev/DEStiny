@@ -3,12 +3,16 @@
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 import { SimulationScene } from "./SimulationScene";
-import { SimulationProvider } from "./SimulationContext";
+import { SimulationProvider, useSimulationController } from "./SimulationContext";
 import { UploadControls } from "./UploadControls";
 import { PlaybackControls } from "./PlaybackControls";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
+    const { history } = useSimulationController();
+    
+    // Dynamic positioning: center & large when no history, top-right & small when history exists
+    const hasHistory = history.length > 0;
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -16,8 +20,11 @@ function SimulationAppContent() {
                 <Application background={"#1099bb"} resizeTo={parentRef}>
                     <SimulationScene />
                 </Application>
-                {/* Floating Upload Controls */}
-                <UploadControls />
+                {/* Dynamic Upload Controls */}
+                <UploadControls 
+                    position={hasHistory ? "top-right" : "center"} 
+                    size={hasHistory ? "sm" : "lg"} 
+                />
             </div>
 
             {/* Bottom Navigation Bar */}
