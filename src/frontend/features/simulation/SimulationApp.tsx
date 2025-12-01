@@ -51,6 +51,7 @@ export default function SimulationApp() {
                     <SimulationScene
                         isPlaying={isPlaying}
                         speed={speed}
+                        history={history}
                     />
                 </Application>
             </div>

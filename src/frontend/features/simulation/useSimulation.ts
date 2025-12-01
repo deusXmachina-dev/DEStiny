@@ -1,5 +1,5 @@
 import { useTick } from "@pixi/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SimulationComponent, SimulationEntityState, SimulationSnapshot } from "./types";
 
 interface UseSimulationOptions {
@@ -62,11 +62,16 @@ export const useSimulation = (
     history: SimulationSnapshot[],
     options: UseSimulationOptions = {}
 ) => {
-    const { loop = true, speed = 1, isPlaying = true } = options;
+    const { loop = false, speed = 1, isPlaying = true } = options;
     const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
     // Playback state
     const accumulatedTimeRef = useRef<number>(0);
+
+    // Reset simulation time when history changes
+    useEffect(() => {
+        accumulatedTimeRef.current = 0;
+    }, [history]);
 
     useTick((ticker) => {
         if (history.length === 0) return;

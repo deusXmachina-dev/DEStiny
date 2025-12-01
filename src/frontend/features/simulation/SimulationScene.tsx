@@ -1,6 +1,5 @@
 import { extend } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
-import dummyHistory from "./dummySimulationHistory.json";
 import { SimulationEntity } from "./SimulationEntity";
 import { useSimulation } from "./useSimulation";
 import { SimulationSnapshot } from "./types";
@@ -15,17 +14,14 @@ extend({
 interface SimulationSceneProps {
     isPlaying: boolean;
     speed: number;
+    history: SimulationSnapshot[];
 }
 
-export const SimulationScene = ({ isPlaying, speed }: SimulationSceneProps) => {
+export const SimulationScene = ({ isPlaying, speed, history }: SimulationSceneProps) => {
     const { isLoaded } = useAssets();
 
-    // Cast dummy data to typed history
-    // In a real app, this would be validated or fetched
-    const history = dummyHistory as SimulationSnapshot[];
-
     const entities = useSimulation(history, {
-        loop: true,
+        loop: false,
         speed,
         isPlaying
     });
