@@ -3,13 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { SimulationComponent, SimulationEntityState, SimulationSnapshot } from "./types";
 import { useSimulationController } from "./SimulationContext";
 
-interface UseSimulationOptions {
-    loop?: boolean;
-    speed?: number;
-    isPlaying?: boolean;
-    history?: SimulationSnapshot[];
-}
-
 /**
  * Linear interpolation helper.
  */
@@ -59,16 +52,10 @@ const interpolateEntities = (
 /**
  * Hook to manage simulation playback.
  * Must be used within a Pixi Application context (because of useTick).
- * By default, reads state from SimulationContext, but can be overridden via options.
+ * Reads state from SimulationContext.
  */
-export const useSimulation = (
-    options: UseSimulationOptions = {}
-) => {
-    const contextController = useSimulationController();
-    
-    // Use context values as defaults, but allow overrides via options
-    const history = options.history ?? contextController.history;
-    const { loop = false, speed = options.speed ?? contextController.speed, isPlaying = options.isPlaying ?? contextController.isPlaying } = options;
+export const useSimulation = () => {
+    const { history, speed, isPlaying } = useSimulationController();
     const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
     // Playback state
@@ -96,13 +83,7 @@ export const useSimulation = (
 
         let currentSimTime = accumulatedTimeRef.current;
 
-        if (loop && duration > 0) {
-            // Handle looping
-            if (currentSimTime >= duration) {
-                currentSimTime = currentSimTime % duration;
-                accumulatedTimeRef.current = currentSimTime;
-            }
-        } else if (currentSimTime > duration) {
+        if (currentSimTime > duration) {
             // Clamp to end
             currentSimTime = duration;
             accumulatedTimeRef.current = duration;
