@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { SimulationSnapshot } from "./types";
+import { SimulationRecording } from "./types";
 
 interface SimulationContextValue {
     // State
-    history: SimulationSnapshot[];
+    recording: SimulationRecording | null;
     simulationName: string;
     isPlaying: boolean;
     speed: number;
@@ -18,7 +18,7 @@ interface SimulationContextValue {
     pause: () => void;
     togglePlay: () => void;
     setSpeed: (speed: number) => void;
-    setHistory: (history: SimulationSnapshot[]) => void;
+    setRecording: (recording: SimulationRecording | null) => void;
     setSimulationName: (name: string) => void;
     seek: (time: number) => void;
     setCurrentTime: (time: number) => void;
@@ -35,12 +35,12 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1);
     const [simulationName, setSimulationName] = useState("Upload Simulation");
-    const [history, setHistory] = useState<SimulationSnapshot[]>([]);
+    const [recording, setRecording] = useState<SimulationRecording | null>(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [seekTarget, setSeekTarget] = useState<number | null>(null);
 
-    // Compute duration from history
-    const duration = history.length > 0 ? history[history.length - 1].time : 0;
+    // Compute duration from recording
+    const duration = recording?.duration || 0;
 
     // Actions
     const play = useCallback(() => setIsPlaying(true), []);
@@ -56,7 +56,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     }, []);
 
     const value: SimulationContextValue = {
-        history,
+        recording,
         simulationName,
         isPlaying,
         speed,
@@ -67,7 +67,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         pause,
         togglePlay,
         setSpeed,
-        setHistory,
+        setRecording,
         setSimulationName,
         seek,
         setCurrentTime,
@@ -88,4 +88,3 @@ export const useSimulationController = (): SimulationContextValue => {
     }
     return context;
 };
-

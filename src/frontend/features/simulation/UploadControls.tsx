@@ -5,7 +5,7 @@ import { useSimulationController } from "./SimulationContext";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { SimulationSnapshot } from "./types";
+import { SimulationRecording } from "./types";
 import { cn } from "@/lib/utils";
 
 type UploadControlsPosition = "top-right" | "center";
@@ -22,15 +22,15 @@ const POSITION_CLASSES: Record<UploadControlsPosition, string> = {
 };
 
 export function UploadControls({ position = "top-right", size = "sm" }: UploadControlsProps) {
-    const { setHistory, setSimulationName, pause, simulationName } = useSimulationController();
+    const { setRecording, setSimulationName, pause, simulationName } = useSimulationController();
     const { fileName, fileContent, triggerFileUpload } = useFileUpload({ acceptFileTypes: ".json" });
 
     // Parse file content and update context when file is uploaded
-    const parsedHistory = useMemo<SimulationSnapshot[] | null>(() => {
+    const parsedRecording = useMemo<SimulationRecording | null>(() => {
         if (fileContent) {
             try {
                 const parsed = JSON.parse(fileContent);
-                return parsed as SimulationSnapshot[];
+                return parsed as SimulationRecording;
             } catch (error) {
                 console.error("Failed to parse file content:", error);
                 return null;
@@ -40,12 +40,12 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
     }, [fileContent]);
 
     useEffect(() => {
-        if (parsedHistory && fileName) {
-            setHistory(parsedHistory);
+        if (parsedRecording && fileName) {
+            setRecording(parsedRecording);
             setSimulationName(fileName);
             pause();
         }
-    }, [parsedHistory, fileName, setHistory, setSimulationName, pause]);
+    }, [parsedRecording, fileName, setRecording, setSimulationName, pause]);
 
     const isLarge = size === "lg";
 
@@ -73,7 +73,7 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
                     )}
                 >
                     <Upload className={cn(isLarge ? "size-6" : "size-4")} />
-                    Upload History
+                    Upload Recording
                 </Button>
                 <div className={cn(
                     "text-gray-900 font-semibold text-center",
@@ -90,4 +90,3 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
         </div>
     );
 }
-
