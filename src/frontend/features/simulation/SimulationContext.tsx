@@ -1,8 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { SimulationSnapshot } from "./types";
-import dummyHistory from "./dummySimulationHistory.json";
 
 interface SimulationContextValue {
     // State
@@ -29,8 +28,8 @@ interface SimulationProviderProps {
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [isPlaying, setIsPlaying] = useState(true);
     const [speed, setSpeed] = useState(1);
-    const [simulationName, setSimulationName] = useState("Simulation 1");
-    const [history, setHistory] = useState<SimulationSnapshot[]>(dummyHistory as SimulationSnapshot[]);
+    const [simulationName, setSimulationName] = useState("Upload Simulation");
+    const [history, setHistory] = useState<SimulationSnapshot[]>([]);
 
     // Actions
     const play = useCallback(() => setIsPlaying(true), []);
