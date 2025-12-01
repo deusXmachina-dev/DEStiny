@@ -6,7 +6,7 @@ from typing import List, Tuple
 from destiny.agv.agv import AGV
 from destiny.agv.items import Box
 from destiny.agv.site_graph import GridSiteGraph
-from destiny.agv.store_location import StoreLocation
+from destiny.agv.store_location import StoreLocation, Source, Sink
 from destiny.agv.fleet_manager import FleetManager, TaskProvider
 from destiny.core.environment import TickingEnvironment
 
@@ -44,7 +44,7 @@ def main():
         original_node = grid.get_node_at(r, c)
         
         # Create a source with some initial items
-        source = StoreLocation(
+        source = Source(
             env, 
             x=original_node.x, 
             y=original_node.y, 
@@ -53,12 +53,13 @@ def main():
         
         grid.insert_location(source)
         sources.append(source)
+        env.add_child(source)
 
     # Add Sinks
     for r, c in sink_coords:
         original_node = grid.get_node_at(r, c)
         
-        sink = StoreLocation(
+        sink = Sink(
             env, 
             x=original_node.x, 
             y=original_node.y
@@ -66,6 +67,7 @@ def main():
         
         grid.insert_location(sink)
         sinks.append(sink)
+        env.add_child(sink)
 
     print(f"Initialized {len(sources)} sources and {len(sinks)} sinks.")
 

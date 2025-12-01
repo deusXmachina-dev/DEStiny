@@ -52,8 +52,6 @@ class SimulationContainer(ABC):
         """
         # Get the component's own state
         snapshot = self._get_snapshot_state(t)
-        if snapshot is None:
-            return None
 
         # Collect snapshots from children
         child_snapshots = []
@@ -61,6 +59,23 @@ class SimulationContainer(ABC):
             child_snapshot = child.snapshot(t)
             if child_snapshot:
                 child_snapshots.append(child_snapshot)
+        
+        # If this component has no visual representation itself
+        if snapshot is None:
+            # If it also has no visible children, it's truly invisible
+            if not child_snapshots:
+                return None
+            
+            # If it has children, return a virtual container snapshot
+            # We use a special type "Group" or similar, with 0 coordinates relative to parent
+            return ComponentSnapshot(
+                type="group",
+                x=0.0,
+                y=0.0,
+                angle=0.0,
+                children=child_snapshots,
+                id=self.id
+            )
 
         # Always ensure ID is set to the container's ID
         # If there are children snapshots, update the main snapshot children as well

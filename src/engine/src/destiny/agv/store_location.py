@@ -23,13 +23,7 @@ class StoreLocation(Location, SimulationContainer, Generic[T]):
         
         if initial_items:
             self.store.items.extend(initial_items)
-
-    def _get_snapshot_state(self, t: float) -> ComponentSnapshot | None:
-        # todo: implement snapshot
-        # If we wanted to render items in the store, we would sync _children here:
-        # self._children = [item for item in self.store.items if isinstance(item, SimulationContainer)]
-        return None
-
+            
     def get_item(self) -> simpy.events.Event:
         """Request an item from the store location."""
         return self.store.get()
@@ -37,3 +31,26 @@ class StoreLocation(Location, SimulationContainer, Generic[T]):
     def put_item(self, item: T) -> simpy.events.Event:
         """Put an item into the store location."""
         return self.store.put(item)
+
+    @property
+    def snapshot_type(self) -> str:
+        return "store"
+
+    def _get_snapshot_state(self, t: float) -> ComponentSnapshot | None:
+        return ComponentSnapshot(
+            type=self.snapshot_type,
+            x=self.x,
+            y=self.y,
+            angle=0.0,
+            id=self.id
+        )
+
+class Source(StoreLocation[T]):
+    @property
+    def snapshot_type(self) -> str:
+        return "source"
+
+class Sink(StoreLocation[T]):
+    @property
+    def snapshot_type(self) -> str:
+        return "sink"

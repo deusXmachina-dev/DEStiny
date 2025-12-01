@@ -41,7 +41,7 @@ class AGV(SimulationContainer):
             self._angle = angle
 
         return ComponentSnapshot(
-            type="AGV",
+            type="agv",
             x=current_location.x,
             y=current_location.y,
             angle=self._angle
