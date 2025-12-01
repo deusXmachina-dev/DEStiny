@@ -22,7 +22,7 @@ const SPEED_OPTIONS = [
     { value: "5", label: "5x" },
 ];
 
-export function PlaybackControls() {
+export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
     const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = useSimulationController();
 
     const handleRestart = () => {
@@ -34,6 +34,7 @@ export function PlaybackControls() {
             {/* Left: Control Buttons */}
             <div className="flex items-center gap-2">
                 <Button
+                    disabled={disabled}
                     onClick={handleRestart}
                     variant="outline"
                     size="icon"
@@ -43,6 +44,7 @@ export function PlaybackControls() {
                     <RotateCcw className="size-4" />
                 </Button>
                 <Button
+                    disabled={disabled}
                     onClick={togglePlay}
                     variant="outline"
                     size="icon"
@@ -63,6 +65,7 @@ export function PlaybackControls() {
                     {formatTime(currentTime)}
                 </span>
                 <Slider
+                    disabled={disabled}
                     id="timeline-slider"
                     value={[currentTime]}
                     min={0}
@@ -79,21 +82,23 @@ export function PlaybackControls() {
             {/* Right: Speed Select */}
             <div className="flex items-center gap-2">
                 <span className="text-gray-900 text-sm font-medium">Speed:</span>
-                <Select
-                    value={speed.toString()}
-                    onValueChange={(val) => setSpeed(parseFloat(val))}
-                >
-                    <SelectTrigger className="w-[90px] bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {SPEED_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                    <Select
+                        disabled={disabled}
+                        value={speed.toString()}
+                        onValueChange={(val) => setSpeed(parseFloat(val))}
+                    >
+                        <SelectTrigger className="w-[90px] bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {SPEED_OPTIONS.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+            
             </div>
         </div>
     );

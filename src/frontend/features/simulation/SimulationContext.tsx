@@ -11,6 +11,7 @@ interface SimulationContextValue {
     speed: number;
     currentTime: number;
     duration: number;
+    seekTarget: number | null;
     
     // Actions
     play: () => void;
@@ -21,6 +22,7 @@ interface SimulationContextValue {
     setSimulationName: (name: string) => void;
     seek: (time: number) => void;
     setCurrentTime: (time: number) => void;
+    clearSeekTarget: () => void;
 }
 
 const SimulationContext = createContext<SimulationContextValue | undefined>(undefined);
@@ -35,6 +37,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [simulationName, setSimulationName] = useState("Upload Simulation");
     const [history, setHistory] = useState<SimulationSnapshot[]>([]);
     const [currentTime, setCurrentTime] = useState(0);
+    const [seekTarget, setSeekTarget] = useState<number | null>(null);
 
     // Compute duration from history
     const duration = history.length > 0 ? history[history.length - 1].time : 0;
@@ -44,7 +47,12 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const pause = useCallback(() => setIsPlaying(false), []);
     const togglePlay = useCallback(() => setIsPlaying(prev => !prev), []);
     const seek = useCallback((time: number) => {
+        setSeekTarget(time);
         setCurrentTime(time);
+    }, []);
+
+    const clearSeekTarget = useCallback(() => {
+        setSeekTarget(null);
     }, []);
 
     const value: SimulationContextValue = {
@@ -54,6 +62,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         speed,
         currentTime,
         duration,
+        seekTarget,
         play,
         pause,
         togglePlay,
@@ -62,6 +71,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         setSimulationName,
         seek,
         setCurrentTime,
+        clearSeekTarget,
     };
 
     return (

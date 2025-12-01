@@ -30,7 +30,7 @@ function SimulationAppContent() {
             {/* Bottom Navigation Bar */}
             <div className="bg-gray-100 border-t border-gray-300 shadow-lg">
                 <div className="p-4 max-w-7xl mx-auto">
-                    <PlaybackControls />
+                    <PlaybackControls disabled={!hasHistory} />
                 </div>
             </div>
         </div>

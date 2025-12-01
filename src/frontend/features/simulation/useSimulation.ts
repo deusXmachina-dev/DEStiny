@@ -55,7 +55,7 @@ const interpolateEntities = (
  * Reads state from SimulationContext.
  */
 export const useSimulation = () => {
-    const { history, speed, isPlaying, currentTime, setCurrentTime } = useSimulationController();
+    const { history, speed, isPlaying, setCurrentTime, seekTarget, clearSeekTarget } = useSimulationController();
     const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
     // Playback state
@@ -69,11 +69,14 @@ export const useSimulation = () => {
         setCurrentTime(0);
     }, [history, setCurrentTime]);
 
-    // Sync accumulated time when seeking
+    // Handle seek target - when user seeks, update accumulated time and clear the seek flag
     useEffect(() => {
-        accumulatedTimeRef.current = currentTime * 1000; // Convert to ms
-        hasRenderedInitialFrameRef.current = false; // Force re-render
-    }, [currentTime]);
+        if (seekTarget !== null) {
+            accumulatedTimeRef.current = seekTarget * 1000; // Convert to ms
+            hasRenderedInitialFrameRef.current = false; // Force re-render
+            clearSeekTarget();
+        }
+    }, [seekTarget, clearSeekTarget]);
 
 
     useTick((ticker) => {
