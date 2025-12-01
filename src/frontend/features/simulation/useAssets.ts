@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 const ASSET_MAP: Record<string, string> = {
     agv: "/assets/agv.png",
     box: "/assets/box.png",
-    source: "/assets/store.png",
-    sink: "/assets/store.png",
-    store: "/assets/store.png",
+    source: "/assets/palette.png",
+    sink: "/assets/palette.png",
+    store: "/assets/palette.png",
 };
 
 export const useAssets = () => {
