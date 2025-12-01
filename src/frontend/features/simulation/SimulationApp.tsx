@@ -35,13 +35,9 @@ function SimulationAppContent() {
         if (parsedHistory && fileName) {
             setHistory(parsedHistory);
             setSimulationName(fileName);
-            pause();
+            pause(); 
         }
     }, [parsedHistory, fileName, setHistory, setSimulationName, pause]);
-
-    const handleUpload = () => {
-        triggerFileUpload();
-    };
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -57,7 +53,7 @@ function SimulationAppContent() {
                     {/* Left Column: Upload & Simulation Name */}
                     <div className="flex items-center gap-4">
                         <Button
-                            onClick={handleUpload}
+                            onClick={triggerFileUpload}
                             variant="outline"
                             size="default"
                             className="gap-2 bg-gray-800 border-gray-700 text-white"
