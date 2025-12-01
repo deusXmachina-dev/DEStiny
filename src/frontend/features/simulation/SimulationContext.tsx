@@ -30,7 +30,7 @@ interface SimulationProviderProps {
 }
 
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
-    const [isPlaying, setIsPlaying] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1);
     const [simulationName, setSimulationName] = useState("Upload Simulation");
     const [history, setHistory] = useState<SimulationSnapshot[]>([]);
