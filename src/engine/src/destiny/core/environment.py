@@ -1,6 +1,7 @@
 """
 Simulation environment with motion recording.
 """
+from collections import defaultdict
 from typing import TYPE_CHECKING, Any
 from simpy import RealtimeEnvironment
 
@@ -26,7 +27,32 @@ class Environment(RealtimeEnvironment):
             factor: Real-time scaling factor (0 = as fast as possible).
         """
         super().__init__(initial_time=initial_time, factor=factor, strict=False)
-        self._segments: list[MotionSegment] = []
+        self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
+
+
+    def record_stay(
+        self,
+        entity: Any,
+        start_time: float,
+        x: float = 0.0,
+        y: float = 0.0,
+        angle: float = 0.0,
+        end_time: float | None = None,
+        parent: "SimulationEntity | None" = None,
+    ) -> None:
+        """
+        Record a stay in location for an entity.
+
+        Args:
+            entity: The entity that is staying
+            start_time: When the stay begins
+            x: Starting x coordinate
+            y: Starting y coordinate
+            angle: Starting angle
+            end_time: When the stay ends (None = until simulation end)
+            parent: If set, coordinates are relative to this parent entity
+        """
+        self.record_motion(entity, start_time, end_time, x, y, x, y, angle, angle, parent)
 
     def record_motion(
         self,
@@ -70,7 +96,7 @@ class Environment(RealtimeEnvironment):
             start_angle=start_angle,
             end_angle=end_angle,
         )
-        self._segments.append(segment)
+        self._segments_by_entity[entity.id].append(segment)
 
     def get_recording(self) -> SimulationRecording:
         """
@@ -78,5 +104,5 @@ class Environment(RealtimeEnvironment):
         """
         return SimulationRecording(
             duration=self.now,
-            segments=self._segments,
+            segments_by_entity=self._segments_by_entity,
         )

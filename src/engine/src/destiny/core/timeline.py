@@ -62,13 +62,24 @@ class SimulationRecording:
     """
     Complete recording of a simulation run.
     
-    Just a duration and a flat list of motion segments.
+    For each component there is a sequence of records
+    where the start time of each record needs to be higher than
+    start time of previous one for the same component.
+    
+    Notes:
+    - new record invalidates the previous one
+    - to record stay in location, use the same start and end time and coordinates
+    - to stay indefinitely, use None for end time
+    
     """
     duration: float
-    segments: list[MotionSegment] = field(default_factory=list)
+    segments_by_entity: dict[str, list[MotionSegment]] = field(default_factory=dict)
     
     def to_dict(self) -> dict[str, Any]:
         return {
             "duration": self.duration,
-            "segments": [seg.to_dict() for seg in self.segments],
+            "segments_by_entity": {
+                entity_id: [seg.to_dict() for seg in segments]
+                for entity_id, segments in self.segments_by_entity.items()
+            },
         }

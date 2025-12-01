@@ -28,16 +28,11 @@ class AGV(SimulationEntity):
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
         
-        env.record_motion(
+        env.record_stay(
             entity=self,
+            x=self._current_location.x,
+            y=self._current_location.y,
             start_time=env.now,
-            end_time=None,
-            start_x=self._current_location.x,
-            start_y=self._current_location.y,
-            end_x=self._current_location.x,
-            end_y=self._current_location.y,
-            start_angle=self._angle,
-            end_angle=self._angle,
         )
 
     def _get_entity_type(self) -> str:
@@ -89,12 +84,12 @@ class AGV(SimulationEntity):
                 end_angle=end_angle,
             )
             
-            # If carrying an item, record its motion relative to AGV
-            env.record_motion(
+            # If carrying an item, stay put relative to AGV
+            env.record_stay(
                 entity=self._carried_item,
-                parent=self,  # Relative to AGV
                 start_time=start_time,
                 end_time=end_time,
+                parent=self,
             )
             
             # Wait for the movement to complete
@@ -111,6 +106,14 @@ class AGV(SimulationEntity):
             if isinstance(sink := waypoint.location, StoreLocation) and waypoint.type == WaypointType.SINK:
                 yield sink.put_item(self._carried_item)
                 self._carried_item = None
+                
+                env.record_stay(
+                    entity=self,
+                    start_time=end_time,
+                    x=end_location.x,
+                    y=end_location.y,
+                    angle=end_angle,
+                )
 
     def is_available(self) -> bool:
         return self._is_available
