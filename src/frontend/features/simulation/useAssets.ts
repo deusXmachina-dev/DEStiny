@@ -7,6 +7,7 @@ const ASSET_MAP: Record<string, string> = {
     source: "/assets/palette.png",
     sink: "/assets/palette.png",
     store: "/assets/palette.png",
+    grid_node: "/assets/dot.png",
 };
 
 export const useAssets = () => {

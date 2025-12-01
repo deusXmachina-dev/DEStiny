@@ -2,6 +2,13 @@ import rustworkx as rx
 from typing import List, Optional, Dict
 
 from destiny.agv.location import Location
+from destiny.core.simulation_container import SimulationEntity
+from destiny.core.environment import Environment
+
+
+class GridNode(SimulationEntity):
+    def _get_entity_type(self) -> str:
+        return "grid_node"
 
 
 def _get_node_id_for_location(location: Location) -> str:
@@ -127,6 +134,25 @@ class SiteGraph:
             return path_length[target_idx]
         except (KeyError, IndexError):
             return float('inf')
+
+    def visualize_graph(self, env: Environment) -> None:
+        """
+        Visualize the graph nodes in the simulation.
+        
+        :param env: The simulation environment.
+        """
+        for node_data in self.graph.nodes():
+            location = node_data['location']
+            # Create a visual entity for the node
+            node_entity = GridNode()
+            
+            env.record_stay(
+                entity=node_entity,
+                start_time=env.now,
+                x=location.x,
+                y=location.y,
+                end_time=None  # Stay until end of simulation
+            )
 
 
 class GridSiteGraph(SiteGraph):

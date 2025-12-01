@@ -43,6 +43,9 @@ def main():
 
     print(f"Initialized {len(sources)} sources and {len(sinks)} sinks.")
 
+    # Visualize the grid
+    grid.visualize_graph(env)
+
     # Initialize Fleet Manager
     task_provider = TaskProvider(sources=sources, sinks=sinks)
     fleet_manager = FleetManager(task_provider, grid)
