@@ -60,37 +60,47 @@ export const useSimulation = () => {
 
     // Playback state
     const accumulatedTimeRef = useRef<number>(0);
+    const hasRenderedInitialFrameRef = useRef<boolean>(false);
 
     // Reset simulation time when history changes
     useEffect(() => {
         accumulatedTimeRef.current = 0;
-        console.log("history changed, resetting simulation time");
-        console.log(isPlaying);
+        hasRenderedInitialFrameRef.current = false;
     }, [history]);
+
+    // Reset flag when resuming playback
+    useEffect(() => {
+        if (isPlaying) {
+            hasRenderedInitialFrameRef.current = false;
+        }
+    }, [isPlaying]);
 
     useTick((ticker) => {
         if (history.length === 0) return;
 
-        // If paused, we don't advance time, but we might still want to render 
-        // (though if nothing changed, React might not re-render unless we force it. 
-        // But here we are inside useTick which runs every frame).
-        // If we just return here when !isPlaying, the simulation freezes, which is correct.
-        if (!isPlaying) return;
-
         const duration = history[history.length - 1].time * 1000; // Duration in ms
 
-        // Advance time
-        // ticker.deltaMS is the time elapsed since the last frame in milliseconds
-        accumulatedTimeRef.current += ticker.deltaMS * speed;
+        // Advance time only when playing
+        if (isPlaying) {
+            // ticker.deltaMS is the time elapsed since the last frame in milliseconds
+            accumulatedTimeRef.current += ticker.deltaMS * speed;
 
-        let currentSimTime = accumulatedTimeRef.current;
+            let currentSimTime = accumulatedTimeRef.current;
 
-        if (currentSimTime > duration) {
-            // Clamp to end
-            currentSimTime = duration;
-            accumulatedTimeRef.current = duration;
+            if (currentSimTime > duration) {
+                // Clamp to end
+                currentSimTime = duration;
+                accumulatedTimeRef.current = duration;
+            }
+        } else {
+            // When paused, only render once (the initial/current frame)
+            if (hasRenderedInitialFrameRef.current) return;
+            hasRenderedInitialFrameRef.current = true;
         }
 
+        console.log("currentSimTime");
+
+        const currentSimTime = accumulatedTimeRef.current;
         const simTimeSeconds = currentSimTime / 1000;
 
         // Find surrounding snapshots
