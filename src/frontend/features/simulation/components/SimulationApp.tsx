@@ -2,10 +2,11 @@
 
 import { Application } from "@pixi/react";
 import { useRef } from "react";
-import { SimulationScene } from "./SimulationScene";
+import { SimulationScene } from "./pixi/SimulationScene";
 import { SimulationProvider, useSimulationController } from "../hooks/SimulationContext";
-import { UploadControls } from "./UploadControls";
-import { PlaybackControls } from "./PlaybackControls";
+import { UploadControls } from "./ui/UploadControls";
+import { PlaybackControls } from "./ui/PlaybackControls";
+import { SimulationBackground } from "./pixi/SimulationBackground";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
@@ -18,6 +19,7 @@ function SimulationAppContent() {
         <div className="flex flex-col w-full h-screen">
             <div ref={parentRef} className="flex-1 min-h-0 w-full relative">
                 <Application resizeTo={parentRef}>
+                    <SimulationBackground theme="warehouse" gridSize={50}/>
                     <SimulationScene />
                 </Application>
                 {/* Dynamic Upload Controls */}
