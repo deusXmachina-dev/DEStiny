@@ -20,9 +20,8 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
                 <Button
                     disabled={disabled}
                     onClick={handleRestart}
-                    variant="outline"
                     size="icon"
-                    className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 size-9"
+                    className="size-9"
                     title="Restart"
                 >
                     <RotateCcw className="size-4" />
@@ -30,9 +29,8 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
                 <Button
                     disabled={disabled}
                     onClick={togglePlay}
-                    variant="outline"
                     size="icon"
-                    className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700 size-9"
+                    className=" ize-9"
                     title={isPlaying ? "Pause" : "Play"}
                 >
                     {isPlaying ? (
@@ -45,7 +43,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
 
             {/* Center: Timeline */}
             <div className="flex items-center gap-3 flex-1">
-                <span className="text-gray-900 font-mono text-sm min-w-[45px]">
+                <span className="font-mono text-sm min-w-[45px]">
                     {formatTime(currentTime)}
                 </span>
                 <Slider
@@ -56,22 +54,22 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
                     max={duration || 1}
                     step={0.01}
                     onValueChange={(vals) => seek(vals[0])}
-                    className="flex-1 **:data-[slot=slider-track]:bg-gray-300 **:data-[slot=slider-range]:bg-gray-700"
+                    className="flex-1 **:data-[slot=slider-track]:bg-gray-300 "
                 />
-                <span className="text-gray-900 font-mono text-sm min-w-[45px]">
+                <span className="font-mono text-sm min-w-[45px]">
                     {formatTime(duration)}
                 </span>
             </div>
 
             {/* Right: Speed Select */}
             <div className="flex items-center gap-2">
-                <span className="text-gray-900 text-sm font-medium">Speed:</span>
+                <span className="text-sm font-medium">Speed:</span>
                     <Select
                         disabled={disabled}
                         value={speed.toString()}
                         onValueChange={(val) => setSpeed(parseFloat(val))}
                     >
-                        <SelectTrigger className="w-[90px] bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+                        <SelectTrigger className="w-[90px]">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

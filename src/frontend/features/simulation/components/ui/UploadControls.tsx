@@ -58,9 +58,8 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
             )}>
                 <Button
                     onClick={triggerFileUpload}
-                    variant="outline"
                     className={cn(
-                        "gap-2 bg-gray-800 border-gray-700 text-white hover:bg-gray-700 transition-all",
+                        "gap-2 transition-all",
                         isLarge ? "text-lg py-6 px-8" : "size-default"
                     )}
                 >
