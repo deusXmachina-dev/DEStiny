@@ -23,10 +23,7 @@ function SimulationAppContent() {
                     <SimulationScene />
                 </Application>
                 {/* Simulation Controls */}
-                <SimulationControls 
-                    position={hasRecording ? "top" : "center"} 
-                    size={hasRecording ? "sm" : "lg"} 
-                />
+                <SimulationControls position={hasRecording ? "top" : "center"} />
             </div>
 
             {/* Bottom Navigation Bar */}
