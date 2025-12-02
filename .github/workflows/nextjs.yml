@@ -44,12 +44,10 @@ jobs:
         working-directory: src/frontend
         run: bun install
 
-      - name: Build and export Next.js
+      - name: Build Next.js
         working-directory: src/frontend
-        run: |
-          bunx next build
-          bunx next export
-        # After this, src/frontend/out WILL exist
+        run: bun run build
+        # With output: 'export' in next.config.ts, this will generate src/frontend/out
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
