@@ -29,6 +29,12 @@ class RecordingEnvironment(Environment):
         self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
 
 
+    def record_disappearance(self, entity: Any) -> None:
+        """
+        Record that an entity has disappeared.
+        """
+        self.record_motion(entity=entity, start_time=self.now, end_time=self.now)
+
     def record_stay(
         self,
         entity: Any,

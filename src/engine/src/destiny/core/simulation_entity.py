@@ -1,8 +1,7 @@
 """
 Base class for simulation entities.
 
-Simplified to just provide identity (id + type).
-All motion recording goes through the environment.
+Provides ID and information about the entity for rendering.
 """
 from abc import abstractmethod, ABC
 import uuid
@@ -16,7 +15,7 @@ class SimulationEntity(ABC):
     - Unique ID
     - Entity type (for rendering)
     
-    Motion recording is handled by the environment, not the entity itself.
+    Entity types are used for rendering.
     """
 
     def __init__(self):

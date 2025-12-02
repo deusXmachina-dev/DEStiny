@@ -2,13 +2,10 @@
 Timeline-based recording for simulation playback.
 
 The entire recording is just a list of motion segments. Each segment describes
-where an entity is (or moves to) during a time interval, and optionally its parent.
+where an entity is (or moves to) during a time interval, and optionally 
+its parent for hierarchical rendering.
 
-Key simplifications:
-- Spawn = first motion segment for an entity
-- Static position = motion segment with same start/end coordinates  
-- Parent-child = motion segment with parent_id set
-- Attach/Detach = new motion segment with different parent_id
+To record segments use env helper methods.
 """
 from dataclasses import dataclass, field
 from typing import Any
@@ -70,6 +67,7 @@ class SimulationRecording:
     - new record invalidates the previous one
     - to record stay in location, use the same start and end time and coordinates
     - to stay indefinitely, use None for end time
+    - to stop rendering of an entity use same start and end time
     
     """
     duration: float
