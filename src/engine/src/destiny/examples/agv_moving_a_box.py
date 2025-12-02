@@ -8,11 +8,11 @@ from destiny.agv.items import Box
 from destiny.agv.location import Location
 from destiny.agv.planning import TripPlan, Waypoint, WaypointType
 from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import Environment
+from destiny.core.environment import RecordingEnvironment
 
 
 def main():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
 
     start_loc = Location(x=500, y=500)
     agv = AGV(env, start_location=start_loc, speed=100.0)

@@ -5,8 +5,8 @@ from typing import Generic, TypeVar, List
 import simpy
 
 from destiny.agv.location import Location
-from destiny.core.simulation_container import SimulationEntity
-from destiny.core.environment import Environment
+from destiny.core.simulation_entity import SimulationEntity
+from destiny.core.environment import RecordingEnvironment
 
 T = TypeVar("T")
 
@@ -20,7 +20,7 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
     
     def __init__(
         self,
-        env: Environment,
+        env: RecordingEnvironment,
         x: float,
         y: float,
         capacity: float = float('inf'),

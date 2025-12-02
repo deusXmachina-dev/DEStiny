@@ -1,7 +1,7 @@
 """
 Items that can be transported by AGVs.
 """
-from destiny.core.simulation_container import SimulationEntity
+from destiny.core.simulation_entity import SimulationEntity
 
 
 class Box(SimulationEntity):

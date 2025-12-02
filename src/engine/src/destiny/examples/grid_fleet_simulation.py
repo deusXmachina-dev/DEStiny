@@ -11,11 +11,11 @@ from destiny.agv.items import Box
 from destiny.agv.site_graph import GridSiteGraph
 from destiny.agv.store_location import Source, Sink
 from destiny.agv.fleet_manager import FleetManager, TaskProvider
-from destiny.core.environment import Environment
+from destiny.core.environment import RecordingEnvironment
 
 
 def main():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
 
     # Create Grid (20x10, spacing 50) - Dimensions: 1000 x 500
     grid = GridSiteGraph(width=20, height=10, spacing=50.0, diagonals=True)

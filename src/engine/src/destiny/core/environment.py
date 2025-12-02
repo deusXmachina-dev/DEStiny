@@ -3,30 +3,29 @@ Simulation environment with motion recording.
 """
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
-from simpy import RealtimeEnvironment
+from simpy import Environment
 
 from destiny.core.timeline import MotionSegment, SimulationRecording
 
 if TYPE_CHECKING:
-    from destiny.core.simulation_container import SimulationEntity
+    from destiny.core.simulation_entity import SimulationEntity
 
 
-class Environment(RealtimeEnvironment):
+class RecordingEnvironment(Environment):
     """
     Simulation environment that records motion segments.
     
     All motion recording goes through this class via record_motion().
     """
 
-    def __init__(self, initial_time: float = 0, factor: float = 1.0):
+    def __init__(self, initial_time: float = 0):
         """
         Initialize the environment.
 
         Args:
             initial_time: The starting simulation time.
-            factor: Real-time scaling factor (0 = as fast as possible).
         """
-        super().__init__(initial_time=initial_time, factor=factor, strict=False)
+        super().__init__(initial_time=initial_time)
         self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
 
 
@@ -88,7 +87,7 @@ class Environment(RealtimeEnvironment):
             start_angle, end_angle: Starting and ending rotation
             parent: If set, coordinates are relative to this parent entity
         """
-        from destiny.core.simulation_container import SimulationEntity
+        from destiny.core.simulation_entity import SimulationEntity
         if not isinstance(entity, SimulationEntity):
             return None
         

@@ -5,12 +5,12 @@ from destiny.agv.items import Box
 from destiny.agv.location import Location
 from destiny.agv.planning import TripPlan, Waypoint, WaypointType
 from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import Environment
+from destiny.core.environment import RecordingEnvironment
 
 
 @pytest.fixture
 def env():
-    return Environment(factor=0)
+    return RecordingEnvironment()
 
 
 def test_agv_records_initial_position(env):

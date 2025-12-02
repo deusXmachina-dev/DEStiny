@@ -2,8 +2,8 @@ import rustworkx as rx
 from typing import List, Optional, Dict
 
 from destiny.agv.location import Location
-from destiny.core.simulation_container import SimulationEntity
-from destiny.core.environment import Environment
+from destiny.core.simulation_entity import SimulationEntity
+from destiny.core.environment import RecordingEnvironment
 
 
 class GridNode(SimulationEntity):
@@ -135,7 +135,7 @@ class SiteGraph:
         except (KeyError, IndexError):
             return float('inf')
 
-    def visualize_graph(self, env: Environment) -> None:
+    def visualize_graph(self, env: RecordingEnvironment) -> None:
         """
         Visualize the graph nodes in the simulation.
         

@@ -9,7 +9,7 @@ from destiny.agv.location import Location
 from destiny.agv.planning import AGVTask
 from destiny.agv.site_graph import SiteGraph
 from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import Environment
+from destiny.core.environment import RecordingEnvironment
 
 
 class DeterministicTaskProvider(TaskProvider):
@@ -19,7 +19,7 @@ class DeterministicTaskProvider(TaskProvider):
         self.tasks = tasks
         self.task_index = 0
 
-    def get_next_task(self, env: Environment) -> Generator[Timeout, Any, AGVTask]:
+    def get_next_task(self, env: RecordingEnvironment) -> Generator[Timeout, Any, AGVTask]:
         if self.task_index < len(self.tasks):
             yield env.timeout(0)
             task = self.tasks[self.task_index]
@@ -32,7 +32,7 @@ class DeterministicTaskProvider(TaskProvider):
 
 def test_fleet_manager_full_integration():
     """Full integration test for fleet manager."""
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
     
     graph = SiteGraph()
     l1 = Location(0, 0)

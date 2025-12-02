@@ -1,6 +1,6 @@
-"""Tests for Environment and motion recording."""
-from destiny.core.environment import Environment
-from destiny.core.simulation_container import SimulationEntity
+"""Tests for RecordingEnvironment and motion recording."""
+from destiny.core.environment import RecordingEnvironment
+from destiny.core.simulation_entity import SimulationEntity
 
 
 class DummyEntity(SimulationEntity):
@@ -9,12 +9,12 @@ class DummyEntity(SimulationEntity):
 
 
 def test_environment_initializes():
-    env = Environment(initial_time=5.0, factor=0)
+    env = RecordingEnvironment(initial_time=5.0)
     assert env.now == 5.0
 
 
 def test_environment_runs():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
     
     events = []
     def process(env):
@@ -30,7 +30,7 @@ def test_environment_runs():
 
 
 def test_record_motion():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
     entity = DummyEntity()
     
     env.record_motion(
@@ -55,7 +55,7 @@ def test_record_motion():
 
 
 def test_record_motion_with_parent():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
     parent = DummyEntity()
     child = DummyEntity()
     
@@ -76,7 +76,7 @@ def test_record_motion_with_parent():
 
 
 def test_recording_to_dict():
-    env = Environment(factor=0)
+    env = RecordingEnvironment()
     entity = DummyEntity()
     
     env.record_motion(

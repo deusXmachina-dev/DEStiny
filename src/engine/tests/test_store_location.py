@@ -1,12 +1,12 @@
 """Tests for StoreLocation."""
 import pytest
 from destiny.agv.store_location import StoreLocation, Source, Sink
-from destiny.core.environment import Environment
+from destiny.core.environment import RecordingEnvironment
 
 
 @pytest.fixture
 def env():
-    return Environment(factor=0)
+    return RecordingEnvironment()
 
 
 def test_store_location_initialization(env):

@@ -9,8 +9,8 @@ from simpy import Timeout
 from destiny.agv.location import Location
 from destiny.agv.planning import TripPlan, WaypointType
 from destiny.agv.store_location import StoreLocation
-from destiny.core.simulation_container import SimulationEntity
-from destiny.core.environment import Environment
+from destiny.core.simulation_entity import SimulationEntity
+from destiny.core.environment import RecordingEnvironment
 
 
 class AGV(SimulationEntity):
@@ -18,7 +18,7 @@ class AGV(SimulationEntity):
     An Automated Guided Vehicle that moves along planned paths.
     """
     
-    def __init__(self, env: Environment, start_location: Location, speed: float = 1.0):
+    def __init__(self, env: RecordingEnvironment, start_location: Location, speed: float = 1.0):
         super().__init__()
         self._speed: float = speed
         self._is_available = True
@@ -33,7 +33,7 @@ class AGV(SimulationEntity):
     def _get_entity_type(self) -> str:
         return "agv"
 
-    def schedule_plan(self, env: Environment, plan: TripPlan) -> None:
+    def schedule_plan(self, env: RecordingEnvironment, plan: TripPlan) -> None:
         """Schedule a plan for the AGV to execute."""
         self._planned_destination = plan[-1].location
         self._plan_queue.append(plan)
@@ -42,14 +42,14 @@ class AGV(SimulationEntity):
             self._is_available = False
             env.process(self._process_queue(env))
 
-    def _process_queue(self, env: Environment) -> Generator[Timeout | Any, Any, None]:
+    def _process_queue(self, env: RecordingEnvironment) -> Generator[Timeout | Any, Any, None]:
         """Process all queued plans."""
         while self._plan_queue:
             plan = self._plan_queue.popleft()
             yield from self._execute_plan(env, plan)
         self._is_available = True
 
-    def _execute_plan(self, env: Environment, plan: TripPlan) -> Generator[Timeout | Any, Any, None]:
+    def _execute_plan(self, env: RecordingEnvironment, plan: TripPlan) -> Generator[Timeout | Any, Any, None]:
         """Execute a single plan, recording motion segments."""
         
         for waypoint in plan:
