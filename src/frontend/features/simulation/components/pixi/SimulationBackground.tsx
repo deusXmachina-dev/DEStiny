@@ -1,21 +1,21 @@
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
-import { LayoutTheme, THEME_COLORS } from "../../constants";
+import { SIMULATION_BACKGROUND_THEME_CONFIGS, SimulationBackgroundTheme } from "../../constants";
 
 extend({ Graphics });
 
 interface SimulationBackgroundProps {
-    theme?: LayoutTheme;
-    gridSize?: number;
+    theme?: SimulationBackgroundTheme;
+    tileSize?: number;
 }
 
 export const SimulationBackground = ({
     theme = "factory",
-    gridSize = 50,
 }: SimulationBackgroundProps) => {
     const { app } = useApplication();
-    const colors = THEME_COLORS[theme];
+    const colors = SIMULATION_BACKGROUND_THEME_CONFIGS[theme];
+    const gridSize = colors.tileSize;
 
     const draw = useCallback(
         (g: Graphics) => {

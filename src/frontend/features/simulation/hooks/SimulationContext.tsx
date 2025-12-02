@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { SimulationRecording } from "../types";
+import { SimulationBackgroundTheme } from "../constants";
 
 interface SimulationContextValue {
     // State
@@ -10,6 +11,7 @@ interface SimulationContextValue {
     currentTime: number;
     duration: number;
     seekTarget: number | null;
+    theme: SimulationBackgroundTheme;
     
     // Actions
     play: () => void;
@@ -21,6 +23,7 @@ interface SimulationContextValue {
     seek: (time: number) => void;
     setCurrentTime: (time: number) => void;
     clearSeekTarget: () => void;
+    setTheme: (theme: SimulationBackgroundTheme) => void;
 }
 
 const SimulationContext = createContext<SimulationContextValue | undefined>(undefined);
@@ -36,6 +39,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [recording, setRecording] = useState<SimulationRecording | null>(null);
     const [currentTime, setCurrentTime] = useState(0);
     const [seekTarget, setSeekTarget] = useState<number | null>(null);
+    const [theme, setTheme] = useState<SimulationBackgroundTheme>("factory");
 
     // Compute duration from recording
     const duration = recording?.duration || 0;
@@ -61,6 +65,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         currentTime,
         duration,
         seekTarget,
+        theme,
         play,
         pause,
         togglePlay,
@@ -70,6 +75,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         seek,
         setCurrentTime,
         clearSeekTarget,
+        setTheme,
     };
 
     return (

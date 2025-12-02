@@ -20,13 +20,12 @@ export const SPEED_OPTIONS = [
     { value: "20", label: "20x" },
 ];
 
-// Layout theme colors
-export type LayoutTheme = "factory" | "office" | "warehouse" | "hospital";
+export type SimulationBackgroundTheme = "factory" | "office" | "warehouse" | "hospital";
 
-export const THEME_COLORS: Record<LayoutTheme, { tile: number; tileAlt: number; grid: number }> = {
-    factory: { tile: 0x4a4a4a, tileAlt: 0x525252, grid: 0x3a3a3a },
-    office: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2 },
-    warehouse: { tile: 0x6b5b4f, tileAlt: 0x5a4a3e, grid: 0x4a3a2e },
-    hospital: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2 },
+export const SIMULATION_BACKGROUND_THEME_CONFIGS: Record<SimulationBackgroundTheme, { tile: number; tileAlt: number; grid: number; tileSize: number }> = {
+    factory: { tile: 0x4a4a4a, tileAlt: 0x525252, grid: 0x3a3a3a, tileSize: 50 },
+    office: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2, tileSize: 15 },
+    warehouse: { tile: 0x6b5b4f, tileAlt: 0x5a4a3e, grid: 0x4a3a2e, tileSize: 40 },
+    hospital: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2, tileSize: 10 },
 };
 

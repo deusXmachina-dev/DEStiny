@@ -4,13 +4,13 @@ import { Application } from "@pixi/react";
 import { useRef } from "react";
 import { SimulationScene } from "./pixi/SimulationScene";
 import { SimulationProvider, useSimulationController } from "../hooks/SimulationContext";
-import { UploadControls } from "./ui/UploadControls";
+import { SimulationControls } from "./ui/SimulationControls";
 import { PlaybackControls } from "./ui/PlaybackControls";
 import { SimulationBackground } from "./pixi/SimulationBackground";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
-    const { recording } = useSimulationController();
+    const { recording, theme } = useSimulationController();
     
     // Dynamic positioning: center & large when no recording, top-right & small when recording exists
     const hasRecording = recording !== null;
@@ -19,11 +19,11 @@ function SimulationAppContent() {
         <div className="flex flex-col w-full h-screen">
             <div ref={parentRef} className="flex-1 min-h-0 w-full relative">
                 <Application resizeTo={parentRef}>
-                    <SimulationBackground theme="hospital" gridSize={10}/>
+                    <SimulationBackground theme={theme}/>
                     <SimulationScene />
                 </Application>
-                {/* Dynamic Upload Controls */}
-                <UploadControls 
+                {/* Simulation Controls */}
+                <SimulationControls 
                     position={hasRecording ? "top-right" : "center"} 
                     size={hasRecording ? "sm" : "lg"} 
                 />
