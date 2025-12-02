@@ -65,7 +65,7 @@ def main():
 
     # Run simulation
     env.run(until=SIMULATION_TIME)
-    env.save_recording(f"simulation-records/grid_fleet_recording_{SIMULATION_TIME}s.json")
+    env.save_recording(f"simulation-records/grid_fleet_recording.json")
 
 
 if __name__ == "__main__":
