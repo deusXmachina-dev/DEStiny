@@ -108,8 +108,8 @@ export const useSimulation = () => {
                 const t = duration > 0 ? (simTimeSeconds - segment.startTime) / duration : 0;
 
                 activeEntities.set(id, {
-                    id,
-                    type: segment.entityType,
+                    entityId: id,
+                    entityType: segment.entityType,
                     x: lerp(segment.startX, segment.endX, t),
                     y: lerp(segment.startY, segment.endY, t),
                     angle: lerp(segment.startAngle, segment.endAngle, t),

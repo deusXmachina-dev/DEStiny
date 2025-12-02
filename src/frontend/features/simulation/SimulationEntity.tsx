@@ -9,9 +9,9 @@ extend({
     Sprite: PixiSprite,
 });
 
-export const SimulationEntity = ({ type, x, y, angle, children }: SimulationEntityState) => {
+export const SimulationEntity = ({ entityType, x, y, angle, children }: SimulationEntityState) => {
     const { getTexture } = useAssets();
-    const texture = getTexture(type);
+    const texture = getTexture(entityType);
 
     return (
         <pixiContainer
@@ -28,7 +28,7 @@ export const SimulationEntity = ({ type, x, y, angle, children }: SimulationEnti
             />
             {children?.map((child) => (
                 <SimulationEntity
-                    key={child.id}
+                    key={child.entityId}
                     {...child}
                 />
             ))}

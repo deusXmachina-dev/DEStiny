@@ -25,7 +25,7 @@ export const SimulationScene = () => {
             <LayoutBackground theme="warehouse" gridSize={50}/>
             {entities.map((entity) => (
                 <SimulationEntity
-                    key={entity.id}
+                    key={entity.entityId}
                     {...entity}
                 />
             ))}
