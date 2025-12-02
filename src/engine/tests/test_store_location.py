@@ -20,7 +20,7 @@ def test_store_location_records_motion(env):
     loc = StoreLocation(env, x=10.0, y=20.0)
     
     recording = env.get_recording()
-    segments = [s for s in recording.segments if s.entity_id == loc.id]
+    segments = recording.segments_by_entity.get(loc.id, [])
     
     assert len(segments) == 1
     seg = segments[0]
@@ -63,7 +63,8 @@ def test_source_sink_types(env):
     assert sink._get_entity_type() == "sink"
     
     recording = env.get_recording()
-    types = {s.entity_type for s in recording.segments}
+    all_segments = [s for segments in recording.segments_by_entity.values() for s in segments]
+    types = {s.entity_type for s in all_segments}
     assert "source" in types
     assert "sink" in types
 

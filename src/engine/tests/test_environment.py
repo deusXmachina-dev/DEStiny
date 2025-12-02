@@ -44,9 +44,9 @@ def test_record_motion():
     )
     
     recording = env.get_recording()
-    assert len(recording.segments) == 1
+    assert len(recording.segments_by_entity[entity.id]) == 1
     
-    seg = recording.segments[0]
+    seg = recording.segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
     assert seg.entity_type == "dummy"
     assert seg.parent_id is None
@@ -71,7 +71,7 @@ def test_record_motion_with_parent():
     )
     
     recording = env.get_recording()
-    seg = recording.segments[0]
+    seg = recording.segments_by_entity[child.id][0]
     assert seg.parent_id == parent.id
 
 
@@ -96,9 +96,9 @@ def test_recording_to_dict():
     data = recording.to_dict()
     
     assert data["duration"] == 10
-    assert len(data["segments"]) == 1
+    assert len(data["segments_by_entity"][entity.id]) == 1
     
-    seg = data["segments"][0]
+    seg = data["segments_by_entity"][entity.id][0]
     assert seg["entityId"] == entity.id
     assert seg["entityType"] == "dummy"
     assert seg["startX"] == 0

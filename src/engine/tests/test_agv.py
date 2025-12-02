@@ -21,7 +21,7 @@ def test_agv_records_initial_position(env):
     env.run(until=20)
     
     recording = env.get_recording()
-    agv_segments = [s for s in recording.segments if s.entity_id == agv.id]
+    agv_segments = recording.segments_by_entity.get(agv.id, [])
     
     # First segment is initial position, second is the movement
     assert len(agv_segments) >= 1
@@ -40,7 +40,7 @@ def test_agv_records_motion_segments(env):
     env.run(until=20)
     
     recording = env.get_recording()
-    agv_segments = [s for s in recording.segments if s.entity_id == agv.id]
+    agv_segments = recording.segments_by_entity.get(agv.id, [])
     
     # Initial + 2 movements
     assert len(agv_segments) == 3
@@ -73,7 +73,8 @@ def test_agv_records_carried_item_motion(env):
     recording = env.get_recording()
     
     # Find box segments (should have parent = agv while carried
-    box_segments = [s for s in recording.segments if s.entity_type == "box"]
+    all_segments = [s for segments in recording.segments_by_entity.values() for s in segments]
+    box_segments = [s for s in all_segments if s.entity_type == "box"]
     assert len(box_segments) >= 1
 
     assert all(s.parent_id == agv.id for s in box_segments)
