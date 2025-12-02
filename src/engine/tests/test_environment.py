@@ -105,3 +105,41 @@ def test_recording_to_dict():
     assert seg["endX"] == 100
     assert seg["startAngle"] == 0
     assert seg["endAngle"] == 1.5
+
+
+def test_record_stay():
+    env = RecordingEnvironment()
+    parent = DummyEntity()
+    child = DummyEntity()
+    
+    env.record_stay(
+        entity=child,
+        parent=parent,
+        start_time=1.0,
+        end_time=5.0,
+        x=10.0,
+        y=20.0,
+    )
+    
+    recording = env.get_recording()
+    seg = recording.segments_by_entity[child.id][0]
+    assert seg.parent_id == parent.id
+    assert seg.start_x == seg.end_x == 10.0
+    assert seg.start_y == seg.end_y == 20.0
+
+
+def test_record_disappearance():
+    """Test disappearance recording at current time."""
+    env = RecordingEnvironment()
+    entity = DummyEntity()
+    
+    env.record_disappearance(entity=entity)
+    
+    recording = env.get_recording()
+    assert len(recording.segments_by_entity[entity.id]) == 1
+    
+    seg = recording.segments_by_entity[entity.id][0]
+    assert seg.entity_id == entity.id
+    assert seg.start_time == env.now
+    assert seg.end_time == env.now
+    assert seg.start_time == seg.end_time
