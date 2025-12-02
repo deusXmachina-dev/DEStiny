@@ -1,10 +1,11 @@
 """Tests for SimulationEntity."""
 from destiny.core.simulation_entity import SimulationEntity
+from destiny.core.rendering import RenderingInfo, AssetType
 
 
 class DummyEntity(SimulationEntity):
-    def _get_entity_type(self) -> str:
-        return "dummy"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.EMPTY)
 
 
 def test_entity_has_unique_id():
@@ -14,6 +15,7 @@ def test_entity_has_unique_id():
     assert len(e1.id) > 0
 
 
-def test_entity_has_type():
+def test_entity_has_rendering_info():
     entity = DummyEntity()
-    assert entity._get_entity_type() == "dummy"
+    rendering_info = entity.get_rendering_info()
+    assert rendering_info.asset_type == AssetType.EMPTY

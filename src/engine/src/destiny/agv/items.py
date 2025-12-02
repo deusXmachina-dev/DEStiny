@@ -2,6 +2,7 @@
 Items that can be transported by AGVs.
 """
 from destiny.core.simulation_entity import SimulationEntity
+from destiny.core.rendering import RenderingInfo, AssetType
 
 
 class Box(SimulationEntity):
@@ -11,5 +12,5 @@ class Box(SimulationEntity):
     Motion is recorded by the manipulating entity when it carries/drops the box.
     """
     
-    def _get_entity_type(self) -> str:
-        return "box"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.BOX)

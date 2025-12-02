@@ -4,11 +4,12 @@ from typing import List, Optional, Dict
 from destiny.agv.location import Location
 from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
+from destiny.core.rendering import RenderingInfo, AssetType
 
 
 class GridNode(SimulationEntity):
-    def _get_entity_type(self) -> str:
-        return "grid_node"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.GRID_NODE)
 
 
 def _get_node_id_for_location(location: Location) -> str:

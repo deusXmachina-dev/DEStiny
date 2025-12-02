@@ -99,9 +99,10 @@ class RecordingEnvironment(Environment):
         
         start_time = start_time if start_time is not None else self.now
         
+        rendering_info = entity.get_rendering_info()
         segment = MotionSegment(
             entity_id=entity.id,
-            entity_type=entity._get_entity_type(),
+            entity_type=rendering_info.asset_type,
             parent_id=parent.id if parent else None,
             start_time=start_time,
             end_time=end_time,

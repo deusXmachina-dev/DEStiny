@@ -7,6 +7,7 @@ import simpy
 from destiny.agv.location import Location
 from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
+from destiny.core.rendering import RenderingInfo, AssetType
 
 T = TypeVar("T")
 
@@ -37,8 +38,8 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
         # Record static position (same start/end = not moving)
         env.record_stay(entity=self, x=x, y=y)
 
-    def _get_entity_type(self) -> str:
-        return "store"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.STORE)
 
     def get_item(self) -> simpy.events.Event:
         """Request an item from the store location."""
@@ -52,12 +53,12 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
 class Source(StoreLocation[T]):
     """A store location that provides items."""
     
-    def _get_entity_type(self) -> str:
-        return "source"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.SOURCE)
 
 
 class Sink(StoreLocation[T]):
     """A store location that receives items."""
     
-    def _get_entity_type(self) -> str:
-        return "sink"
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(asset_type=AssetType.SINK)

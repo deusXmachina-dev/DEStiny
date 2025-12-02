@@ -3,8 +3,10 @@ Base class for simulation entities.
 
 Provides ID and information about the entity for rendering.
 """
-from abc import abstractmethod, ABC
+from abc import ABC
 import uuid
+
+from destiny.core.rendering import RenderingInfo, AssetType
 
 
 class SimulationEntity(ABC):
@@ -13,18 +15,22 @@ class SimulationEntity(ABC):
     
     Provides:
     - Unique ID
-    - Entity type (for rendering)
+    - Rendering information (for frontend display)
     
-    Entity types are used for rendering.
+    Rendering information is used for displaying entities in the frontend.
     """
 
     def __init__(self):
         self.id: str = str(uuid.uuid4())
 
-    @abstractmethod
-    def _get_entity_type(self) -> str:
+    def get_rendering_info(self) -> RenderingInfo:
         """
-        Return the type identifier for this entity (e.g., 'agv', 'box', 'source').
-        Used for rendering on the frontend.
+        Return rendering information for this entity.
+        
+        By default, returns empty rendering info. Subclasses should override
+        this method to provide appropriate rendering information.
+        
+        Returns:
+            RenderingInfo instance with asset type and other rendering properties.
         """
-        pass
+        return RenderingInfo(asset_type=AssetType.EMPTY)

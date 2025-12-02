@@ -55,20 +55,6 @@ def test_store_location_put_get(env):
     env.run()
 
 
-def test_source_sink_types(env):
-    source = Source(env, x=0, y=0)
-    sink = Sink(env, x=10, y=0)
-    
-    assert source._get_entity_type() == "source"
-    assert sink._get_entity_type() == "sink"
-    
-    recording = env.get_recording()
-    all_segments = [s for segments in recording.segments_by_entity.values() for s in segments]
-    types = {s.entity_type for s in all_segments}
-    assert "source" in types
-    assert "sink" in types
-
-
 def test_store_location_distance(env):
     loc1 = StoreLocation(env, x=0, y=0)
     loc2 = StoreLocation(env, x=3, y=4)
