@@ -1,44 +1,43 @@
 """
-Bank renege example with Destiny visualization
+Bank renege example with Destiny visualization (Refactored)
 
 Covers:
-
 - Resources: Resource
-
 - Condition events
-
-- Destiny visualization
+- Destiny visualization (Encapsulated)
 
 Scenario:
-
   A counter with a random service time and customers who renege. Based on the
-
   program bank08.py from TheBank tutorial of SimPy 2. (KGM)
-
 """
 import math
 import random
 import simpy
 import json
 import os
+from dataclasses import dataclass
 
 from destiny.core.environment import RecordingEnvironment
 from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
+# --- Configuration ---
 RANDOM_SEED = 42
-NEW_CUSTOMERS = 25  # Total number of customers
-INTERVAL_CUSTOMERS = 10.0  # Generate new customers roughly every x seconds
-MIN_PATIENCE = 1  # Min. customer patience
-MAX_PATIENCE = 3  # Max. customer patience
+NEW_CUSTOMERS = 25
+INTERVAL_CUSTOMERS = 10.0
+MIN_PATIENCE = 1
+MAX_PATIENCE = 3
 
-# Visualization constants
-COUNTER_X, COUNTER_Y = 500, 100
-SOURCE_X, SOURCE_Y = 100, 500
-EXIT_X, EXIT_Y = 900, 500
-QUEUE_X, QUEUE_Y = 500, 200
-WALK_SPEED = 100.0  # units per second
+@dataclass
+class Config:
+    counter_pos = (500, 100)
+    source_pos = (100, 500)
+    exit_pos = (900, 500)
+    queue_pos = (500, 200)
+    walk_speed = 100.0
 
+
+# --- Entities ---
 
 class BankCounter(SimulationEntity):
     def get_rendering_info(self) -> RenderingInfo:
@@ -46,13 +45,65 @@ class BankCounter(SimulationEntity):
 
 
 class BankCustomer(SimulationEntity):
-    def __init__(self, name):
+    def __init__(self, env: RecordingEnvironment, name: str, speed: float = 100.0):
         super().__init__()
+        self.env = env
         self.name = name
+        self.speed = speed
+        self.x = 0.0
+        self.y = 0.0
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
 
+    def set_position(self, x: float, y: float):
+        self.x = x
+        self.y = y
+        # Record initial appearance or teleport
+        self.env.record_stay(self, start_time=self.env.now, x=x, y=y)
+
+    def walk_to(self, target_x: float, target_y: float, wait: bool = True):
+        """
+        Records walking to a target. 
+        If wait=True, yields a timeout corresponding to the travel time.
+        """
+        dist = math.hypot(target_x - self.x, target_y - self.y)
+        duration = dist / self.speed
+        
+        start_time = self.env.now
+        end_time = start_time + duration
+
+        self.env.record_motion(
+            self,
+            start_time=start_time,
+            end_time=end_time,
+            start_x=self.x,
+            start_y=self.y,
+            end_x=target_x,
+            end_y=target_y
+        )
+
+        # Update internal state
+        self.x = target_x
+        self.y = target_y
+
+        if wait:
+            return self.env.timeout(duration)
+        return None
+
+    def wait(self, duration: float):
+        """Records a stationary wait."""
+        self.env.record_stay(
+            self,
+            start_time=self.env.now,
+            end_time=self.env.now + duration,
+            x=self.x,
+            y=self.y
+        )
+        return self.env.timeout(duration)
+
+
+# --- Simulation Processes ---
 
 def source(env, number, interval, counter):
     """Source generates customers randomly"""
@@ -65,129 +116,71 @@ def source(env, number, interval, counter):
 
 def customer(env, name, counter, time_in_bank):
     """Customer arrives, is served and leaves."""
-    cust_entity = BankCustomer(name)
+    cust = BankCustomer(env, name, speed=Config.walk_speed)
+    cust.set_position(*Config.source_pos)
 
     # Walk to queue
-    dist_to_queue = math.hypot(QUEUE_X - SOURCE_X, QUEUE_Y - SOURCE_Y)
-    walk_time = dist_to_queue / WALK_SPEED
-
-    env.record_motion(
-        cust_entity,
-        start_time=env.now,
-        end_time=env.now + walk_time,
-        start_x=SOURCE_X,
-        start_y=SOURCE_Y,
-        end_x=QUEUE_X,
-        end_y=QUEUE_Y
-    )
-    yield env.timeout(walk_time)
+    yield cust.walk_to(*Config.queue_pos)
 
     arrive = env.now
     print(f'{arrive:7.4f} {name}: Here I am')
 
     with counter.request() as req:
         patience = random.uniform(MIN_PATIENCE, MAX_PATIENCE)
-        # Wait for the counter or abort at the end of our tether
-        results = yield req | env.timeout(patience)
-
-        wait = env.now - arrive
         
-        # Record waiting time in queue if they waited
+        # Wait for counter or patience
+        # Note: We only visualize the "waiting" stay if we actually waited longer than 0
+        # But logically we just yield on the request/patience.
+        # For visualization, we might want to record the stay AFTER we know how long it was,
+        # or we record a stay with indefinite end? 
+        # Destiny's record_stay works best with definite times or updates.
+        # Here we follow the original pattern: calculate wait after the fact.
+        
+        results = yield req | env.timeout(patience)
+        wait = env.now - arrive
+
         if wait > 0:
-            env.record_stay(
-                cust_entity,
-                start_time=arrive,
-                end_time=env.now,
-                x=QUEUE_X,
-                y=QUEUE_Y
-            )
+            # Record that we stood in the queue
+            env.record_stay(cust, start_time=arrive, end_time=env.now, x=cust.x, y=cust.y)
 
         if req in results:
-            # We got to the counter
             print(f'{env.now:7.4f} {name}: Waited {wait:6.3f}')
             
-            # Move to counter (short walk)
-            step_time = 0.5
-            env.record_motion(
-                cust_entity,
-                start_time=env.now,
-                end_time=env.now + step_time,
-                start_x=QUEUE_X,
-                start_y=QUEUE_Y,
-                end_x=COUNTER_X,
-                end_y=COUNTER_Y
-            )
-            yield env.timeout(step_time)
+            # Move to counter
+            yield cust.walk_to(*Config.counter_pos)
 
+            # Service time
             tib = random.expovariate(1.0 / time_in_bank)
+            yield cust.wait(tib)
             
-            # Record service time
-            env.record_stay(
-                cust_entity,
-                start_time=env.now,
-                end_time=env.now + tib,
-                x=COUNTER_X,
-                y=COUNTER_Y
-            )
-            
-            yield env.timeout(tib)
             print(f'{env.now:7.4f} {name}: Finished')
             
-            # Walk to exit
-            start_exit_walk = env.now
-            dist_to_exit = math.hypot(EXIT_X - COUNTER_X, EXIT_Y - COUNTER_Y)
-            exit_walk_time = dist_to_exit / WALK_SPEED
-            
-            env.record_motion(
-                cust_entity,
-                start_time=start_exit_walk,
-                end_time=start_exit_walk + exit_walk_time,
-                start_x=COUNTER_X,
-                start_y=COUNTER_Y,
-                end_x=EXIT_X,
-                end_y=EXIT_Y
-            )
+            # Walk to exit (Fire and forget simulation-wise, but recorded)
+            cust.walk_to(*Config.exit_pos, wait=False)
 
         else:
-            # We reneged
             print(f'{env.now:7.4f} {name}: RENEGED after {wait:6.3f}')
             
-            # Walk to exit from queue
-            start_exit_walk = env.now
-            dist_to_exit = math.hypot(EXIT_X - QUEUE_X, EXIT_Y - QUEUE_Y)
-            exit_walk_time = dist_to_exit / WALK_SPEED
-            
-            env.record_motion(
-                cust_entity,
-                start_time=start_exit_walk,
-                end_time=start_exit_walk + exit_walk_time,
-                start_x=QUEUE_X,
-                start_y=QUEUE_Y,
-                end_x=EXIT_X,
-                end_y=EXIT_Y
-            )
+            # Walk to exit (Fire and forget)
+            cust.walk_to(*Config.exit_pos, wait=False)
 
 
 def main():
-    # Setup and start the simulation
     print('Bank renege')
     random.seed(RANDOM_SEED)
     env = RecordingEnvironment()
 
-    # Start processes and run
+    # Setup Counter
     counter = simpy.Resource(env, capacity=1)
+    bank_counter = BankCounter()
+    env.record_stay(bank_counter, start_time=0, x=Config.counter_pos[0], y=Config.counter_pos[1])
     
-    # Create visual entity for the counter
-    bank_counter_entity = BankCounter()
-    # Record it staying at its position indefinitely (or until simulation ends)
-    env.record_stay(bank_counter_entity, start_time=0, x=COUNTER_X, y=COUNTER_Y)
-    
+    # Start Source
     env.process(source(env, NEW_CUSTOMERS, INTERVAL_CUSTOMERS, counter))
     
-    # Run simulation
     env.run()
     
-    # Export recording
+    # Export
     recording = env.get_recording()
     print(f"Recorded {len(recording.segments_by_entity)} entities")
 
@@ -201,4 +194,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
