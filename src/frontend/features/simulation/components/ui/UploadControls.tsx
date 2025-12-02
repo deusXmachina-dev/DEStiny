@@ -43,7 +43,7 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
 
     return (
         <div className={cn(
-            "absolute z-10 bg-white rounded-lg shadow-lg border transition-all",
+            "absolute z-10 bg-background rounded-lg shadow-lg border transition-all",
             POSITION_CLASSES[position],
             isLarge ? [
                 "p-8 border-gray-400 shadow-2xl",

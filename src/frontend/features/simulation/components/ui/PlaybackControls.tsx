@@ -30,7 +30,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
                     disabled={disabled}
                     onClick={togglePlay}
                     size="icon"
-                    className=" ize-9"
+                    className="size-9"
                     title={isPlaying ? "Pause" : "Play"}
                 >
                     {isPlaying ? (
@@ -43,7 +43,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
 
             {/* Center: Timeline */}
             <div className="flex items-center gap-3 flex-1">
-                <span className="font-mono text-sm min-w-[45px]">
+                <span className="text-sm min-w-[45px]">
                     {formatTime(currentTime)}
                 </span>
                 <Slider
@@ -56,7 +56,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
                     onValueChange={(vals) => seek(vals[0])}
                     className="flex-1 **:data-[slot=slider-track]:bg-gray-300 "
                 />
-                <span className="font-mono text-sm min-w-[45px]">
+                <span className="text-sm min-w-[45px]">
                     {formatTime(duration)}
                 </span>
             </div>

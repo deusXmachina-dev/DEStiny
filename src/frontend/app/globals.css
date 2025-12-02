@@ -51,79 +51,74 @@
 }
 
 :root {
-  /* Global Radius */
-  --radius: 0.625rem;
-
-  /* Light Theme (Base Palette: Light Background, Dark Text) */
-  --background: oklch(1 0 0); /* Pure White for clean look */
-  --foreground: oklch(0.25 0.04 266); /* Dark Charcoal Gray for text */
-
-  /* Cards, Popovers (often same as BG/FG) */
+  --radius: 0.65rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.04 266);
+  --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.04 266);
-
-  /* Primary Accent: Neon Lime Green (Buttons, Links) */
-  --primary: oklch(0.9 0.23 103);
-  --primary-foreground: oklch(0.25 0.04 266); /* Dark text on bright primary */
-
-  /* Secondary: Dark Charcoal (Subtle Buttons) */
-  --secondary: oklch(0.25 0.04 266); 
-  --secondary-foreground: oklch(1 0 0); /* White text on dark secondary */
-
-  /* Muted/Placeholder: Lighter Gray */
-  --muted: oklch(0.95 0.005 270);
-  --muted-foreground: oklch(0.5 0.02 270);
-
-  /* Accent/Highlight: Neon Lime Green, but slightly darker/desaturated for context */
-  --accent: oklch(0.9 0.23 103);
-  --accent-foreground: oklch(0.25 0.04 266);
-
-  /* Destructive (Red/Orange for warnings) */
-  --destructive: oklch(0.577 0.245 27.325); /* Kept existing value for now */
-
-  /* Borders, Inputs, Focus Rings */
-  --border: oklch(0.9 0.01 270);
-  --input: oklch(0.9 0.01 270);
-  --ring: oklch(0.9 0.23 103); /* Focus ring is the primary color */
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.648 0.2 131.684);
+  --primary-foreground: oklch(0.986 0.031 120.757);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.841 0.238 128.85);
+  --chart-1: oklch(0.871 0.15 154.449);
+  --chart-2: oklch(0.723 0.219 149.579);
+  --chart-3: oklch(0.627 0.194 149.214);
+  --chart-4: oklch(0.527 0.154 150.069);
+  --chart-5: oklch(0.448 0.119 151.328);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.648 0.2 131.684);
+  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.841 0.238 128.85);
 }
 
 .dark {
-  /* Dark Theme (Base Palette: Dark Background, White Text) */
-  --background: oklch(0.25 0.04 266); /* Dark Charcoal Gray */
-  --foreground: oklch(1 0 0); /* Pure White for text */
-
-  /* Cards, Popovers */
-  --card: oklch(0.25 0.04 266);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.25 0.04 266);
-  --popover-foreground: oklch(1 0 0);
-
-  /* Primary Accent: Neon Lime Green (Buttons, Links) */
-  --primary: oklch(0.9 0.23 103);
-  --primary-foreground: oklch(0.25 0.04 266); /* Dark text on bright primary */
-
-  /* Secondary: Slightly Lighter Dark Gray (Subtle Buttons) */
-  --secondary: oklch(0.35 0.05 266); 
-  --secondary-foreground: oklch(1 0 0);
-
-  /* Muted/Placeholder: Mid Gray */
-  --muted: oklch(0.35 0.05 266);
-  --muted-foreground: oklch(0.7 0.02 266);
-
-  /* Accent/Highlight: Neon Lime Green */
-  --accent: oklch(0.9 0.23 103);
-  --accent-foreground: oklch(0.25 0.04 266);
-
-  /* Destructive (Red/Orange for warnings) */
-  --destructive: oklch(0.704 0.191 22.216); /* Kept existing value for now */
-
-  /* Borders, Inputs, Focus Rings */
-  --border: oklch(0.35 0.05 266);
-  --input: oklch(0.35 0.05 266);
-  --ring: oklch(0.9 0.23 103); /* Focus ring is the primary color */
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.648 0.2 131.684);
+  --primary-foreground: oklch(0.986 0.031 120.757);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.405 0.101 131.063);
+  --chart-1: oklch(0.871 0.15 154.449);
+  --chart-2: oklch(0.723 0.219 149.579);
+  --chart-3: oklch(0.627 0.194 149.214);
+  --chart-4: oklch(0.527 0.154 150.069);
+  --chart-5: oklch(0.448 0.119 151.328);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.768 0.233 130.85);
+  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.405 0.101 131.063);
 }
+
 
 @layer base {
   * {
