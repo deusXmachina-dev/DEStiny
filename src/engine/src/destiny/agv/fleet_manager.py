@@ -17,13 +17,20 @@ from destiny.core.environment import RecordingEnvironment
 class TaskProvider:
     """Provides tasks for AGVs to execute."""
     
-    def __init__(self, sources: list[StoreLocation], sinks: list[StoreLocation], expected_task_interval: float = 10.0):
+    def __init__(
+        self,
+        sources: list[StoreLocation],
+        sinks: list[StoreLocation],
+        expected_task_interval: float = 10.0,
+    ):
         self._sources = sources
         self._sinks = sinks
         self._expected_task_interval = expected_task_interval
         self._first_task = True
 
-    def get_next_task(self, env: RecordingEnvironment) -> Generator[Event, Any, AGVTask]:
+    def get_next_task(
+        self, env: RecordingEnvironment
+    ) -> Generator[Event, Any, AGVTask]:
         if self._first_task:
             self._first_task = False
             return (yield from self._get_next_task(env))
@@ -36,7 +43,9 @@ class TaskProvider:
         
         return (yield from self._get_next_task(env))
     
-    def _get_next_task(self, env: RecordingEnvironment) -> Generator[Event, Any, AGVTask]:
+    def _get_next_task(
+        self, env: RecordingEnvironment
+    ) -> Generator[Event, Any, AGVTask]:
         source = random.choice(self._sources)
         sink = random.choice(self._sinks)
         
@@ -68,7 +77,9 @@ class FleetManager:
     def agvs(self) -> list[AGV]:
         return self._agvs
 
-    def plan_indefinitely(self, env: RecordingEnvironment) -> Generator[Event, Any, Any]:
+    def plan_indefinitely(
+        self, env: RecordingEnvironment
+    ) -> Generator[Event, Any, Any]:
         """Continuously assign tasks to available AGVs."""
         while True:
             new_task = yield env.process(self._task_provider.get_next_task(env))
@@ -81,8 +92,12 @@ class FleetManager:
             return random.choice(self._agvs)
         return random.choice(taskless_agvs)
 
-    def _schedule_plan(self, env: RecordingEnvironment, agv: AGV, task: AGVTask) -> None:
-        path_to_source = self._site_graph.shortest_path(agv.planned_destination, task.source)
+    def _schedule_plan(
+        self, env: RecordingEnvironment, agv: AGV, task: AGVTask
+    ) -> None:
+        path_to_source = self._site_graph.shortest_path(
+            agv.planned_destination, task.source
+        )
         path_to_sink = self._site_graph.shortest_path(task.source, task.sink)
 
         waypoints = []

@@ -1,5 +1,6 @@
 """Tests for AGV motion recording."""
 import pytest
+
 from destiny.agv.agv import AGV
 from destiny.agv.items import Box
 from destiny.agv.location import Location
@@ -73,7 +74,9 @@ def test_agv_records_carried_item_motion(env):
     recording = env.get_recording()
     
     # Find box segments (should have parent = agv while carried
-    all_segments = [s for segments in recording.segments_by_entity.values() for s in segments]
+    all_segments = [
+        s for segments in recording.segments_by_entity.values() for s in segments
+    ]
     box_segments = [s for s in all_segments if s.entity_type == "box"]
     assert len(box_segments) >= 1
 

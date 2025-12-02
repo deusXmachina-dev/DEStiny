@@ -9,9 +9,9 @@ from simpy import Timeout
 from destiny.agv.location import Location
 from destiny.agv.planning import TripPlan, WaypointType
 from destiny.agv.store_location import StoreLocation
-from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
 from destiny.core.rendering import RenderingInfo, SimulationEntityType
+from destiny.core.simulation_entity import SimulationEntity
 
 
 class AGV(SimulationEntity):
@@ -19,7 +19,9 @@ class AGV(SimulationEntity):
     An Automated Guided Vehicle that moves along planned paths.
     """
     
-    def __init__(self, env: RecordingEnvironment, start_location: Location, speed: float = 1.0):
+    def __init__(
+        self, env: RecordingEnvironment, start_location: Location, speed: float = 1.0
+    ):
         super().__init__()
         self._speed: float = speed
         self._is_available = True
@@ -29,7 +31,9 @@ class AGV(SimulationEntity):
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
         
-        env.record_stay(entity=self, x=self._current_location.x, y=self._current_location.y)
+        env.record_stay(
+            entity=self, x=self._current_location.x, y=self._current_location.y
+        )
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.AGV)
@@ -43,14 +47,18 @@ class AGV(SimulationEntity):
             self._is_available = False
             env.process(self._process_queue(env))
 
-    def _process_queue(self, env: RecordingEnvironment) -> Generator[Timeout | Any, Any, None]:
+    def _process_queue(
+        self, env: RecordingEnvironment
+    ) -> Generator[Timeout | Any, Any, None]:
         """Process all queued plans."""
         while self._plan_queue:
             plan = self._plan_queue.popleft()
             yield from self._execute_plan(env, plan)
         self._is_available = True
 
-    def _execute_plan(self, env: RecordingEnvironment, plan: TripPlan) -> Generator[Timeout | Any, Any, None]:
+    def _execute_plan(
+        self, env: RecordingEnvironment, plan: TripPlan
+    ) -> Generator[Timeout | Any, Any, None]:
         """Execute a single plan, recording motion segments."""
         
         for waypoint in plan:
@@ -95,11 +103,17 @@ class AGV(SimulationEntity):
             self._current_location = end_location
 
             # Handle pickup at SOURCE
-            if isinstance(source := waypoint.location, StoreLocation) and waypoint.type == WaypointType.SOURCE:
+            if (
+                isinstance(source := waypoint.location, StoreLocation)
+                and waypoint.type == WaypointType.SOURCE
+            ):
                 self._carried_item = yield source.get_item()
 
             # Handle drop at SINK
-            if isinstance(sink := waypoint.location, StoreLocation) and waypoint.type == WaypointType.SINK:
+            if (
+                isinstance(sink := waypoint.location, StoreLocation)
+                and waypoint.type == WaypointType.SINK
+            ):
                 yield sink.put_item(self._carried_item)
                 self._carried_item = None
                 

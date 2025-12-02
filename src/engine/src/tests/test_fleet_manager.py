@@ -19,7 +19,9 @@ class DeterministicTaskProvider(TaskProvider):
         self.tasks = tasks
         self.task_index = 0
 
-    def get_next_task(self, env: RecordingEnvironment) -> Generator[Timeout, Any, AGVTask]:
+    def get_next_task(
+        self, env: RecordingEnvironment
+    ) -> Generator[Timeout, Any, AGVTask]:
         if self.task_index < len(self.tasks):
             yield env.timeout(0)
             task = self.tasks[self.task_index]

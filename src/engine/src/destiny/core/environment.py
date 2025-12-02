@@ -3,6 +3,7 @@ Simulation environment with motion recording.
 """
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any
+
 from simpy import Environment
 
 from destiny.core.timeline import MotionSegment, SimulationRecording

@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 
+
 @dataclass
 class Location:
     x: float
@@ -14,7 +15,9 @@ class Location:
             return None
         return math.atan2(other.y - self.y, other.x - self.x)
 
-    def move_towards(self, other: 'Location', distance: float, clip: bool = True) -> 'Location':
+    def move_towards(
+        self, other: 'Location', distance: float, clip: bool = True
+    ) -> 'Location':
         dist_total = self.distance_to(other)
         
         if dist_total == 0:

@@ -1,7 +1,7 @@
 """Tests for RecordingEnvironment and motion recording."""
 from destiny.core.environment import RecordingEnvironment
-from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.rendering import RenderingInfo, SimulationEntityType
+from destiny.core.simulation_entity import SimulationEntity
 
 
 class DummyEntity(SimulationEntity):

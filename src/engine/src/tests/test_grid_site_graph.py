@@ -1,7 +1,10 @@
 import math
+
 import pytest
-from destiny.agv.site_graph import GridSiteGraph
+
 from destiny.agv.location import Location
+from destiny.agv.site_graph import GridSiteGraph
+
 
 class TestGridSiteGraph:
     def test_grid_creation(self):
@@ -54,8 +57,6 @@ class TestGridSiteGraph:
 
     def test_insert_location_replace(self):
         grid = GridSiteGraph(width=3, height=3, spacing=10.0)
-        # Original node at (1,1) i.e. (10, 10)
-        original_node = grid.get_node_at(1, 1)
         
         # Create a "Store" location (just a subclass or different instance for now)
         class Store(Location):

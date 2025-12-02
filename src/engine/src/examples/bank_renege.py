@@ -10,16 +10,17 @@ Scenario:
   A counter with a random service time and customers who renege. Based on the
   program bank08.py from TheBank tutorial of SimPy 2. (KGM)
 """
-import math
-import random
-import simpy
 import json
+import math
 import os
+import random
 from dataclasses import dataclass
 
+import simpy
+
 from destiny.core.environment import RecordingEnvironment
-from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.rendering import RenderingInfo, SimulationEntityType
+from destiny.core.simulation_entity import SimulationEntity
 
 # --- Configuration ---
 RANDOM_SEED = 42
@@ -129,10 +130,10 @@ def customer(env, name, counter, time_in_bank):
         patience = random.uniform(MIN_PATIENCE, MAX_PATIENCE)
         
         # Wait for counter or patience
-        # Note: We only visualize the "waiting" stay if we actually waited longer than 0
-        # But logically we just yield on the request/patience.
-        # For visualization, we might want to record the stay AFTER we know how long it was,
-        # or we record a stay with indefinite end? 
+        # Note: We only visualize the "waiting" stay if we actually waited
+        # longer than 0. But logically we just yield on the request/patience.
+        # For visualization, we might want to record the stay AFTER we know
+        # how long it was, or we record a stay with indefinite end?
         # Destiny's record_stay works best with definite times or updates.
         # Here we follow the original pattern: calculate wait after the fact.
         
@@ -141,7 +142,9 @@ def customer(env, name, counter, time_in_bank):
 
         if wait > 0:
             # Record that we stood in the queue
-            env.record_stay(cust, start_time=arrive, end_time=env.now, x=cust.x, y=cust.y)
+            env.record_stay(
+                cust, start_time=arrive, end_time=env.now, x=cust.x, y=cust.y
+            )
 
         if req in results:
             print(f'{env.now:7.4f} {name}: Waited {wait:6.3f}')
@@ -173,7 +176,12 @@ def main():
     # Setup Counter
     counter = simpy.Resource(env, capacity=1)
     bank_counter = BankCounter()
-    env.record_stay(bank_counter, start_time=0, x=Config.counter_pos[0], y=Config.counter_pos[1])
+    env.record_stay(
+        bank_counter,
+        start_time=0,
+        x=Config.counter_pos[0],
+        y=Config.counter_pos[1],
+    )
     
     # Start Source
     env.process(source(env, NEW_CUSTOMERS, INTERVAL_CUSTOMERS, counter))

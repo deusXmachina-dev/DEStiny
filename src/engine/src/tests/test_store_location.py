@@ -1,6 +1,7 @@
 """Tests for StoreLocation."""
 import pytest
-from destiny.agv.store_location import StoreLocation, Source, Sink
+
+from destiny.agv.store_location import StoreLocation
 from destiny.core.environment import RecordingEnvironment
 
 

@@ -1,7 +1,10 @@
-import pytest
 import math
+
+import pytest
+
 from destiny.agv.location import Location
 from destiny.agv.site_graph import SiteGraph
+
 
 class TestSiteGraph:
     def test_shortest_path_simple(self):
@@ -55,7 +58,8 @@ class TestSiteGraph:
         
         path = site.shortest_path(loc_a, loc_c)
         # Should go A -> D -> C (cost 2) instead of A -> B -> C (cost 101)
-        # Even though A->B->C is physically shorter/straight line, the weights dictate the path
+        # Even though A->B->C is physically shorter/straight line,
+        # the weights dictate the path
         assert path == [loc_a, loc_d, loc_c]
         
         length = site.shortest_path_length(loc_a, loc_c)

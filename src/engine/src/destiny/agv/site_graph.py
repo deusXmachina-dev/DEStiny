@@ -1,10 +1,11 @@
+from typing import Dict, List, Optional
+
 import rustworkx as rx
-from typing import List, Optional, Dict
 
 from destiny.agv.location import Location
-from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
 from destiny.core.rendering import RenderingInfo, SimulationEntityType
+from destiny.core.simulation_entity import SimulationEntity
 
 
 class GridNode(SimulationEntity):
@@ -19,7 +20,8 @@ def _get_node_id_for_location(location: Location) -> str:
 class SiteGraph:
     """
     Represents the site map as a graph of locations (nodes) and connections (edges).
-    Uses rustworkx for the underlying graph representation and search algorithms for high performance.
+    Uses rustworkx for the underlying graph representation and search algorithms
+    for high performance.
     """
     def __init__(self):
         # PyDiGraph is a directed graph.
@@ -41,13 +43,20 @@ class SiteGraph:
         idx = self.graph.add_node({'location': location})
         self.node_indices[node_id] = idx
 
-    def add_edge(self, source: Location, target: Location, weight: Optional[float] = None, bidirectional: bool = True) -> None:
+    def add_edge(
+        self,
+        source: Location,
+        target: Location,
+        weight: Optional[float] = None,
+        bidirectional: bool = True,
+    ) -> None:
         """
         Add an edge (connection) between two nodes.
         
         :param source: Source location.
         :param target: Target location.
-        :param weight: Cost of the edge (e.g., distance). If None, Euclidean distance is calculated.
+        :param weight: Cost of the edge (e.g., distance).
+            If None, Euclidean distance is calculated.
         :param bidirectional: If True, adds an edge in both directions.
         """
 
@@ -75,7 +84,9 @@ class SiteGraph:
         if bidirectional:
             self.graph.add_edge(target_idx, source_idx, edge_data)
 
-    def shortest_path(self, source: Location, target: Location, weight_key: str = 'weight') -> List[Location]:
+    def shortest_path(
+        self, source: Location, target: Location, weight_key: str = 'weight'
+    ) -> List[Location]:
         """
         Find the shortest path between source and target nodes.
         
@@ -93,7 +104,6 @@ class SiteGraph:
         source_idx = self.node_indices[source_id]
         target_idx = self.node_indices[target_id]
 
-        # dijkstra_shortest_paths returns a dictionary of paths {target_idx: [source, ..., target]}
         paths = rx.dijkstra_shortest_paths(
             self.graph,
             source_idx,
@@ -112,7 +122,9 @@ class SiteGraph:
         return [self.graph.get_node_data(idx)['location'] for idx in path_indices]
 
             
-    def shortest_path_length(self, source: Location, target: Location, weight_key: str = 'weight') -> float:
+    def shortest_path_length(
+        self, source: Location, target: Location, weight_key: str = 'weight'
+    ) -> float:
         """
         Find the length of the shortest path between source and target nodes.
         """
@@ -211,7 +223,9 @@ class GridSiteGraph(SiteGraph):
         """
         return self._grid_locations.get((row, col))
 
-    def insert_location(self, location: Location, connect_to_k_nearest: int = 4) -> None:
+    def insert_location(
+        self, location: Location, connect_to_k_nearest: int = 4
+    ) -> None:
         """
         Insert a location into the graph.
         
@@ -221,7 +235,8 @@ class GridSiteGraph(SiteGraph):
           'connect_to_k_nearest' closest existing nodes.
         
         :param location: The Location to add.
-        :param connect_to_k_nearest: Number of neighbors to connect to if it's a new node.
+        :param connect_to_k_nearest: Number of neighbors to connect to
+            if it's a new node.
         """
         node_id = _get_node_id_for_location(location)
         

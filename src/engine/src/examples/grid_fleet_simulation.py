@@ -7,10 +7,9 @@ import json
 from typing import List
 
 from destiny.agv.agv import AGV
-from destiny.agv.items import Box
-from destiny.agv.site_graph import GridSiteGraph
-from destiny.agv.store_location import Source, Sink
 from destiny.agv.fleet_manager import FleetManager, TaskProvider
+from destiny.agv.site_graph import GridSiteGraph
+from destiny.agv.store_location import Sink, Source
 from destiny.core.environment import RecordingEnvironment
 
 
@@ -47,7 +46,9 @@ def main():
     grid.visualize_graph(env)
 
     # Initialize Fleet Manager
-    task_provider = TaskProvider(sources=sources, sinks=sinks, expected_task_interval=15.0)
+    task_provider = TaskProvider(
+        sources=sources, sinks=sinks, expected_task_interval=15.0
+    )
     fleet_manager = FleetManager(task_provider, grid)
 
     # Add 3 AGVs in the middle
