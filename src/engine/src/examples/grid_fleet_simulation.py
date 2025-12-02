@@ -3,7 +3,6 @@ Grid fleet simulation example.
 
 Demonstrates multiple AGVs moving boxes between sources and sinks on a grid.
 """
-import json
 from typing import List
 
 from dxm.agv.agv import AGV
@@ -12,6 +11,8 @@ from dxm.agv.site_graph import GridSiteGraph
 from dxm.agv.store_location import Sink, Source
 from dxm.core.environment import RecordingEnvironment
 
+
+SIMULATION_TIME = 600
 
 def main():
     env = RecordingEnvironment()
@@ -63,20 +64,8 @@ def main():
     env.process(fleet_manager.plan_indefinitely(env))
 
     # Run simulation
-    simulation_time = 600
-    print(f"Running simulation for {simulation_time} seconds...")
-    env.run(until=simulation_time)
-    print("Simulation complete.")
-
-    # Export recording
-    recording = env.get_recording()
-
-    import os
-    os.makedirs("simulation-records", exist_ok=True)
-
-    with open("simulation-records/grid_fleet_recording.json", "w") as f:
-        json.dump(recording.to_dict(), f, indent=2)
-    print("Recording exported to simulation-records/grid_fleet_recording.json")
+    env.run(until=SIMULATION_TIME)
+    env.save_recording(f"simulation-records/grid_fleet_recording_{SIMULATION_TIME}s.json")
 
 
 if __name__ == "__main__":

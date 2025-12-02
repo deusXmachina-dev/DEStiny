@@ -1,7 +1,9 @@
 """
 Simulation environment with motion recording.
 """
+import json
 from collections import defaultdict
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from simpy import Environment
@@ -125,3 +127,24 @@ class RecordingEnvironment(Environment):
             duration=self.now,
             segments_by_entity=self._segments_by_entity,
         )
+
+    def save_recording(self, file_path: str) -> None:
+        """
+        Save the recording to a JSON file.
+        
+        Creates directories if needed and prints a confirmation message.
+        
+        Args:
+            file_path: Path to the output JSON file (e.g., "simulation-records/recording.json")
+        """
+        recording = self.get_recording()
+        
+        # Create parent directories if they don't exist
+        path = Path(file_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Write JSON file
+        with open(file_path, "w") as f:
+            json.dump(recording.to_dict(), f, indent=2)
+        
+        print(f"Recording exported to {file_path}")
