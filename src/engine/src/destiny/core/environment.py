@@ -33,11 +33,11 @@ class Environment(RealtimeEnvironment):
     def record_stay(
         self,
         entity: Any,
-        start_time: float,
+        start_time: float | None = None,
+        end_time: float | None = None,
         x: float = 0.0,
         y: float = 0.0,
         angle: float = 0.0,
-        end_time: float | None = None,
         parent: "SimulationEntity | None" = None,
     ) -> None:
         """
@@ -52,13 +52,13 @@ class Environment(RealtimeEnvironment):
             end_time: When the stay ends (None = until simulation end)
             parent: If set, coordinates are relative to this parent entity
         """
-        self.record_motion(entity, start_time, end_time, x, y, x, y, angle, angle, parent)
+        self.record_motion(entity, start_time=start_time, end_time=end_time, x=x, y=y, angle=angle, parent=parent)
 
     def record_motion(
         self,
         entity: Any,
-        start_time: float,
-        end_time: float | None,
+        start_time: float | None = None,
+        end_time: float | None = None,
         start_x: float = 0.0,
         start_y: float = 0.0,
         end_x: float = 0.0,
@@ -82,6 +82,8 @@ class Environment(RealtimeEnvironment):
         from destiny.core.simulation_container import SimulationEntity
         if not isinstance(entity, SimulationEntity):
             return None
+        
+        start_time = start_time if start_time is not None else self.now
         
         segment = MotionSegment(
             entity_id=entity.id,

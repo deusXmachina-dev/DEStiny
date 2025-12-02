@@ -28,12 +28,7 @@ class AGV(SimulationEntity):
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
         
-        env.record_stay(
-            entity=self,
-            x=self._current_location.x,
-            y=self._current_location.y,
-            start_time=env.now,
-        )
+        env.record_stay(entity=self, x=self._current_location.x, y=self._current_location.y)
 
     def _get_entity_type(self) -> str:
         return "agv"

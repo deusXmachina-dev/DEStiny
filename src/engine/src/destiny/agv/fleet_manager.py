@@ -30,6 +30,8 @@ class TaskProvider:
         sink = random.choice(self._sinks)
         
         box = Box()
+        env.record_stay(entity=box, start_time=env.now, parent=box)
+        
         yield source.put_item(box)
         
         return AGVTask(source=source, sink=sink)

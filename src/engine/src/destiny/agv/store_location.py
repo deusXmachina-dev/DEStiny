@@ -35,12 +35,7 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
             self.store.items.extend(initial_items)
         
         # Record static position (same start/end = not moving)
-        env.record_stay(
-            entity=self,
-            x=x,
-            y=y,
-            start_time=env.now,
-        )
+        env.record_stay(entity=self, x=x, y=y)
 
     def _get_entity_type(self) -> str:
         return "store"

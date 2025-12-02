@@ -146,13 +146,7 @@ class SiteGraph:
             # Create a visual entity for the node
             node_entity = GridNode()
             
-            env.record_stay(
-                entity=node_entity,
-                start_time=env.now,
-                x=location.x,
-                y=location.y,
-                end_time=None  # Stay until end of simulation
-            )
+            env.record_stay(entity=node_entity, x=location.x, y=location.y)
 
 
 class GridSiteGraph(SiteGraph):
