@@ -1,12 +1,12 @@
 """Tests for AGV motion recording."""
 import pytest
 
-from destiny.agv.agv import AGV
-from destiny.agv.items import Box
-from destiny.agv.location import Location
-from destiny.agv.planning import TripPlan, Waypoint, WaypointType
-from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import RecordingEnvironment
+from dxm.agv.agv import AGV
+from dxm.agv.items import Box
+from dxm.agv.location import Location
+from dxm.agv.planning import TripPlan, Waypoint, WaypointType
+from dxm.agv.store_location import StoreLocation
+from dxm.core.environment import RecordingEnvironment
 
 
 @pytest.fixture

@@ -6,12 +6,12 @@ from typing import Any, Generator
 
 from simpy import Event
 
-from destiny.agv.agv import AGV
-from destiny.agv.items import Box
-from destiny.agv.planning import AGVTask, TripPlan, Waypoint, WaypointType
-from destiny.agv.site_graph import SiteGraph
-from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import RecordingEnvironment
+from dxm.agv.agv import AGV
+from dxm.agv.items import Box
+from dxm.agv.planning import AGVTask, TripPlan, Waypoint, WaypointType
+from dxm.agv.site_graph import SiteGraph
+from dxm.agv.store_location import StoreLocation
+from dxm.core.environment import RecordingEnvironment
 
 
 class TaskProvider:

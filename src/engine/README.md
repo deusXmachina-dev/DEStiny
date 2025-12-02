@@ -1,6 +1,6 @@
-# Destiny
+# DXM
 
-**Destiny** is a discrete event simulation engine built on top of [SimPy](https://simpy.readthedocs.io/). It adds a layer of abstraction for **recording simulation events** (movement, stays) to be visualized in a frontend application.
+**DXM** is a discrete event simulation engine built on top of [SimPy](https://simpy.readthedocs.io/). It adds a layer of abstraction for **recording simulation events** (movement, stays) to be visualized in a frontend application.
 
 It is designed for:
 - Any discrete event simulation where spatial visualization is key
@@ -11,7 +11,7 @@ With examples in place for
 ## Installation
 
 ```bash
-pip install destiny
+pip install dxm
 ```
 
 ## Quick Start
@@ -20,9 +20,9 @@ Here is a minimal example of a simulation recording:
 
 ```python
 import json
-from destiny.core.environment import RecordingEnvironment
-from destiny.core.simulation_entity import SimulationEntity
-from destiny.core.rendering import RenderingInfo, SimulationEntityType
+from dxm.core.environment import RecordingEnvironment
+from dxm.core.simulation_entity import SimulationEntity
+from dxm.core.rendering import RenderingInfo, SimulationEntityType
 
 # 1. Define your entities
 class Robot(SimulationEntity):

@@ -3,13 +3,13 @@ from typing import Any, Generator
 
 from simpy import Timeout
 
-from destiny.agv.agv import AGV
-from destiny.agv.fleet_manager import FleetManager, TaskProvider
-from destiny.agv.location import Location
-from destiny.agv.planning import AGVTask
-from destiny.agv.site_graph import SiteGraph
-from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import RecordingEnvironment
+from dxm.agv.agv import AGV
+from dxm.agv.fleet_manager import FleetManager, TaskProvider
+from dxm.agv.location import Location
+from dxm.agv.planning import AGVTask
+from dxm.agv.site_graph import SiteGraph
+from dxm.agv.store_location import StoreLocation
+from dxm.core.environment import RecordingEnvironment
 
 
 class DeterministicTaskProvider(TaskProvider):

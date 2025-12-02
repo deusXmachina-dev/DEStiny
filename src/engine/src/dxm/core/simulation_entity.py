@@ -6,7 +6,7 @@ Provides ID and information about the entity for rendering.
 import uuid
 from abc import ABC, abstractmethod
 
-from destiny.core.rendering import RenderingInfo
+from dxm.core.rendering import RenderingInfo
 
 
 class SimulationEntity(ABC):

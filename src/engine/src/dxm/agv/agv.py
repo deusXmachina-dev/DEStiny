@@ -6,12 +6,12 @@ from typing import Any, Generator
 
 from simpy import Timeout
 
-from destiny.agv.location import Location
-from destiny.agv.planning import TripPlan, WaypointType
-from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import RecordingEnvironment
-from destiny.core.rendering import RenderingInfo, SimulationEntityType
-from destiny.core.simulation_entity import SimulationEntity
+from dxm.agv.location import Location
+from dxm.agv.planning import TripPlan, WaypointType
+from dxm.agv.store_location import StoreLocation
+from dxm.core.environment import RecordingEnvironment
+from dxm.core.rendering import RenderingInfo, SimulationEntityType
+from dxm.core.simulation_entity import SimulationEntity
 
 
 class AGV(SimulationEntity):

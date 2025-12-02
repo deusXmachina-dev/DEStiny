@@ -5,10 +5,10 @@ from typing import Generic, List, TypeVar
 
 import simpy
 
-from destiny.agv.location import Location
-from destiny.core.environment import RecordingEnvironment
-from destiny.core.rendering import RenderingInfo, SimulationEntityType
-from destiny.core.simulation_entity import SimulationEntity
+from dxm.agv.location import Location
+from dxm.core.environment import RecordingEnvironment
+from dxm.core.rendering import RenderingInfo, SimulationEntityType
+from dxm.core.simulation_entity import SimulationEntity
 
 T = TypeVar("T")
 

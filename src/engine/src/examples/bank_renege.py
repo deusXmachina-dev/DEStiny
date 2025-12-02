@@ -1,10 +1,10 @@
 """
-Bank renege example with Destiny visualization (Refactored)
+Bank renege example with dxm visualization (Refactored)
 
 Covers:
 - Resources: Resource
 - Condition events
-- Destiny visualization (Encapsulated)
+- dxm visualization (Encapsulated)
 
 Scenario:
   A counter with a random service time and customers who renege. Based on the
@@ -18,9 +18,9 @@ from dataclasses import dataclass
 
 import simpy
 
-from destiny.core.environment import RecordingEnvironment
-from destiny.core.rendering import RenderingInfo, SimulationEntityType
-from destiny.core.simulation_entity import SimulationEntity
+from dxm.core.environment import RecordingEnvironment
+from dxm.core.rendering import RenderingInfo, SimulationEntityType
+from dxm.core.simulation_entity import SimulationEntity
 
 # --- Configuration ---
 RANDOM_SEED = 42
@@ -134,7 +134,7 @@ def customer(env, name, counter, time_in_bank):
         # longer than 0. But logically we just yield on the request/patience.
         # For visualization, we might want to record the stay AFTER we know
         # how long it was, or we record a stay with indefinite end?
-        # Destiny's record_stay works best with definite times or updates.
+        # dxm's record_stay works best with definite times or updates.
         # Here we follow the original pattern: calculate wait after the fact.
         
         results = yield req | env.timeout(patience)

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable, Iterator
 
-from destiny.agv.location import Location
-from destiny.agv.store_location import StoreLocation
+from dxm.agv.location import Location
+from dxm.agv.store_location import StoreLocation
 
 
 class WaypointType(Enum):

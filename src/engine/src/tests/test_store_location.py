@@ -1,8 +1,8 @@
 """Tests for StoreLocation."""
 import pytest
 
-from destiny.agv.store_location import StoreLocation
-from destiny.core.environment import RecordingEnvironment
+from dxm.agv.store_location import StoreLocation
+from dxm.core.environment import RecordingEnvironment
 
 
 @pytest.fixture

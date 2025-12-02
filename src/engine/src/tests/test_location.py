@@ -1,6 +1,6 @@
 import math
 
-from destiny.agv.location import Location
+from dxm.agv.location import Location
 
 
 def test_initialization_and_equality():

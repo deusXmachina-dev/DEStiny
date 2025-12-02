@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Any
 
 from simpy import Environment
 
-from destiny.core.timeline import MotionSegment, SimulationRecording
+from dxm.core.timeline import MotionSegment, SimulationRecording
 
 if TYPE_CHECKING:
-    from destiny.core.simulation_entity import SimulationEntity
+    from dxm.core.simulation_entity import SimulationEntity
 
 
 class RecordingEnvironment(Environment):
@@ -95,7 +95,7 @@ class RecordingEnvironment(Environment):
             start_angle, end_angle: Starting and ending rotation
             parent: If set, coordinates are relative to this parent entity
         """
-        from destiny.core.simulation_entity import SimulationEntity
+        from dxm.core.simulation_entity import SimulationEntity
         if not isinstance(entity, SimulationEntity):
             return None
         

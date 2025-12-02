@@ -1,4 +1,4 @@
-# Project Rules for DEStiny
+# Project Rules
 
 ## Package Management and Execution
 
@@ -13,7 +13,7 @@ This project uses `uv` for package management and running Python code. Always us
 
 ### Examples
 
-- Run a script: `uv run src/destiny/examples/agv_moving_a_box.py`
+- Run a script: `uv run src/dxm/examples/agv_moving_a_box.py`
 - Run tests: `uv run pytest`
 - Run a specific test: `uv run pytest tests/test_simulation_entity.py`
 - Install dev dependencies: `uv sync --dev` or `uv sync --all-groups`

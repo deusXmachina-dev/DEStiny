@@ -2,8 +2,8 @@ import math
 
 import pytest
 
-from destiny.agv.location import Location
-from destiny.agv.site_graph import GridSiteGraph
+from dxm.agv.location import Location
+from dxm.agv.site_graph import GridSiteGraph
 
 
 class TestGridSiteGraph:

@@ -6,11 +6,11 @@ Demonstrates multiple AGVs moving boxes between sources and sinks on a grid.
 import json
 from typing import List
 
-from destiny.agv.agv import AGV
-from destiny.agv.fleet_manager import FleetManager, TaskProvider
-from destiny.agv.site_graph import GridSiteGraph
-from destiny.agv.store_location import Sink, Source
-from destiny.core.environment import RecordingEnvironment
+from dxm.agv.agv import AGV
+from dxm.agv.fleet_manager import FleetManager, TaskProvider
+from dxm.agv.site_graph import GridSiteGraph
+from dxm.agv.store_location import Sink, Source
+from dxm.core.environment import RecordingEnvironment
 
 
 def main():
