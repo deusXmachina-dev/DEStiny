@@ -23,9 +23,13 @@ export const SPEED_OPTIONS = [
 export type SimulationBackgroundTheme = "factory" | "office" | "warehouse" | "hospital";
 
 export const SIMULATION_BACKGROUND_THEME_CONFIGS: Record<SimulationBackgroundTheme, { tile: number; tileAlt: number; grid: number; tileSize: number }> = {
-    factory: { tile: 0x4a4a4a, tileAlt: 0x525252, grid: 0x3a3a3a, tileSize: 50 },
-    office: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2, tileSize: 15 },
-    warehouse: { tile: 0x6b5b4f, tileAlt: 0x5a4a3e, grid: 0x4a3a2e, tileSize: 40 },
-    hospital: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2, tileSize: 10 },
+    // Industrial concrete slabs - neutral gray with subtle warmth
+    factory: { tile: 0x5c5c5c, tileAlt: 0x666666, grid: 0x484848, tileSize: 60 },
+    // Commercial carpet tiles - warm neutral gray/taupe
+    office: { tile: 0x7a7672, tileAlt: 0x6e6a66, grid: 0x5e5a56, tileSize: 35 },
+    // Epoxy-coated concrete - gray with subtle green-blue industrial tint
+    warehouse: { tile: 0x686e6c, tileAlt: 0x727876, grid: 0x585e5c, tileSize: 80 },
+    // Vinyl/linoleum flooring - light, clean, sterile appearance
+    hospital: { tile: 0xd8dce0, tileAlt: 0xe2e6ea, grid: 0xc4c8cc, tileSize: 20 },
 };
 
