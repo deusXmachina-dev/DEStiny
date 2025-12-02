@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 
 const ASSET_MAP: Record<string, string> = {
     agv: "/assets/agv.png",
+    robot: "/assets/robot.png",
     box: "/assets/box.png",
-    source: "/assets/palette.png",
+    palette: "/assets/palette.png",
+    human: "/assets/human.png",
+    counter: "/assets/counter.png",
     sink: "/assets/palette.png",
     store: "/assets/palette.png",
     grid_node: "/assets/dot.png",
