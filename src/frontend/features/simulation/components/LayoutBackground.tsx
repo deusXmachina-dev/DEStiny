@@ -1,17 +1,9 @@
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
+import { LayoutTheme, THEME_COLORS } from "../constants";
 
 extend({ Graphics });
-
-export type LayoutTheme = "factory" | "office" | "warehouse" | "hospital";
-
-const THEME_COLORS = {
-    factory: { tile: 0x4a4a4a, tileAlt: 0x525252, grid: 0x3a3a3a },
-    office: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2 },
-    warehouse: { tile: 0x6b5b4f, tileAlt: 0x5a4a3e, grid: 0x4a3a2e },
-    hospital: { tile: 0x8b9dc3, tileAlt: 0x7a8cb2, grid: 0x6b7ca2 },
-};
 
 interface LayoutBackgroundProps {
     theme?: LayoutTheme;
@@ -61,3 +53,4 @@ export const LayoutBackground = ({
 };
 
 export default LayoutBackground;
+

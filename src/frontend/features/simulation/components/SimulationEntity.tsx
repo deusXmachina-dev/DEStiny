@@ -1,7 +1,7 @@
 import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
-import { SimulationEntityState } from "./types";
-import { useAssets } from "./useAssets";
+import { SimulationEntityState } from "../types";
+import { useAssets } from "../hooks/useAssets";
 
 // Extend Pixi.js components for @pixi/react
 extend({
@@ -35,3 +35,4 @@ export const SimulationEntity = ({ entityType, x, y, angle, children }: Simulati
         </pixiContainer>
     );
 };
+

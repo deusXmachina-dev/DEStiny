@@ -1,26 +1,10 @@
-"use client";
-
-import { useSimulationController } from "./SimulationContext";
+import { useSimulationController } from "../hooks/SimulationContext";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Play, Pause, RotateCcw } from "lucide-react";
-
-// Helper function to format time as MM:SS
-function formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-const SPEED_OPTIONS = [
-    { value: "0.25", label: "0.25x" },
-    { value: "0.5", label: "0.5x" },
-    { value: "1", label: "1x" },
-    { value: "2", label: "2x" },
-    { value: "3", label: "3x" },
-    { value: "5", label: "5x" },
-];
+import { formatTime } from "../utils";
+import { SPEED_OPTIONS } from "../constants";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
     const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = useSimulationController();

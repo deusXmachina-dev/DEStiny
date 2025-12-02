@@ -1,7 +1,5 @@
-"use client";
-
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { SimulationRecording } from "./types";
+import { SimulationRecording } from "../types";
 
 interface SimulationContextValue {
     // State
@@ -88,3 +86,4 @@ export const useSimulationController = (): SimulationContextValue => {
     }
     return context;
 };
+

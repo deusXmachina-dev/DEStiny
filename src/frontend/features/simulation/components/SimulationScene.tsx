@@ -1,8 +1,8 @@
 import { extend } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
 import { SimulationEntity } from "./SimulationEntity";
-import { useSimulation } from "./useSimulation";
-import { useAssets } from "./useAssets";
+import { useSimulation } from "../hooks/useSimulation";
+import { useAssets } from "../hooks/useAssets";
 import { LayoutBackground } from "./LayoutBackground";
 
 // Extend Pixi.js components for @pixi/react
@@ -32,3 +32,4 @@ export const SimulationScene = () => {
         </pixiContainer>
     );
 };
+

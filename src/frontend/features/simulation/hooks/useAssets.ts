@@ -1,14 +1,6 @@
 import { Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
-
-const ASSET_MAP: Record<string, string> = {
-    agv: "/assets/agv.png",
-    robot: "/assets/robot.png",
-    box: "/assets/box.png",
-    palette: "/assets/palette.png",
-    human: "/assets/human.png",
-    counter: "/assets/counter.png",
-};
+import { ASSET_MAP } from "../constants";
 
 export const useAssets = () => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -50,3 +42,4 @@ export const useAssets = () => {
 
     return { getTexture, isLoaded };
 };
+

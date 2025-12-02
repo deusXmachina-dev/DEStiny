@@ -3,7 +3,7 @@
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 import { SimulationScene } from "./SimulationScene";
-import { SimulationProvider, useSimulationController } from "./SimulationContext";
+import { SimulationProvider, useSimulationController } from "../hooks/SimulationContext";
 import { UploadControls } from "./UploadControls";
 import { PlaybackControls } from "./PlaybackControls";
 
@@ -44,3 +44,4 @@ export default function SimulationApp() {
         </SimulationProvider>
     );
 }
+

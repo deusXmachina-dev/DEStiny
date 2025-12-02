@@ -1,14 +1,8 @@
 import { useTick } from "@pixi/react";
 import { useEffect, useRef, useState } from "react";
-import { SimulationEntityState } from "./types";
+import { SimulationEntityState } from "../types";
 import { useSimulationController } from "./SimulationContext";
-
-/**
- * Linear interpolation helper.
- */
-const lerp = (a: number, b: number, t: number) => {
-    return a + (b - a) * t;
-};
+import { lerp } from "../utils";
 
 /**
  * Hook to manage simulation playback.
@@ -104,8 +98,8 @@ export const useSimulation = () => {
 
             // Only render if time is within [startTime, effectiveEndTime]
             if (simTimeSeconds >= segment.startTime && simTimeSeconds <= effectiveEndTime) {
-                const duration = effectiveEndTime - segment.startTime;
-                const t = duration > 0 ? (simTimeSeconds - segment.startTime) / duration : 0;
+                const segmentDuration = effectiveEndTime - segment.startTime;
+                const t = segmentDuration > 0 ? (simTimeSeconds - segment.startTime) / segmentDuration : 0;
 
                 activeEntities.set(id, {
                     entityId: id,
@@ -138,3 +132,4 @@ export const useSimulation = () => {
 
     return entities;
 };
+

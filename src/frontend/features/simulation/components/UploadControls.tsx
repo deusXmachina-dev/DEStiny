@@ -1,11 +1,9 @@
-"use client";
-
 import { useEffect, useMemo } from "react";
-import { useSimulationController } from "./SimulationContext";
+import { useSimulationController } from "../hooks/SimulationContext";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { SimulationRecording } from "./types";
+import { parseRecording } from "../utils";
 import { cn } from "@/lib/utils";
 
 type UploadControlsPosition = "top-right" | "center";
@@ -26,15 +24,9 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
     const { fileName, fileContent, triggerFileUpload } = useFileUpload({ acceptFileTypes: ".json" });
 
     // Parse file content and update context when file is uploaded
-    const parsedRecording = useMemo<SimulationRecording | null>(() => {
+    const parsedRecording = useMemo(() => {
         if (fileContent) {
-            try {
-                const parsed = JSON.parse(fileContent);
-                return parsed as SimulationRecording;
-            } catch (error) {
-                console.error("Failed to parse file content:", error);
-                return null;
-            }
+            return parseRecording(fileContent);
         }
         return null;
     }, [fileContent]);
@@ -90,3 +82,4 @@ export function UploadControls({ position = "top-right", size = "sm" }: UploadCo
         </div>
     );
 }
+
