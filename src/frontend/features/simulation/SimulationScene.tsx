@@ -3,6 +3,7 @@ import { Container, Sprite } from "pixi.js";
 import { SimulationEntity } from "./SimulationEntity";
 import { useSimulation } from "./useSimulation";
 import { useAssets } from "./useAssets";
+import { FactoryBackground } from "./FactoryBackground";
 
 // Extend Pixi.js components for @pixi/react
 extend({
@@ -21,6 +22,7 @@ export const SimulationScene = () => {
 
     return (
         <pixiContainer>
+            <FactoryBackground />
             {entities.map((entity) => (
                 <SimulationEntity
                     key={entity.id}

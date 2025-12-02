@@ -17,7 +17,7 @@ function SimulationAppContent() {
     return (
         <div className="flex flex-col w-full h-screen">
             <div ref={parentRef} className="flex-1 min-h-0 w-full relative">
-                <Application background={"#1099bb"} resizeTo={parentRef}>
+                <Application resizeTo={parentRef}>
                     <SimulationScene />
                 </Application>
                 {/* Dynamic Upload Controls */}
