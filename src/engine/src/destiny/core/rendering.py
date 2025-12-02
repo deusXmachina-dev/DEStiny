@@ -7,10 +7,11 @@ from enum import StrEnum
 class AssetType(StrEnum):
     """Asset types for rendering entities in the frontend."""
     AGV = "agv"
+    ROBOT = "robot"
     BOX = "box"
-    STORE = "store"
-    SOURCE = "source"
-    SINK = "sink"
+    PALETTE = "palette"
+    HUMAN = "human"
+    COUNTER = "counter"
     GRID_NODE = "grid_node"
     EMPTY = ""
 

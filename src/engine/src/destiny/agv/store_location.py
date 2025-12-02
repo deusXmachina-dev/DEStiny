@@ -39,7 +39,7 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
         env.record_stay(entity=self, x=x, y=y)
 
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.STORE)
+        return RenderingInfo(asset_type=AssetType.PALETTE)
 
     def get_item(self) -> simpy.events.Event:
         """Request an item from the store location."""
@@ -54,11 +54,11 @@ class Source(StoreLocation[T]):
     """A store location that provides items."""
     
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.SOURCE)
+        return RenderingInfo(asset_type=AssetType.PALETTE)
 
 
 class Sink(StoreLocation[T]):
     """A store location that receives items."""
     
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.SINK)
+        return RenderingInfo(asset_type=AssetType.PALETTE)
