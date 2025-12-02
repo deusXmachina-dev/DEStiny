@@ -28,7 +28,10 @@ class TaskProvider:
             self._first_task = False
             return (yield from self._get_next_task(env))
 
-        delay = random.expovariate(1.0 / self._expected_task_interval)
+        sigma = self._expected_task_interval * 0.2
+        delay = random.gauss(self._expected_task_interval, sigma)
+        delay = max(0.1, delay)
+        
         yield env.timeout(delay)
         
         return (yield from self._get_next_task(env))
@@ -38,7 +41,7 @@ class TaskProvider:
         sink = random.choice(self._sinks)
         
         box = Box()
-        env.record_stay(entity=box, start_time=env.now, parent=box)
+        env.record_stay(entity=box, start_time=env.now, parent=source)
         yield source.put_item(box)
 
         return AGVTask(source=source, sink=sink)
