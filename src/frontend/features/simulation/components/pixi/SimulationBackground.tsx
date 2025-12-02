@@ -7,15 +7,13 @@ extend({ Graphics });
 
 interface SimulationBackgroundProps {
     theme?: SimulationBackgroundTheme;
-    tileSize?: number;
 }
 
 export const SimulationBackground = ({
     theme = "factory",
 }: SimulationBackgroundProps) => {
     const { app } = useApplication();
-    const colors = SIMULATION_BACKGROUND_THEME_CONFIGS[theme];
-    const gridSize = colors.tileSize;
+    const config = SIMULATION_BACKGROUND_THEME_CONFIGS[theme];
 
     const draw = useCallback(
         (g: Graphics) => {
@@ -23,30 +21,30 @@ export const SimulationBackground = ({
 
             const width = app.screen.width;
             const height = app.screen.height;
-            const tilesX = Math.ceil(width / gridSize) + 1;
-            const tilesY = Math.ceil(height / gridSize) + 1;
+            const tilesX = Math.ceil(width / config.tileSize) + 1;
+            const tilesY = Math.ceil(height / config.tileSize) + 1;
 
             // Draw checkerboard tiles
             for (let y = 0; y < tilesY; y++) {
                 for (let x = 0; x < tilesX; x++) {
-                    g.rect(x * gridSize, y * gridSize, gridSize, gridSize);
-                    g.fill((x + y) % 2 === 0 ? colors.tile : colors.tileAlt);
+                    g.rect(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
+                    g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
                 }
             }
 
             // Draw grid lines
-            g.setStrokeStyle({ width: 2, color: colors.grid });
+            g.setStrokeStyle({ width: 2, color: config.grid });
             for (let x = 0; x <= tilesX; x++) {
-                g.moveTo(x * gridSize, 0);
-                g.lineTo(x * gridSize, height);
+                g.moveTo(x * config.tileSize, 0);
+                g.lineTo(x * config.tileSize, height);
             }
             for (let y = 0; y <= tilesY; y++) {
-                g.moveTo(0, y * gridSize);
-                g.lineTo(width, y * gridSize);
+                g.moveTo(0, y * config.tileSize);
+                g.lineTo(width, y * config.tileSize);
             }
             g.stroke();
         },
-        [app, colors, gridSize]
+        [app, config]
     );
 
     return <pixiGraphics draw={draw} />;
