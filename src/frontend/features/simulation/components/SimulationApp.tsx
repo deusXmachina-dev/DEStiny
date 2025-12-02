@@ -24,7 +24,7 @@ function SimulationAppContent() {
                 </Application>
                 {/* Simulation Controls */}
                 <SimulationControls 
-                    position={hasRecording ? "top-right" : "center"} 
+                    position={hasRecording ? "top" : "center"} 
                     size={hasRecording ? "sm" : "lg"} 
                 />
             </div>
