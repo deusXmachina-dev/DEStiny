@@ -8,9 +8,6 @@ const ASSET_MAP: Record<string, string> = {
     palette: "/assets/palette.png",
     human: "/assets/human.png",
     counter: "/assets/counter.png",
-    sink: "/assets/palette.png",
-    store: "/assets/palette.png",
-    grid_node: "/assets/dot.png",
 };
 
 export const useAssets = () => {

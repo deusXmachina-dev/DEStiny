@@ -1,6 +1,8 @@
+export type SimulationEntityType = "agv" | "robot" | "box" | "palette" | "human" | "counter" | "grid_node";
+
 export interface SimulationEntityState {
     id: string;
-    type: string;
+    type: SimulationEntityType;
     x: number;
     y: number;
     angle: number;
@@ -16,7 +18,7 @@ export interface SimulationRecording {
 
 export interface SimulationMotionSegment {
     entityId: string;
-    entityType: string;
+    entityType: SimulationEntityType;
     parentId: string | null;
     startTime: number;
     endTime: number | null;
