@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { X, Plus } from "lucide-react";
 import { RecordingUploadButton } from "./RecordingUploadButton";
 import { ThemeSelector } from "./ThemeSelector";
 
@@ -16,6 +20,7 @@ const POSITION_STYLES: Record<SimulationControlsPosition, string> = {
 export function SimulationControls({ 
     position = "top", 
 }: SimulationControlsProps) {
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const isCenter = position === "center";
 
     if (isCenter) {
@@ -44,14 +49,48 @@ export function SimulationControls({
         );
     }
 
+    // Collapsed state - floating circle button
+    if (isCollapsed) {
+        return (
+            <button
+                onClick={() => setIsCollapsed(false)}
+                className={cn(
+                    "absolute z-10 size-10 rounded-full bg-background/60 backdrop-blur-sm shadow-lg",
+                    "flex items-center justify-center",
+                    "hover:scale-110 hover:shadow-xl active:scale-95",
+                    "transition-all duration-200 ease-out",
+                    "animate-in fade-in zoom-in-50 duration-200",
+                    POSITION_STYLES[position]
+                )}
+                title="Expand controls"
+            >
+                <Plus className="size-5 text-gray-600" />
+            </button>
+        );
+    }
+
+    // Expanded state
     return (
         <div className={cn(
             "absolute z-10 bg-background rounded-full shadow-lg border transition-all",
+            "animate-in fade-in slide-in-from-top-2 duration-200",
             POSITION_STYLES[position]
         )}>
-            <div className="flex flex-row items-center gap-4 mx-4 my-1">
+            <div className="flex flex-row items-center gap-3 pl-4 pr-1 py-1">
                 <RecordingUploadButton />
                 <ThemeSelector />
+                <button
+                    onClick={() => setIsCollapsed(true)}
+                    className={cn(
+                        "size-8 rounded-full flex items-center justify-center",
+                        "text-gray-500 hover:text-gray-700 hover:bg-gray-100",
+                        "transition-all duration-150",
+                        "active:scale-90"
+                    )}
+                    title="Collapse controls"
+                >
+                    <X className="size-4" />
+                </button>
             </div>
         </div>
     );
