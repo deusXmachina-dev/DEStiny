@@ -18,11 +18,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # All `run:` commands will execute from src/frontend
-    defaults:
-      run:
-        working-directory: src/frontend
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,7 +30,6 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
-          # You can drop this if you manage Next config yourself
           static_site_generator: next
 
       - name: Restore Next.js cache
@@ -47,16 +41,20 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('src/frontend/bun.lockb') }}-
 
       - name: Install dependencies
+        working-directory: src/frontend
         run: bun install
 
-      - name: Build with Next.js
-        # Assumes "build": "next build && next export" (or similar) in src/frontend/package.json
-        run: bun run build
+      - name: Build and export Next.js
+        working-directory: src/frontend
+        run: |
+          bunx next build
+          bunx next export
+        # After this, src/frontend/out WILL exist
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Next.js export output in src/frontend/out
+          # Path is relative to repo root
           path: src/frontend/out
 
   deploy:
