@@ -2,7 +2,7 @@
 Items that can be transported by AGVs.
 """
 from destiny.core.simulation_entity import SimulationEntity
-from destiny.core.rendering import RenderingInfo, AssetType
+from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
 
 class Box(SimulationEntity):
@@ -13,4 +13,4 @@ class Box(SimulationEntity):
     """
     
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.BOX)
+        return RenderingInfo(entity_type=SimulationEntityType.BOX)

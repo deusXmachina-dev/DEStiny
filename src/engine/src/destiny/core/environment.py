@@ -102,7 +102,7 @@ class RecordingEnvironment(Environment):
         rendering_info = entity.get_rendering_info()
         segment = MotionSegment(
             entity_id=entity.id,
-            entity_type=rendering_info.asset_type,
+            entity_type=rendering_info.entity_type,
             parent_id=parent.id if parent else None,
             start_time=start_time,
             end_time=end_time,

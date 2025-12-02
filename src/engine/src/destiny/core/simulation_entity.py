@@ -6,7 +6,7 @@ Provides ID and information about the entity for rendering.
 from abc import ABC
 import uuid
 
-from destiny.core.rendering import RenderingInfo, AssetType
+from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
 
 class SimulationEntity(ABC):
@@ -33,4 +33,4 @@ class SimulationEntity(ABC):
         Returns:
             RenderingInfo instance with asset type and other rendering properties.
         """
-        return RenderingInfo(asset_type=AssetType.EMPTY)
+        return RenderingInfo(entity_type=SimulationEntityType.EMPTY)

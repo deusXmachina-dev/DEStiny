@@ -4,8 +4,8 @@ Rendering information for simulation entities.
 from enum import StrEnum
 
 
-class AssetType(StrEnum):
-    """Asset types for rendering entities in the frontend."""
+class SimulationEntityType(StrEnum):
+    """Simulation entity types for rendering entities in the frontend."""
     AGV = "agv"
     ROBOT = "robot"
     BOX = "box"
@@ -23,12 +23,12 @@ class RenderingInfo:
     Contains information needed to render the entity in the frontend.
     """
     
-    def __init__(self, asset_type: AssetType = AssetType.EMPTY):
+    def __init__(self, entity_type: SimulationEntityType = SimulationEntityType.EMPTY):
         """
         Initialize rendering info.
         
         Args:
-            asset_type: The type of asset to use for rendering this entity.
+            entity_type: The type of entity to use for rendering this entity.
         """
-        self.asset_type: AssetType = asset_type
+        self.entity_type: SimulationEntityType = entity_type
 

@@ -7,7 +7,7 @@ import simpy
 from destiny.agv.location import Location
 from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
-from destiny.core.rendering import RenderingInfo, AssetType
+from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
 T = TypeVar("T")
 
@@ -39,7 +39,7 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
         env.record_stay(entity=self, x=x, y=y)
 
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.PALETTE)
+        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
 
     def get_item(self) -> simpy.events.Event:
         """Request an item from the store location."""
@@ -54,11 +54,11 @@ class Source(StoreLocation[T]):
     """A store location that provides items."""
     
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.PALETTE)
+        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
 
 
 class Sink(StoreLocation[T]):
     """A store location that receives items."""
     
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.PALETTE)
+        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)

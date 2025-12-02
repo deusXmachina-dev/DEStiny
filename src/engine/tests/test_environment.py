@@ -1,12 +1,12 @@
 """Tests for RecordingEnvironment and motion recording."""
 from destiny.core.environment import RecordingEnvironment
 from destiny.core.simulation_entity import SimulationEntity
-from destiny.core.rendering import RenderingInfo, AssetType
+from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
 
 class DummyEntity(SimulationEntity):
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.EMPTY)
+        return RenderingInfo(entity_type=SimulationEntityType.EMPTY)
 
 
 def test_environment_initializes():
@@ -49,7 +49,7 @@ def test_record_motion():
     
     seg = recording.segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
-    assert seg.entity_type == AssetType.EMPTY
+    assert seg.entity_type == SimulationEntityType.EMPTY
     assert seg.parent_id is None
     assert seg.start_x == 0
     assert seg.end_x == 100
@@ -101,7 +101,7 @@ def test_recording_to_dict():
     
     seg = data["segments_by_entity"][entity.id][0]
     assert seg["entityId"] == entity.id
-    assert seg["entityType"] == AssetType.EMPTY
+    assert seg["entityType"] == SimulationEntityType.EMPTY
     assert seg["startX"] == 0
     assert seg["endX"] == 100
     assert seg["startAngle"] == 0

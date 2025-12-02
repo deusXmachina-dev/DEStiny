@@ -11,7 +11,7 @@ from destiny.agv.planning import TripPlan, WaypointType
 from destiny.agv.store_location import StoreLocation
 from destiny.core.simulation_entity import SimulationEntity
 from destiny.core.environment import RecordingEnvironment
-from destiny.core.rendering import RenderingInfo, AssetType
+from destiny.core.rendering import RenderingInfo, SimulationEntityType
 
 
 class AGV(SimulationEntity):
@@ -32,7 +32,7 @@ class AGV(SimulationEntity):
         env.record_stay(entity=self, x=self._current_location.x, y=self._current_location.y)
 
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(asset_type=AssetType.AGV)
+        return RenderingInfo(entity_type=SimulationEntityType.AGV)
 
     def schedule_plan(self, env: RecordingEnvironment, plan: TripPlan) -> None:
         """Schedule a plan for the AGV to execute."""
