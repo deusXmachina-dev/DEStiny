@@ -7,6 +7,7 @@ from typing import Any, Generator
 from simpy import Event
 
 from destiny.agv.agv import AGV
+from destiny.agv.items import Box
 from destiny.agv.planning import AGVTask, TripPlan, Waypoint, WaypointType
 from destiny.agv.site_graph import SiteGraph
 from destiny.agv.store_location import StoreLocation
@@ -16,13 +17,22 @@ from destiny.core.environment import Environment
 class TaskProvider:
     """Provides tasks for AGVs to execute."""
     
-    def __init__(self, sources: list[StoreLocation], sinks: list[StoreLocation]):
+    def __init__(self, sources: list[StoreLocation], sinks: list[StoreLocation], expected_task_interval: float = 10.0):
         self._sources = sources
         self._sinks = sinks
+        self._expected_task_interval = expected_task_interval
 
     def get_next_task(self, env: Environment) -> Generator[Event, Any, AGVTask]:
-        yield env.timeout(10)
-        return AGVTask(source=random.choice(self._sources), sink=random.choice(self._sinks))
+        delay = random.expovariate(1.0 / self._expected_task_interval)
+        yield env.timeout(delay)
+        
+        source = random.choice(self._sources)
+        sink = random.choice(self._sinks)
+        
+        box = Box()
+        yield source.put_item(box)
+        
+        return AGVTask(source=source, sink=sink)
 
 
 class FleetManager:

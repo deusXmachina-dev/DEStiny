@@ -31,7 +31,7 @@ def main():
 
     for r, c in source_coords:
         node = grid.get_node_at(r, c)
-        source = Source(env, x=node.x, y=node.y, initial_items=[Box() for _ in range(50)])
+        source = Source(env, x=node.x, y=node.y)
         grid.insert_location(source)
         sources.append(source)
 
