@@ -52,7 +52,16 @@ class Environment(RealtimeEnvironment):
             end_time: When the stay ends (None = until simulation end)
             parent: If set, coordinates are relative to this parent entity
         """
-        self.record_motion(entity, start_time=start_time, end_time=end_time, x=x, y=y, angle=angle, parent=parent)
+        self.record_motion(entity, 
+                           start_time=start_time,
+                           end_time=end_time,
+                           start_x=x,
+                           start_y=y,
+                           end_x=x,
+                           end_y=y,
+                           start_angle=angle,
+                           end_angle=angle,
+                           parent=parent)
 
     def record_motion(
         self,

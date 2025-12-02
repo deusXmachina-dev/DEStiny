@@ -21,19 +21,26 @@ class TaskProvider:
         self._sources = sources
         self._sinks = sinks
         self._expected_task_interval = expected_task_interval
+        self._first_task = True
 
     def get_next_task(self, env: Environment) -> Generator[Event, Any, AGVTask]:
+        if self._first_task:
+            self._first_task = False
+            return (yield from self._get_next_task(env))
+
         delay = random.expovariate(1.0 / self._expected_task_interval)
         yield env.timeout(delay)
         
+        return (yield from self._get_next_task(env))
+    
+    def _get_next_task(self, env: Environment) -> Generator[Event, Any, AGVTask]:
         source = random.choice(self._sources)
         sink = random.choice(self._sinks)
         
         box = Box()
         env.record_stay(entity=box, start_time=env.now, parent=box)
-        
         yield source.put_item(box)
-        
+
         return AGVTask(source=source, sink=sink)
 
 

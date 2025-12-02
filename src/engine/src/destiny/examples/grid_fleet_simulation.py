@@ -47,7 +47,7 @@ def main():
     grid.visualize_graph(env)
 
     # Initialize Fleet Manager
-    task_provider = TaskProvider(sources=sources, sinks=sinks)
+    task_provider = TaskProvider(sources=sources, sinks=sinks, expected_task_interval=15.0)
     fleet_manager = FleetManager(task_provider, grid)
 
     # Add 3 AGVs in the middle
