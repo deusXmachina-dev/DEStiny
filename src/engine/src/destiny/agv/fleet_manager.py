@@ -21,7 +21,7 @@ class TaskProvider:
         self._sinks = sinks
 
     def get_next_task(self, env: Environment) -> Generator[Event, Any, AGVTask]:
-        yield env.timeout(20)
+        yield env.timeout(10)
         return AGVTask(source=random.choice(self._sources), sink=random.choice(self._sinks))
 
 
