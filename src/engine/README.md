@@ -1,6 +1,6 @@
 # DEStiny
 
-![DEStiny AGVs demo GIF](src/engine/doc-assets/destiny.gif)
+![DEStiny AGVs demo GIF](doc-assets/destiny.gif)
 
 **DEStiny** is a discrete event simulation engine built on top of [SimPy](https://simpy.readthedocs.io/). It extends SimPy by adding a standardized layer for **recording simulation events** (such as movement) which can then be visualized in a companion frontend application.
 
