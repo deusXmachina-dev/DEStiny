@@ -1,12 +1,8 @@
 # DEStiny
 
-**DEStiny** is a discrete event simulation engine built on top of [SimPy](https://simpy.readthedocs.io/). It adds a layer of abstraction for **recording simulation events** (movement, stays) to be visualized in a frontend application.
+**DEStiny** is a discrete event simulation engine built on top of [SimPy](https://simpy.readthedocs.io/). It extends SimPy by adding a standardized layer for **recording simulation events** (such as movement) which can then be visualized in a companion frontend application.
 
-It is designed for:
-- Any discrete event simulation where spatial visualization is key
-
-With examples in place for
-- AGV (Automated Guided Vehicle) simulations
+It allows you to focus on the logic of your simulation while automatically handling the generation of playback data for debugging and presentation.
 
 ## Installation
 
@@ -16,56 +12,80 @@ pip install destiny-sim
 
 ## Quick Start
 
-Here is a minimal example of a simulation recording:
+Here is a minimal example showing a simple entity walking between points.
 
 ```python
-import json
 from destiny_sim.core.environment import RecordingEnvironment
-from destiny_sim.core.simulation_entity import SimulationEntity
 from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
-# 1. Define your entities
-class Robot(SimulationEntity):
-    def get_rendering_info(self):
-        return RenderingInfo(entity_type=SimulationEntityType.ROBOT)
+# 1. Define your entity by inheriting from SimulationEntity
+class Person(SimulationEntity):
+    def __init__(self, x: float, y: float):
+        super().__init__()
+        self.x = x
+        self.y = y
 
-# 2. Create the environment
+    # Define how this entity should look in the visualizer
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
+
+    # Define the simulation process for this entity
+    def walk_sequence(self, env: RecordingEnvironment):
+        # Walk to (500, 300) over 5 seconds
+        yield from self._walk_to(env, 500.0, 300.0, duration=5)
+        # Walk to (800, 100) over 5 seconds
+        yield from self._walk_to(env, 800.0, 100.0, duration=5)
+
+    def _walk_to(self, env: RecordingEnvironment, target_x: float, target_y: float, duration: float):
+        # Record the motion event
+        env.record_motion(
+            self,
+            start_time=env.now,
+            end_time=env.now + duration,
+            start_x=self.x,
+            start_y=self.y,
+            end_x=target_x,
+            end_y=target_y,
+        )
+        
+        # Update internal state and wait for the duration
+        self.x = target_x
+        self.y = target_y
+        yield env.timeout(duration)
+
+# 2. Run the simulation
 env = RecordingEnvironment()
-robot = Robot()
+person = Person(x=100.0, y=100.0)
+env.process(person.walk_sequence(env))
 
-# 3. Define simulation logic
-def robot_process(env, robot):
-    # Record initial position
-    env.record_stay(robot, x=0, y=0, start_time=env.now)
-    yield env.timeout(1)
-    
-    # Move to (10, 10) over 5 seconds
-    env.record_motion(
-        entity=robot,
-        start_time=env.now,
-        end_time=env.now + 5,
-        start_x=0, start_y=0,
-        end_x=10, end_y=10
-    )
-    yield env.timeout(5)
+env.run()
 
-env.process(robot_process(env, robot))
-
-# 4. Run and Export
-env.run(until=10)
-recording = env.get_recording()
-
-with open("recording.json", "w") as f:
-    json.dump(recording.to_dict(), f, indent=2)
-
-print("Simulation complete! saved to recording.json")
+# 3. Save the recording
+env.save_recording("simple_walk_recording.json")
+print("Simulation complete! Saved to simple_walk_recording.json")
 ```
 
-## Features
+### Key Concepts
 
-- **RecordingEnvironment**: Drop-in replacement for `simpy.Environment` that tracks entity states.
-- **Spatial Graph**: Includes `GridSiteGraph` for navigation and pathfinding.
-- **AGV Logic**: Built-in support for AGVs, Tasks, and Fleet Management.
+DEStiny adds a few core concepts on top of SimPy:
+
+- **`SimulationEntity`**: The base class for any object you want to track in the visualization. You must implement `get_rendering_info()` to tell the visualizer what sprite or shape to use.
+- **`env.record_motion(...)`**: A method on the `RecordingEnvironment` that logs a movement event. This does not affect the simulation logic itself (you still use `yield env.timeout(...)` for time passing), but it generates the data needed for smooth interpolation in the viewer.
+
+## Visualization
+
+Once you have generated a recording JSON file, you can visualize it using our web viewer:
+
+👉 **[Open Simulation Viewer](https://destiny.deusxmachina.dev/)**
+
+## Why we did this
+
+<!-- TODO: Add motivation behind building DEStiny -->
+
+## Roadmap
+
+<!-- TODO: Add upcoming features and goals -->
 
 ## License
 
