@@ -1,6 +1,7 @@
 """Tests for SimulationEntity."""
-from dxm.core.rendering import RenderingInfo, SimulationEntityType
-from dxm.core.simulation_entity import SimulationEntity
+
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 class DummyEntity(SimulationEntity):

@@ -1,7 +1,8 @@
 """Tests for RecordingEnvironment and motion recording."""
-from dxm.core.environment import RecordingEnvironment
-from dxm.core.rendering import RenderingInfo, SimulationEntityType
-from dxm.core.simulation_entity import SimulationEntity
+
+from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 class DummyEntity(SimulationEntity):
@@ -16,16 +17,17 @@ def test_environment_initializes():
 
 def test_environment_runs():
     env = RecordingEnvironment()
-    
+
     events = []
+
     def process(env):
         while True:
             events.append(env.now)
             yield env.timeout(1.0)
-    
+
     env.process(process(env))
     env.run(until=5.0)
-    
+
     assert env.now == 5.0
     assert len(events) == 5
 
@@ -33,7 +35,7 @@ def test_environment_runs():
 def test_record_motion():
     env = RecordingEnvironment()
     entity = DummyEntity()
-    
+
     env.record_motion(
         entity=entity,
         start_time=0,
@@ -43,10 +45,10 @@ def test_record_motion():
         end_x=100,
         end_y=0,
     )
-    
+
     recording = env.get_recording()
     assert len(recording.segments_by_entity[entity.id]) == 1
-    
+
     seg = recording.segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
     assert seg.entity_type == SimulationEntityType.EMPTY
@@ -59,7 +61,7 @@ def test_record_motion_with_parent():
     env = RecordingEnvironment()
     parent = DummyEntity()
     child = DummyEntity()
-    
+
     env.record_motion(
         entity=child,
         parent=parent,
@@ -70,7 +72,7 @@ def test_record_motion_with_parent():
         end_x=0,
         end_y=0,
     )
-    
+
     recording = env.get_recording()
     seg = recording.segments_by_entity[child.id][0]
     assert seg.parent_id == parent.id
@@ -79,7 +81,7 @@ def test_record_motion_with_parent():
 def test_recording_to_dict():
     env = RecordingEnvironment()
     entity = DummyEntity()
-    
+
     env.record_motion(
         entity=entity,
         start_time=0,
@@ -91,14 +93,14 @@ def test_recording_to_dict():
         start_angle=0,
         end_angle=1.5,
     )
-    
+
     env.run(until=10)
     recording = env.get_recording()
     data = recording.to_dict()
-    
+
     assert data["duration"] == 10
     assert len(data["segments_by_entity"][entity.id]) == 1
-    
+
     seg = data["segments_by_entity"][entity.id][0]
     assert seg["entityId"] == entity.id
     assert seg["entityType"] == SimulationEntityType.EMPTY
@@ -112,7 +114,7 @@ def test_record_stay():
     env = RecordingEnvironment()
     parent = DummyEntity()
     child = DummyEntity()
-    
+
     env.record_stay(
         entity=child,
         parent=parent,
@@ -121,7 +123,7 @@ def test_record_stay():
         x=10.0,
         y=20.0,
     )
-    
+
     recording = env.get_recording()
     seg = recording.segments_by_entity[child.id][0]
     assert seg.parent_id == parent.id
@@ -133,12 +135,12 @@ def test_record_disappearance():
     """Test disappearance recording at current time."""
     env = RecordingEnvironment()
     entity = DummyEntity()
-    
+
     env.record_disappearance(entity=entity)
-    
+
     recording = env.get_recording()
     assert len(recording.segments_by_entity[entity.id]) == 1
-    
+
     seg = recording.segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
     assert seg.start_time == env.now

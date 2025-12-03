@@ -1,24 +1,25 @@
 """
 AGV (Automated Guided Vehicle) simulation entity.
 """
+
 from collections import deque
 from typing import Any, Generator
 
 from simpy import Timeout
 
-from dxm.agv.location import Location
-from dxm.agv.planning import TripPlan, WaypointType
-from dxm.agv.store_location import StoreLocation
-from dxm.core.environment import RecordingEnvironment
-from dxm.core.rendering import RenderingInfo, SimulationEntityType
-from dxm.core.simulation_entity import SimulationEntity
+from destiny_sim.agv.location import Location
+from destiny_sim.agv.planning import TripPlan, WaypointType
+from destiny_sim.agv.store_location import StoreLocation
+from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 class AGV(SimulationEntity):
     """
     An Automated Guided Vehicle that moves along planned paths.
     """
-    
+
     def __init__(
         self, env: RecordingEnvironment, start_location: Location, speed: float = 1.0
     ):
@@ -30,7 +31,7 @@ class AGV(SimulationEntity):
         self._current_location: Location = start_location
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
-        
+
         env.record_stay(
             entity=self, x=self._current_location.x, y=self._current_location.y
         )
@@ -60,12 +61,12 @@ class AGV(SimulationEntity):
         self, env: RecordingEnvironment, plan: TripPlan
     ) -> Generator[Timeout | Any, Any, None]:
         """Execute a single plan, recording motion segments."""
-        
+
         for waypoint in plan:
             start_time = env.now
             start_location = self._current_location
             end_location = waypoint.location
-            
+
             new_angle = start_location.angle_to(end_location)
             end_angle = new_angle if new_angle is not None else self._angle
             self._angle = end_angle  # update to face next destination
@@ -87,7 +88,7 @@ class AGV(SimulationEntity):
                 start_angle=end_angle,
                 end_angle=end_angle,
             )
-            
+
             # If carrying an item, stay put relative to AGV
             env.record_stay(
                 entity=self._carried_item,
@@ -95,11 +96,11 @@ class AGV(SimulationEntity):
                 end_time=end_time,
                 parent=self,
             )
-            
+
             # Wait for the movement to complete
             if duration > 0:
                 yield env.timeout(duration)
-            
+
             self._current_location = end_location
 
             # Handle pickup at SOURCE
@@ -116,7 +117,7 @@ class AGV(SimulationEntity):
             ):
                 yield sink.put_item(self._carried_item)
                 self._carried_item = None
-                
+
                 env.record_stay(
                     entity=self,
                     start_time=end_time,

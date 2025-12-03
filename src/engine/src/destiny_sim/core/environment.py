@@ -1,6 +1,7 @@
 """
 Simulation environment with motion recording.
 """
+
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -8,16 +9,16 @@ from typing import TYPE_CHECKING, Any
 
 from simpy import Environment
 
-from dxm.core.timeline import MotionSegment, SimulationRecording
+from destiny_sim.core.timeline import MotionSegment, SimulationRecording
 
 if TYPE_CHECKING:
-    from dxm.core.simulation_entity import SimulationEntity
+    from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 class RecordingEnvironment(Environment):
     """
     Simulation environment that records motion segments.
-    
+
     All motion recording goes through this class via record_motion().
     """
 
@@ -30,7 +31,6 @@ class RecordingEnvironment(Environment):
         """
         super().__init__(initial_time=initial_time)
         self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
-
 
     def record_disappearance(self, entity: Any, time: float | None = None) -> None:
         """
@@ -61,16 +61,18 @@ class RecordingEnvironment(Environment):
             end_time: When the stay ends (None = until simulation end)
             parent: If set, coordinates are relative to this parent entity
         """
-        self.record_motion(entity, 
-                           start_time=start_time,
-                           end_time=end_time,
-                           start_x=x,
-                           start_y=y,
-                           end_x=x,
-                           end_y=y,
-                           start_angle=angle,
-                           end_angle=angle,
-                           parent=parent)
+        self.record_motion(
+            entity,
+            start_time=start_time,
+            end_time=end_time,
+            start_x=x,
+            start_y=y,
+            end_x=x,
+            end_y=y,
+            start_angle=angle,
+            end_angle=angle,
+            parent=parent,
+        )
 
     def record_motion(
         self,
@@ -87,7 +89,7 @@ class RecordingEnvironment(Environment):
     ) -> None:
         """
         Record a motion segment for an entity.
-        
+
         Args:
             entity: The entity that is moving
             start_time: When the motion begins
@@ -97,12 +99,13 @@ class RecordingEnvironment(Environment):
             start_angle, end_angle: Starting and ending rotation
             parent: If set, coordinates are relative to this parent entity
         """
-        from dxm.core.simulation_entity import SimulationEntity
+        from destiny_sim.core.simulation_entity import SimulationEntity
+
         if not isinstance(entity, SimulationEntity):
             return None
-        
+
         start_time = start_time if start_time is not None else self.now
-        
+
         rendering_info = entity.get_rendering_info()
         segment = MotionSegment(
             entity_id=entity.id,
@@ -131,20 +134,21 @@ class RecordingEnvironment(Environment):
     def save_recording(self, file_path: str) -> None:
         """
         Save the recording to a JSON file.
-        
+
         Creates directories if needed and prints a confirmation message.
-        
+
         Args:
-            file_path: Path to the output JSON file (e.g., "simulation-records/recording.json")
+            file_path: Path to the output JSON file
+                (e.g., "simulation_records/recording.json")
         """
         recording = self.get_recording()
-        
+
         # Create parent directories if they don't exist
         path = Path(file_path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Write JSON file
         with open(file_path, "w") as f:
             json.dump(recording.to_dict(), f, indent=2)
-        
+
         print(f"Recording exported to {file_path}")

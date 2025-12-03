@@ -1,12 +1,13 @@
 """
 Simple walk example - one person moving from point A to point B.
 """
-from dxm.core.environment import RecordingEnvironment
-from dxm.core.rendering import RenderingInfo, SimulationEntityType
-from dxm.core.simulation_entity import SimulationEntity
 
+from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
 DURATION = 5
+
 
 class Person(SimulationEntity):
     def __init__(self, x: float, y: float):
@@ -16,23 +17,23 @@ class Person(SimulationEntity):
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
-    
+
     def walk_sequence(self, env: RecordingEnvironment):
         yield from self._walk_to(env, 500.0, 300.0)
         yield from self._walk_to(env, 800.0, 100.0)
 
     def _walk_to(self, env: RecordingEnvironment, target_x: float, target_y: float):
         """Move from current position to target position."""
-        
+
         env.record_motion(
             self,
             end_time=env.now + DURATION,
             start_x=self.x,
             start_y=self.y,
             end_x=target_x,
-            end_y=target_y
+            end_y=target_y,
         )
-        
+
         self.x = target_x
         self.y = target_y
         yield env.timeout(DURATION)
@@ -40,10 +41,10 @@ class Person(SimulationEntity):
 
 def main():
     env = RecordingEnvironment()
-    
+
     person = Person(x=100.0, y=100.0)
     env.process(person.walk_sequence(env))
-    
+
     env.run()
     env.save_recording("simulation-records/simple_walk_recording.json")
 

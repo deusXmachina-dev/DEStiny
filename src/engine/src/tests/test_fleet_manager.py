@@ -1,19 +1,21 @@
 """Tests for FleetManager."""
+
 from typing import Any, Generator
 
 from simpy import Timeout
 
-from dxm.agv.agv import AGV
-from dxm.agv.fleet_manager import FleetManager, TaskProvider
-from dxm.agv.location import Location
-from dxm.agv.planning import AGVTask
-from dxm.agv.site_graph import SiteGraph
-from dxm.agv.store_location import StoreLocation
-from dxm.core.environment import RecordingEnvironment
+from destiny_sim.agv.agv import AGV
+from destiny_sim.agv.fleet_manager import FleetManager, TaskProvider
+from destiny_sim.agv.location import Location
+from destiny_sim.agv.planning import AGVTask
+from destiny_sim.agv.site_graph import SiteGraph
+from destiny_sim.agv.store_location import StoreLocation
+from destiny_sim.core.environment import RecordingEnvironment
 
 
 class DeterministicTaskProvider(TaskProvider):
     """A test helper that returns specific tasks immediately."""
+
     def __init__(self, tasks: list[AGVTask]):
         super().__init__([], [])
         self.tasks = tasks
@@ -35,18 +37,18 @@ class DeterministicTaskProvider(TaskProvider):
 def test_fleet_manager_full_integration():
     """Full integration test for fleet manager."""
     env = RecordingEnvironment()
-    
+
     graph = SiteGraph()
     l1 = Location(0, 0)
     l2 = StoreLocation(env, 10, 0, initial_items=["TestBox"])
     l3 = StoreLocation(env, 20, 0)
-    
+
     graph.add_node(l1)
     graph.add_node(l2)
     graph.add_node(l3)
     graph.add_edge(l1, l2)
     graph.add_edge(l2, l3)
-    
+
     task = AGVTask(source=l2, sink=l3)
     task_provider = DeterministicTaskProvider([task])
 

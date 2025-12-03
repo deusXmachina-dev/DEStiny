@@ -2,10 +2,10 @@ from typing import Dict, List, Optional
 
 import rustworkx as rx
 
-from dxm.agv.location import Location
-from dxm.core.environment import RecordingEnvironment
-from dxm.core.rendering import RenderingInfo, SimulationEntityType
-from dxm.core.simulation_entity import SimulationEntity
+from destiny_sim.agv.location import Location
+from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 class GridNode(SimulationEntity):
@@ -23,6 +23,7 @@ class SiteGraph:
     Uses rustworkx for the underlying graph representation and search algorithms
     for high performance.
     """
+
     def __init__(self):
         # PyDiGraph is a directed graph.
         # We will store a dictionary as the node payload: {'location': location}
@@ -32,7 +33,7 @@ class SiteGraph:
     def add_node(self, location: Location) -> None:
         """
         Add a node to the graph.
-        
+
         :param location: The Location object associated with this node.
         """
         node_id = _get_node_id_for_location(location)
@@ -40,7 +41,7 @@ class SiteGraph:
         if node_id in self.node_indices:
             raise ValueError(f"Node {node_id} already exists in the graph.")
 
-        idx = self.graph.add_node({'location': location})
+        idx = self.graph.add_node({"location": location})
         self.node_indices[node_id] = idx
 
     def add_edge(
@@ -52,7 +53,7 @@ class SiteGraph:
     ) -> None:
         """
         Add an edge (connection) between two nodes.
-        
+
         :param source: Source location.
         :param target: Target location.
         :param weight: Cost of the edge (e.g., distance).
@@ -75,21 +76,21 @@ class SiteGraph:
             weight = source.distance_to(target)
 
         # rustworkx edge payload can be anything, usually the weight or a dict
-        # Here we store the weight directly or a dict if more props are needed? 
+        # Here we store the weight directly or a dict if more props are needed?
         # For shortest path algos, it's easiest if the edge weight function extracts it.
         # We'll store a dict and provide a weight function.
-        edge_data = {'weight': weight}
-        
+        edge_data = {"weight": weight}
+
         self.graph.add_edge(source_idx, target_idx, edge_data)
         if bidirectional:
             self.graph.add_edge(target_idx, source_idx, edge_data)
 
     def shortest_path(
-        self, source: Location, target: Location, weight_key: str = 'weight'
+        self, source: Location, target: Location, weight_key: str = "weight"
     ) -> List[Location]:
         """
         Find the shortest path between source and target nodes.
-        
+
         :param source: Start location.
         :param target: End location.
         :param weight_key: Dictionary key in edge data to use as weight.
@@ -109,7 +110,7 @@ class SiteGraph:
             source_idx,
             target=target_idx,
             weight_fn=lambda edge: edge.get(weight_key, 1.0),
-            default_weight=1.0
+            default_weight=1.0,
         )
 
         try:
@@ -119,11 +120,10 @@ class SiteGraph:
 
         # Convert indices back to string IDs
         # accessing the 'id' field we stored in the node payload
-        return [self.graph.get_node_data(idx)['location'] for idx in path_indices]
+        return [self.graph.get_node_data(idx)["location"] for idx in path_indices]
 
-            
     def shortest_path_length(
-        self, source: Location, target: Location, weight_key: str = 'weight'
+        self, source: Location, target: Location, weight_key: str = "weight"
     ) -> float:
         """
         Find the length of the shortest path between source and target nodes.
@@ -132,7 +132,7 @@ class SiteGraph:
         target_id = _get_node_id_for_location(target)
 
         if source_id not in self.node_indices or target_id not in self.node_indices:
-            return float('inf')
+            return float("inf")
 
         source_idx = self.node_indices[source_id]
         target_idx = self.node_indices[target_id]
@@ -141,24 +141,24 @@ class SiteGraph:
             self.graph,
             source_idx,
             lambda edge: edge.get(weight_key, 1.0),
-            goal=target_idx
+            goal=target_idx,
         )
         try:
             return path_length[target_idx]
         except (KeyError, IndexError):
-            return float('inf')
+            return float("inf")
 
     def visualize_graph(self, env: RecordingEnvironment) -> None:
         """
         Visualize the graph nodes in the simulation.
-        
+
         :param env: The simulation environment.
         """
         for node_data in self.graph.nodes():
-            location = node_data['location']
+            location = node_data["location"]
             # Create a visual entity for the node
             node_entity = GridNode()
-            
+
             env.record_stay(entity=node_entity, x=location.x, y=location.y)
 
 
@@ -166,6 +166,7 @@ class GridSiteGraph(SiteGraph):
     """
     A SiteGraph that is initialized as a grid of nodes.
     """
+
     def __init__(self, width: int, height: int, spacing: float, diagonals: bool = True):
         """
         Initialize a grid-based site graph.
@@ -228,23 +229,23 @@ class GridSiteGraph(SiteGraph):
     ) -> None:
         """
         Insert a location into the graph.
-        
-        - If a node with the same coordinates already exists, it is replaced 
+
+        - If a node with the same coordinates already exists, it is replaced
           (preserving edges but updating the Location object).
-        - If it is a new location, it is added as a new node and connected to the 
+        - If it is a new location, it is added as a new node and connected to the
           'connect_to_k_nearest' closest existing nodes.
-        
+
         :param location: The Location to add.
         :param connect_to_k_nearest: Number of neighbors to connect to
             if it's a new node.
         """
         node_id = _get_node_id_for_location(location)
-        
+
         if node_id in self.node_indices:
             # Case 1: Replace existing node
             idx = self.node_indices[node_id]
-            self.graph[idx] = {'location': location}
-            
+            self.graph[idx] = {"location": location}
+
             # Update _grid_locations if this matches a grid point
             # We calculate expected grid indices to check efficiently
             if self.spacing > 0:
@@ -260,13 +261,13 @@ class GridSiteGraph(SiteGraph):
             # Gather candidates BEFORE adding the new node to avoid self-matching
             candidates = []
             for node_data in self.graph.nodes():
-                other_loc = node_data['location']
+                other_loc = node_data["location"]
                 dist = location.distance_to(other_loc)
                 candidates.append((dist, other_loc))
-            
+
             # Add the new node
             super().add_node(location)
-            
+
             # Connect to k nearest
             candidates.sort(key=lambda x: x[0])
             for i in range(min(len(candidates), connect_to_k_nearest)):

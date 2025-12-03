@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable, Iterator
 
-from dxm.agv.location import Location
-from dxm.agv.store_location import StoreLocation
+from destiny_sim.agv.location import Location
+from destiny_sim.agv.store_location import StoreLocation
 
 
 class WaypointType(Enum):
@@ -19,7 +19,6 @@ class Waypoint:
 
 
 class TripPlan(Iterable[Waypoint]):
-
     def __init__(self, waypoints: Iterable[Waypoint]):
         self._waypoints = list(waypoints)
 

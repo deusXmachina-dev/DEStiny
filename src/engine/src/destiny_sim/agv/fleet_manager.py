@@ -1,22 +1,23 @@
 """
 Fleet manager for coordinating AGVs.
 """
+
 import random
 from typing import Any, Generator
 
 from simpy import Event
 
-from dxm.agv.agv import AGV
-from dxm.agv.items import Box
-from dxm.agv.planning import AGVTask, TripPlan, Waypoint, WaypointType
-from dxm.agv.site_graph import SiteGraph
-from dxm.agv.store_location import StoreLocation
-from dxm.core.environment import RecordingEnvironment
+from destiny_sim.agv.agv import AGV
+from destiny_sim.agv.items import Box
+from destiny_sim.agv.planning import AGVTask, TripPlan, Waypoint, WaypointType
+from destiny_sim.agv.site_graph import SiteGraph
+from destiny_sim.agv.store_location import StoreLocation
+from destiny_sim.core.environment import RecordingEnvironment
 
 
 class TaskProvider:
     """Provides tasks for AGVs to execute."""
-    
+
     def __init__(
         self,
         sources: list[StoreLocation],
@@ -38,17 +39,17 @@ class TaskProvider:
         sigma = self._expected_task_interval * 0.2
         delay = random.gauss(self._expected_task_interval, sigma)
         delay = max(0.1, delay)
-        
+
         yield env.timeout(delay)
-        
+
         return (yield from self._get_next_task(env))
-    
+
     def _get_next_task(
         self, env: RecordingEnvironment
     ) -> Generator[Event, Any, AGVTask]:
         source = random.choice(self._sources)
         sink = random.choice(self._sinks)
-        
+
         box = Box()
         env.record_stay(entity=box, start_time=env.now, parent=source)
         yield source.put_item(box)
@@ -59,7 +60,7 @@ class TaskProvider:
 class FleetManager:
     """
     Coordinates AGVs to execute tasks.
-    
+
     Note: This is a simple implementation without collision avoidance,
     load balancing, or advanced scheduling.
     """
