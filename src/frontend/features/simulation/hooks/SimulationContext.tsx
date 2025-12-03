@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { SimulationRecording } from "../types";
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
+import { SimulationRecording, BoundingBox } from "../types";
 import { SimulationBackgroundTheme } from "../constants";
+import { SimulationEngine } from "../logic/SimulationEngine";
 
 interface SimulationContextValue {
     // State
@@ -12,6 +13,7 @@ interface SimulationContextValue {
     duration: number;
     seekTarget: number | null;
     theme: SimulationBackgroundTheme;
+    boundingBox: BoundingBox | null;
     
     // Actions
     play: () => void;
@@ -44,6 +46,13 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     // Compute duration from recording
     const duration = recording?.duration || 0;
 
+    // Compute bounding box from recording (memoized, computed once when recording changes)
+    const boundingBox = useMemo<BoundingBox | null>(() => {
+        if (!recording) return null;
+        const engine = new SimulationEngine(recording);
+        return engine.getBoundingBox();
+    }, [recording]);
+
     // Actions
     const play = useCallback(() => setIsPlaying(true), []);
     const pause = useCallback(() => setIsPlaying(false), []);
@@ -66,6 +75,7 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
         duration,
         seekTarget,
         theme,
+        boundingBox,
         play,
         pause,
         togglePlay,

@@ -9,6 +9,13 @@ export interface SimulationEntityState {
     children: SimulationEntityState[];
 }
 
+export interface BoundingBox {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+}
+
 export interface SimulationRecording {
     duration: number;
     segments_by_entity: {
