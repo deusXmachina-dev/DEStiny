@@ -73,7 +73,7 @@ DEStiny adds a few core concepts on top of SimPy:
 - **`SimulationEntity`**: The base class for any object you want to track in the visualization. You must implement `get_rendering_info()` to tell the visualizer what sprite or shape to use.
 - **`env.record_motion(...)`**: A method on the `RecordingEnvironment` that logs a movement event. This does not affect the simulation logic itself (you still use `yield env.timeout(...)` for time passing), but it generates the data needed for smooth interpolation in the viewer.
 
-For more usage patterns, check the [examples](src/engine/src/examples) folder.
+For more usage patterns, check the [examples](src/engine/src/examples) folder. The most complete example is the [AGV Grid Fleet Simulation](src/engine/src/examples/grid_fleet_simulation.py), which demonstrates a fleet of AGVs moving boxes between sources and sinks.
 
 ## Visualization
 
