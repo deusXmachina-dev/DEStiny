@@ -81,11 +81,25 @@ Once you have generated a recording JSON file, you can visualize it using our we
 
 ## Why we did this
 
-<!-- TODO: Add motivation behind building DEStiny -->
+Commercial GUI-first simulation tools are often clunky, expensive, and overkill for many use cases (aiming for hyper-realism rather than simple modelling). They also tend to have steep learning curves and don't play well with modern development workflows or LLMs.
+
+We love **SimPy** as an idiomatic way to program both agents and processes in Python. However, we felt it was missing an opinionated structure for things like visualization and metrics collection.
+
+**DEStiny** aims to bridge this gap. It provides the code-first flexibility of SimPy with a lightweight, standardized way to record and visualize what actually happens in your simulation.
 
 ## Roadmap
 
-<!-- TODO: Add upcoming features and goals -->
+We are at the beginning of our journey with DEStiny. We are releasing this initial version to collect feedback and see if we are heading in the right direction.
+
+Next we are planning to add:
+- metrics collection API
+- richer and more flexible visualization
+- LLM friendly docs
+- use case specific packages (similar to the AGV package)
+- user managed asset libraries
+- tooling to create the sim scenarios directly in the frontend
+
+There are many more things we could work on (such as support for physical units) - that is why we'll appreaciate your feedback on what you would like to see us add next. Feel free also to open up a PR with proposed changes.
 
 ## License
 
