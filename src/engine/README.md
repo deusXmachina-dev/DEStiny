@@ -73,13 +73,15 @@ DEStiny adds a few core concepts on top of SimPy:
 - **`SimulationEntity`**: The base class for any object you want to track in the visualization. You must implement `get_rendering_info()` to tell the visualizer what sprite or shape to use.
 - **`env.record_motion(...)`**: A method on the `RecordingEnvironment` that logs a movement event. This does not affect the simulation logic itself (you still use `yield env.timeout(...)` for time passing), but it generates the data needed for smooth interpolation in the viewer.
 
+For more usage patterns, check the [examples](src/engine/src/examples) folder.
+
 ## Visualization
 
 Once you have generated a recording JSON file, you can visualize it using our web viewer:
 
-👉 **[Open Simulation Viewer](https://destiny.deusxmachina.dev/)**
+👉 **<a href="https://destiny.deusxmachina.dev/" target="_blank">Open Simulation Viewer</a>**
 
-## Why we did this
+## Why was this project created
 
 Commercial GUI-first simulation tools are often clunky, expensive, and overkill for many use cases (aiming for hyper-realism rather than simple modelling). They also tend to have steep learning curves and don't play well with modern development workflows or LLMs.
 
