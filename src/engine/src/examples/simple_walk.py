@@ -1,5 +1,5 @@
 """
-Simple walk example - one person moving from point A to point B.
+Minimal DEStiny example - one person moving from A to B to C.
 """
 
 from destiny_sim.core.environment import RecordingEnvironment
@@ -12,8 +12,8 @@ DURATION = 5
 class Person(SimulationEntity):
     def __init__(self, x: float, y: float):
         super().__init__()
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
@@ -28,14 +28,14 @@ class Person(SimulationEntity):
         env.record_motion(
             self,
             end_time=env.now + DURATION,
-            start_x=self.x,
-            start_y=self.y,
+            start_x=self._x,
+            start_y=self._y,
             end_x=target_x,
             end_y=target_y,
         )
 
-        self.x = target_x
-        self.y = target_y
+        self._x = target_x
+        self._y = target_y
         yield env.timeout(DURATION)
 
 
