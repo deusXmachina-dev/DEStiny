@@ -79,7 +79,7 @@ For more usage patterns, check the [examples](src/engine/src/examples) folder. T
 
 Once you have generated a recording JSON file, you can visualize it using our web viewer:
 
-👉 **<a href="https://destiny.deusxmachina.dev/" target="_blank">Open Simulation Viewer</a>**
+👉 <a href="https://destiny.deusxmachina.dev/" target="_blank"><b>Open Simulation Viewer</b></a>
 
 ## Why was this project created
 
