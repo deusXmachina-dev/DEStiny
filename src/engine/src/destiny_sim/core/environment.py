@@ -3,11 +3,12 @@ Simulation environment with motion recording.
 """
 
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from simpy import Environment
+from simpy import Environment, Timeout
 
 from destiny_sim.core.timeline import MotionSegment, SimulationRecording
 from destiny_sim.core.metrics import MetricsContainer
@@ -94,27 +95,36 @@ class RecordingEnvironment(Environment):
         entity: Any,
         start_time: float | None = None,
         end_time: float | None = None,
+        duration: float | None = None,
         x: float = 0.0,
         y: float = 0.0,
         angle: float = 0.0,
         parent: "SimulationEntity | None" = None,
-    ) -> None:
+    ) -> Timeout:
         """
         Record a stay in location for an entity.
 
+        Returns a timeout event that fires when the stay ends.
+        For infinite stays (end_time=None and duration=None), returns timeout(0).
+
         Args:
             entity: The entity that is staying
-            start_time: When the stay begins
+            start_time: When the stay begins (defaults to env.now)
+            end_time: When the stay ends (None = until simulation end)
+            duration: How long the stay lasts (alternative to end_time)
             x: Starting x coordinate
             y: Starting y coordinate
             angle: Starting angle
-            end_time: When the stay ends (None = until simulation end)
             parent: If set, coordinates are relative to this parent entity
+
+        Returns:
+            Timeout event that fires when the stay ends, or timeout(0) for infinite stays
         """
-        self.record_motion(
+        return self.record_motion(
             entity,
             start_time=start_time,
             end_time=end_time,
+            duration=duration,
             start_x=x,
             start_y=y,
             end_x=x,
@@ -129,6 +139,8 @@ class RecordingEnvironment(Environment):
         entity: Any,
         start_time: float | None = None,
         end_time: float | None = None,
+        duration: float | None = None,
+        speed: float | None = None,
         start_x: float = 0.0,
         start_y: float = 0.0,
         end_x: float = 0.0,
@@ -136,25 +148,44 @@ class RecordingEnvironment(Environment):
         start_angle: float = 0.0,
         end_angle: float = 0.0,
         parent: "SimulationEntity | None" = None,
-    ) -> None:
+    ) -> Timeout:
         """
         Record a motion segment for an entity.
 
+        Returns a timeout event that fires when the motion ends.
+        For infinite motion (end_time=None and duration=None), returns timeout(0).
+
         Args:
             entity: The entity that is moving
-            start_time: When the motion begins
+            start_time: When the motion begins (defaults to env.now)
             end_time: When the motion ends (None = until simulation end)
+            duration: How long the motion takes (alternative to end_time)
+            speed: Speed of motion - calculates duration from distance (alternative to duration/end_time)
             start_x, start_y: Starting position
             end_x, end_y: Ending position
             start_angle, end_angle: Starting and ending rotation
             parent: If set, coordinates are relative to this parent entity
+
+        Returns:
+            Timeout event that fires when the motion ends, or timeout(0) for infinite motion
         """
         from destiny_sim.core.simulation_entity import SimulationEntity
 
         if not isinstance(entity, SimulationEntity):
-            return None
+            return self.timeout(0)
 
         start_time = start_time if start_time is not None else self.now
+
+        # Calculate end_time from duration or speed if provided
+        if end_time is None:
+            if duration is not None:
+                end_time = start_time + duration
+            elif speed is not None and speed > 0:
+                # Calculate distance from start to end position
+                distance = math.hypot(end_x - start_x, end_y - start_y)
+                duration = distance / speed
+                end_time = start_time + duration
+            # else: end_time remains None (infinite motion)
 
         rendering_info = entity.get_rendering_info()
         segment = MotionSegment(
@@ -171,6 +202,16 @@ class RecordingEnvironment(Environment):
             end_angle=end_angle,
         )
         self._segments_by_entity[entity.id].append(segment)
+
+        # Return timeout event for finite motion, timeout(0) for infinite or zero duration
+        if end_time is None:
+            return self.timeout(0)
+        
+        calculated_duration = end_time - start_time
+        if calculated_duration <= 0:
+            return self.timeout(0)
+        
+        return self.timeout(calculated_duration)
 
     def get_recording(self) -> SimulationRecording:
         """

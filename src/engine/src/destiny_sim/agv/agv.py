@@ -77,16 +77,12 @@ class AGV(SimulationEntity):
             end_angle = new_angle if new_angle is not None else self._angle
             self._angle = end_angle  # update to face next destination
 
-            # Calculate duration
-            distance = start_location.distance_to(end_location)
-            duration = distance / self._speed if distance > 0 else 0
-            end_time = start_time + duration
-
-            # Record motion for AGV
-            env.record_motion(
+            # Record motion for AGV and yield the timeout including the carried item
+            env.record_stay(entity=self._carried_item, parent=self)
+            yield env.record_motion(
                 entity=self,
                 start_time=start_time,
-                end_time=end_time,
+                speed=self._speed,
                 start_x=start_location.x,
                 start_y=start_location.y,
                 end_x=end_location.x,
@@ -94,18 +90,7 @@ class AGV(SimulationEntity):
                 start_angle=end_angle,
                 end_angle=end_angle,
             )
-
-            # If carrying an item, stay put relative to AGV
-            env.record_stay(
-                entity=self._carried_item,
-                start_time=start_time,
-                end_time=end_time,
-                parent=self,
-            )
-
-            # Wait for the movement to complete
-            if duration > 0:
-                yield env.timeout(duration)
+            env.record_disappearance(entity=self._carried_item)
 
             self._current_location = end_location
 
@@ -132,9 +117,9 @@ class AGV(SimulationEntity):
                 
                 self._carried_item = None
 
+                # Record AGV staying at drop location (infinite stay)
                 env.record_stay(
                     entity=self,
-                    start_time=end_time,
                     x=end_location.x,
                     y=end_location.y,
                     angle=end_angle,

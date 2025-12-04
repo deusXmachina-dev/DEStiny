@@ -146,3 +146,102 @@ def test_record_disappearance():
     assert seg.start_time == env.now
     assert seg.end_time == env.now
     assert seg.start_time == seg.end_time
+
+
+def test_record_motion_timeout_in_process():
+    """Test that record_motion returns a timeout that can be yielded in a process."""
+    env = RecordingEnvironment()
+    entity = DummyEntity()
+    completion_times = []
+
+    def process():
+        # Record motion with duration - much simpler!
+        yield env.record_motion(
+            entity=entity,
+            duration=5.0,
+            start_x=0,
+            start_y=0,
+            end_x=100,
+            end_y=0,
+        )
+        completion_times.append(env.now)
+
+    env.process(process())
+    env.run(until=10.0)
+
+    # Should complete at time 5.0
+    assert len(completion_times) == 1
+    assert completion_times[0] == 5.0
+
+
+def test_record_motion_with_speed():
+    """Test that record_motion can calculate duration from speed."""
+    env = RecordingEnvironment()
+    entity = DummyEntity()
+    completion_times = []
+
+    def process():
+        # Record motion with speed - calculates duration from distance automatically!
+        yield env.record_motion(
+            entity=entity,
+            speed=20.0,  # 20 units per time unit
+            start_x=0,
+            start_y=0,
+            end_x=100,  # distance = 100, so duration = 100/20 = 5.0
+            end_y=0,
+        )
+        completion_times.append(env.now)
+
+    env.process(process())
+    env.run(until=10.0)
+
+    # Should complete at time 5.0 (100 distance / 20 speed = 5 duration)
+    assert len(completion_times) == 1
+    assert completion_times[0] == 5.0
+
+
+def test_record_stay_infinite_timeout_zero():
+    """Test that infinite stay returns timeout(0) which fires immediately."""
+    env = RecordingEnvironment()
+    entity = DummyEntity()
+    completion_times = []
+
+    def process():
+        # Record infinite stay (no duration/end_time) - returns timeout(0)
+        yield env.record_stay(
+            entity=entity,
+            x=10,
+            y=20,
+        )
+        completion_times.append(env.now)
+
+    env.process(process())
+    env.run(until=10.0)
+
+    # timeout(0) fires immediately, so should complete at time 0
+    assert len(completion_times) == 1
+    assert completion_times[0] == 0.0
+
+
+def test_record_stay_with_duration():
+    """Test that record_stay with duration returns appropriate timeout."""
+    env = RecordingEnvironment()
+    entity = DummyEntity()
+    completion_times = []
+
+    def process():
+        # Record stay with duration - much simpler!
+        yield env.record_stay(
+            entity=entity,
+            duration=3.0,
+            x=10,
+            y=20,
+        )
+        completion_times.append(env.now)
+
+    env.process(process())
+    env.run(until=10.0)
+
+    # Should complete at time 3.0
+    assert len(completion_times) == 1
+    assert completion_times[0] == 3.0
