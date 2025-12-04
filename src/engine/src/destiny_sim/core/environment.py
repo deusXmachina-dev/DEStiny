@@ -67,6 +67,21 @@ class RecordingEnvironment(Environment):
         """
         self._metrics_container.adjust_gauge(name, self.now, delta, labels)
 
+    def record_sample(self, name: str, value: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Record a sample metric observation.
+        
+        Sample metrics represent independent observations that can be used for statistical
+        analysis (histograms, distribution comparisons, etc.). Each call records a new
+        independent data point at the current simulation time.
+        
+        Args:
+            name: Metric name
+            value: Sample value (e.g., delivery time, service duration)
+            labels: Optional filtering labels
+        """
+        self._metrics_container.record_sample(name, self.now, value, labels)
+
     def record_disappearance(self, entity: Any, time: float | None = None) -> None:
         """
         Record that an entity has disappeared.

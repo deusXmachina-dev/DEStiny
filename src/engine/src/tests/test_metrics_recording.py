@@ -95,6 +95,45 @@ def test_metrics_in_to_dict():
     assert data["metrics"][0]["name"] == "test_metric"
     assert data["metrics"][0]["data"]["value"] == [1]
 
+def test_sample_metric():
+    """Test recording sample metrics."""
+    env = RecordingEnvironment()
+    
+    # Record some delivery times (all with same labels so they're in same metric)
+    env.record_sample("package_delivery_time", 5.2)
+    env.run(until=10.0)
+    env.record_sample("package_delivery_time", 8.7)
+    env.run(until=15.0)
+    env.record_sample("package_delivery_time", 3.1)
+    
+    recording = env.get_recording()
+    metrics = recording.metrics
+    
+    assert len(metrics) == 1
+    metric = metrics[0]
+    assert metric.name == "package_delivery_time"
+    assert metric.type == MetricType.SAMPLE
+    assert metric.data["timestamp"] == [0.0, 10.0, 15.0]
+    assert metric.data["value"] == [5.2, 8.7, 3.1]
+
+def test_sample_metric_with_labels():
+    """Test that samples with different labels create separate metrics."""
+    env = RecordingEnvironment()
+    
+    env.record_sample("delivery_time", 5.2, labels={"region": "north"})
+    env.record_sample("delivery_time", 8.7, labels={"region": "south"})
+    
+    recording = env.get_recording()
+    metrics = recording.metrics
+    
+    assert len(metrics) == 2
+    
+    north = next(m for m in metrics if m.labels.get("region") == "north")
+    south = next(m for m in metrics if m.labels.get("region") == "south")
+    
+    assert north.data["value"] == [5.2]
+    assert south.data["value"] == [8.7]
+
 def test_different_types_same_name():
     """Test that metrics with same name but different types are distinct."""
     env = RecordingEnvironment()
@@ -105,15 +144,21 @@ def test_different_types_same_name():
     # Create gauge with same name
     env.set_gauge("foo", 10)
     
+    # Create sample with same name
+    env.record_sample("foo", 42.0)
+    
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 2
+    assert len(metrics) == 3
     
     counter = next(m for m in metrics if m.type == MetricType.COUNTER)
     gauge = next(m for m in metrics if m.type == MetricType.GAUGE)
+    sample = next(m for m in metrics if m.type == MetricType.SAMPLE)
     
     assert counter.name == "foo"
     assert gauge.name == "foo"
+    assert sample.name == "foo"
     assert counter.data["value"] == [1]
     assert gauge.data["value"] == [10]
+    assert sample.data["value"] == [42.0]

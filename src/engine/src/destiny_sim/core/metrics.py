@@ -3,7 +3,7 @@ Generic tabular metrics system for simulation data collection.
 
 Provides a flexible, columnar data format that can represent any metric type:
 - State metrics: counter (total people served), gauge (queue length), enum (machine state)
-- Event metrics: time-series events (queue wait times), categorical events (voting choices)
+- Event metrics: sample (package delivery times, service durations), categorical events (voting choices)
 
 All metrics use a columnar format (col_name: [values]) which is efficient for
 serialization and frontend consumption.
@@ -17,6 +17,7 @@ class MetricType(str, Enum):
     """Enumeration of metric types."""
     COUNTER = "counter"
     GAUGE = "gauge"
+    SAMPLE = "sample"
     GENERIC = "generic"
 
 
@@ -189,7 +190,25 @@ class MetricsContainer:
         new_value = current_value + delta
         metric.data["timestamp"].append(time)
         metric.data["value"].append(new_value)
+    
+    def record_sample(self, name: str, time: float, value: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Record a sample metric observation.
         
+        Sample metrics represent independent observations that can be used for statistical
+        analysis (histograms, distribution comparisons, etc.). Each call records a new
+        independent data point.
+        
+        Args:
+            name: Metric name
+            time: Simulation time when the sample was observed
+            value: Sample value (e.g., delivery time, service duration)
+            labels: Optional filtering labels
+        """
+        metric = self._get_or_create_metric(name, MetricType.SAMPLE, labels)
+        metric.data["timestamp"].append(time)
+        metric.data["value"].append(value)
+    
     def get_all(self) -> list[Metric]:
         """Return all recorded metrics."""
         return list(self._metrics.values())
