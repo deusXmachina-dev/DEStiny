@@ -42,6 +42,33 @@ def test_gauge_metric():
     assert metric.data["timestamp"] == [0.0, 2.0, 4.0]
     assert metric.data["value"] == [0, 5, 3]
 
+def test_adjust_gauge():
+    """Test adjusting a gauge with positive and negative deltas."""
+    env = RecordingEnvironment()
+    
+    # Start at 0 implicitly or explicitly set
+    env.adjust_gauge("active_agents", 1) # becomes 1
+    assert env.now == 0.0
+    
+    env.run(until=1.0)
+    env.adjust_gauge("active_agents", 2) # becomes 3
+    
+    env.run(until=2.0)
+    env.adjust_gauge("active_agents", -1) # becomes 2
+    
+    env.run(until=3.0)
+    env.adjust_gauge("active_agents", -2) # becomes 0
+    env.adjust_gauge("active_agents", -1) # becomes -1
+    
+    recording = env.get_recording()
+    metrics = recording.metrics
+    metric = metrics[0]
+    
+    assert metric.name == "active_agents"
+    assert metric.type == MetricType.GAUGE
+    assert metric.data["timestamp"] == [0.0, 1.0, 2.0, 3.0, 3.0]
+    assert metric.data["value"] == [1, 3, 2, 0, -1]
+
 def test_multiple_metrics_and_labels():
     env = RecordingEnvironment()
     

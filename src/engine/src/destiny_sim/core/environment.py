@@ -56,6 +56,17 @@ class RecordingEnvironment(Environment):
         """
         self._metrics_container.set_gauge(name, self.now, value, labels)
 
+    def adjust_gauge(self, name: str, delta: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Adjust a gauge metric by a relative amount (delta).
+        
+        Args:
+            name: Metric name
+            delta: Amount to change the gauge by (positive to increase, negative to decrease)
+            labels: Optional filtering labels
+        """
+        self._metrics_container.adjust_gauge(name, self.now, delta, labels)
+
     def record_disappearance(self, entity: Any, time: float | None = None) -> None:
         """
         Record that an entity has disappeared.

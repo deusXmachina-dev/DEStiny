@@ -117,7 +117,7 @@ class MetricsContainer:
 
     def __init__(self) -> None:
         # Metrics storage: key is (name, sorted_labels_tuple) to ensure uniqueness
-        self._metrics: dict[tuple[str, tuple[tuple[str, str], ...]], Metric] = {}
+        self._metrics: dict[tuple[str, MetricType, tuple[tuple[str, str], ...]], Metric] = {}
 
     def _get_metric_key(self, name: str, metric_type: MetricType, labels: dict[str, str] | None) -> tuple:
         """Create a unique key for a metric based on name, type and labels."""
@@ -169,6 +169,26 @@ class MetricsContainer:
         metric = self._get_or_create_metric(name, MetricType.GAUGE, labels)
         metric.data["timestamp"].append(time)
         metric.data["value"].append(value)
+
+    def adjust_gauge(self, name: str, time: float, delta: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Adjust a gauge metric by a relative amount (delta).
+        
+        Args:
+            name: Metric name
+            time: Current simulation time
+            delta: Amount to change the gauge by (positive to increase, negative to decrease)
+            labels: Optional filtering labels
+        """
+        metric = self._get_or_create_metric(name, MetricType.GAUGE, labels)
+        
+        current_value = 0
+        if metric.data["value"]:
+            current_value = metric.data["value"][-1]
+            
+        new_value = current_value + delta
+        metric.data["timestamp"].append(time)
+        metric.data["value"].append(new_value)
         
     def get_all(self) -> list[Metric]:
         """Return all recorded metrics."""
