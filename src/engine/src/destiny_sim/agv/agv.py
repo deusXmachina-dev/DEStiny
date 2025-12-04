@@ -16,6 +16,7 @@ from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 AGV_ACTIVE_METRIC = "Active AGVs"
+DELIVERY_TIME_METRIC = "package_delivery_time"
 
 class AGV(SimulationEntity):
     """
@@ -30,6 +31,7 @@ class AGV(SimulationEntity):
         self._is_available = True
         self._plan_queue: deque[TripPlan] = deque()
         self._carried_item: Any | None = None
+        self._pickup_time: float | None = None
         self._current_location: Location = start_location
         self._planned_destination: Location = start_location
         self._angle: float = 0.0
@@ -113,6 +115,7 @@ class AGV(SimulationEntity):
                 and waypoint.type == WaypointType.SOURCE
             ):
                 self._carried_item = yield source.get_item(env)
+                self._pickup_time = env.now
 
             # Handle drop at SINK
             if (
@@ -120,6 +123,13 @@ class AGV(SimulationEntity):
                 and waypoint.type == WaypointType.SINK
             ):
                 yield sink.put_item(env, self._carried_item)
+                
+                # Record delivery time sample
+                if self._pickup_time is not None:
+                    delivery_time = env.now - self._pickup_time
+                    env.record_sample(DELIVERY_TIME_METRIC, delivery_time)
+                    self._pickup_time = None
+                
                 self._carried_item = None
 
                 env.record_stay(
