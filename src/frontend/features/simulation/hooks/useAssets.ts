@@ -1,3 +1,5 @@
+"use client";
+
 import { Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { ASSET_MAP } from "../constants";

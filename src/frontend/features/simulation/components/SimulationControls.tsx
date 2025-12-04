@@ -3,20 +3,29 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { X, Plus } from "lucide-react";
-import { RecordingUploadButton } from "./RecordingUploadButton";
+import { RecordingUploadButton } from "@features/playback";
 import { ThemeSelector } from "./ThemeSelector";
 
-type SimulationControlsPosition = "top" | "center";
+type ControlsPosition = "top" | "center";
 
 interface SimulationControlsProps {
-    position?: SimulationControlsPosition;
+    position?: ControlsPosition;
 }
 
-const POSITION_STYLES: Record<SimulationControlsPosition, string> = {
+const POSITION_STYLES: Record<ControlsPosition, string> = {
     "top": "top-4 left-1/2 -translate-x-1/2",
     "center": "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
 };
 
+/**
+ * SimulationControls - UI overlay for recording upload and theme selection.
+ * 
+ * This component uses:
+ * - RecordingUploadButton (from playback feature)
+ * - ThemeSelector (simulation-specific)
+ * 
+ * Must be used within both PlaybackProvider and SimulationProvider.
+ */
 export function SimulationControls({ 
     position = "top", 
 }: SimulationControlsProps) {
@@ -95,3 +104,4 @@ export function SimulationControls({
         </div>
     );
 }
+

@@ -1,13 +1,15 @@
-import { useSimulationController } from "../../hooks/SimulationContext";
+"use client";
+
+import { usePlayback } from "../hooks/PlaybackContext";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { formatTime } from "../../utils";
-import { SPEED_OPTIONS } from "../../constants";
+import { formatTime } from "../utils";
+import { SPEED_OPTIONS } from "../constants";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
-    const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = useSimulationController();
+    const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();
 
     const handleRestart = () => {
         seek(0);

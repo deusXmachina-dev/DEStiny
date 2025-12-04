@@ -1,5 +1,4 @@
-import { BoundingBox } from "../types";
-import { SimulationEntityState, SimulationRecording } from "../types";
+import type { BoundingBox, SimulationEntityState, SimulationRecording } from "@features/playback";
 import { lerp } from "../utils";
 
 /**

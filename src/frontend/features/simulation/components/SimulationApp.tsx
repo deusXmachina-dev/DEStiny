@@ -2,36 +2,29 @@
 
 import { Application } from "@pixi/react";
 import { useRef } from "react";
-import { SimulationScene } from "./pixi/SimulationScene";
-import { SimulationProvider, useSimulationController } from "../hooks/SimulationContext";
-import { SimulationControls } from "./ui/SimulationControls";
-import { PlaybackControls } from "./ui/PlaybackControls";
-import { SimulationBackground } from "./pixi/SimulationBackground";
+import { Scene } from "./pixi/Scene";
+import { usePlayback } from "@features/playback";
+import { SimulationProvider, useSimulation } from "../hooks/SimulationContext";
+import { SimulationControls } from "./SimulationControls";
+import { Background } from "./pixi/Background";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
-    const { recording, theme } = useSimulationController();
+    const { recording } = usePlayback();
+    const { theme } = useSimulation();
     
     // Dynamic positioning: center & large when no recording, top-right & small when recording exists
     const hasRecording = recording !== null;
 
     return (
-        <div className="flex flex-col w-full h-screen">
-            <div ref={parentRef} className="flex-1 min-h-0 w-full relative">
-                <Application resizeTo={parentRef}>
-                    <SimulationBackground theme={theme}/>
-                    <SimulationScene />
-                </Application>
-                {/* Simulation Controls */}
-                <SimulationControls position={hasRecording ? "top" : "center"} />
-            </div>
-
-            {/* Bottom Navigation Bar */}
-            <div className="bg-gray-100 border-t border-gray-300 shadow-lg">
-                <div className="p-4 max-w-7xl mx-auto">
-                    <PlaybackControls disabled={!hasRecording} />
-                </div>
-            </div>
+        <div ref={parentRef} className="w-full h-full relative">
+            <Application resizeTo={parentRef}>
+                <Background theme={theme}/>
+                <Scene />
+            </Application>
+            {/* Simulation Controls */}
+            { /* TODO: This should be moved to the parent component */ }
+            <SimulationControls position={hasRecording ? "top" : "center"} />
         </div>
     );
 }

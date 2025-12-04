@@ -1,19 +1,21 @@
+"use client";
+
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
-import { SIMULATION_BACKGROUND_THEME_CONFIGS, SimulationBackgroundTheme } from "../../constants";
+import { THEME_CONFIGS, SimulationTheme } from "../../constants";
 
 extend({ Graphics });
 
-interface SimulationBackgroundProps {
-    theme?: SimulationBackgroundTheme;
+interface BackgroundProps {
+    theme?: SimulationTheme;
 }
 
-export const SimulationBackground = ({
+export const Background = ({
     theme = "factory",
-}: SimulationBackgroundProps) => {
+}: BackgroundProps) => {
     const { app } = useApplication();
-    const config = SIMULATION_BACKGROUND_THEME_CONFIGS[theme];
+    const config = THEME_CONFIGS[theme];
 
     const draw = useCallback(
         (g: Graphics) => {
@@ -50,5 +52,5 @@ export const SimulationBackground = ({
     return <pixiGraphics draw={draw} />;
 };
 
-export default SimulationBackground;
+export default Background;
 

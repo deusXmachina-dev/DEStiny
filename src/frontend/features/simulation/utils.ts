@@ -1,57 +1,33 @@
-import { SimulationRecording, BoundingBox } from "./types";
+import type { BoundingBox } from "@features/playback";
 
 /**
- * Linear interpolation helper.
+ * Linear interpolation between two values.
  */
-export const lerp = (a: number, b: number, t: number): number => {
-    return a + (b - a) * t;
+export const lerp = (start: number, end: number, t: number): number => {
+    return start + (end - start) * t;
 };
 
+
 /**
- * Calculate the scene offset to center content based on bounding box.
- * Returns { offsetX: 0, offsetY: 0 } if bounding box is invalid or null.
+ * Calculate the offset needed to center the scene in the viewport.
  */
 export const calculateSceneOffset = (
     boundingBox: BoundingBox | null,
     screenWidth: number,
     screenHeight: number
 ): { offsetX: number; offsetY: number } => {
-    // Only apply offset if bounding box has valid (finite) values
-    const hasValidBounds = boundingBox && 
-        Number.isFinite(boundingBox.minX) && 
-        Number.isFinite(boundingBox.maxX);
-    
-    if (!hasValidBounds) {
+    if (!boundingBox) {
         return { offsetX: 0, offsetY: 0 };
     }
 
-    const contentCenterX = (boundingBox.minX + boundingBox.maxX) / 2;
-    const contentCenterY = (boundingBox.minY + boundingBox.maxY) / 2;
-    const offsetX = (screenWidth / 2) - contentCenterX;
-    const offsetY = (screenHeight / 2) - contentCenterY;
+    const { minX, minY, maxX, maxY } = boundingBox;
+    const worldWidth = maxX - minX;
+    const worldHeight = maxY - minY;
+
+    // Center the bounding box in the screen
+    const offsetX = (screenWidth - worldWidth) / 2 - minX;
+    const offsetY = (screenHeight - worldHeight) / 2 - minY;
 
     return { offsetX, offsetY };
-};
-
-/**
- * Format time as MM:SS
- */
-export const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-};
-
-/**
- * Parse and validate a simulation recording from JSON string.
- */
-export const parseRecording = (content: string): SimulationRecording | null => {
-    try {
-        const parsed = JSON.parse(content);
-        return parsed as SimulationRecording;
-    } catch (error) {
-        console.error("Failed to parse recording:", error);
-        return null;
-    }
 };
 

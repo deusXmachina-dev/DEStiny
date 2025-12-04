@@ -38,9 +38,6 @@
       "@types/*": [
         "./types/*"
       ],
-      "@layouts/*": [
-        "./layouts/*"
-      ],
       "@assets/*": [
         "./assets/*"
       ]

@@ -1,6 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { useRecordingUpload } from "../../hooks/useRecordingUpload";
+import { useRecordingUpload } from "../hooks/useRecordingUpload";
 
 export function RecordingUploadButton() {
     const { triggerUpload } = useRecordingUpload();

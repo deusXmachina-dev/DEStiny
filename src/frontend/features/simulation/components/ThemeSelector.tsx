@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Select,
     SelectContent,
@@ -5,22 +7,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSimulationController } from "../../hooks/SimulationContext";
-import { SimulationBackgroundTheme, SIMULATION_BACKGROUND_THEME_CONFIGS } from "../../constants";
+import { useSimulation } from "../hooks/SimulationContext";
+import { SimulationTheme, THEME_CONFIGS } from "../constants";
 
-const THEME_OPTIONS: { value: SimulationBackgroundTheme; label: string }[] = 
-    Object.keys(SIMULATION_BACKGROUND_THEME_CONFIGS).map((key) => ({
-        value: key as SimulationBackgroundTheme,
+const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 
+    Object.keys(THEME_CONFIGS).map((key) => ({
+        value: key as SimulationTheme,
         label: key.charAt(0).toUpperCase() + key.slice(1),
     }));
 
 export function ThemeSelector() {
-    const { theme, setTheme } = useSimulationController();
+    const { theme, setTheme } = useSimulation();
 
     return (
         <Select 
             value={theme} 
-            onValueChange={(value) => setTheme(value as SimulationBackgroundTheme)}
+            onValueChange={(value) => setTheme(value as SimulationTheme)}
         >
             <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Theme" />

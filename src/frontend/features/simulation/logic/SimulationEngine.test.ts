@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { SimulationEngine } from "./SimulationEngine";
-import { SimulationRecording, SimulationMotionSegment } from "../types";
+import type { SimulationRecording, SimulationMotionSegment } from "@features/playback";
 
 // Helper to create a motion segment with defaults
 const createSegment = (
@@ -612,4 +612,3 @@ describe("SimulationEngine", () => {
         });
     });
 });
-

@@ -1,9 +1,11 @@
+"use client";
+
 import { extend, useApplication } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
-import { SimulationEntity } from "./SimulationEntity";
-import { useSimulation } from "../../hooks/useSimulation";
+import { Entity } from "./Entity";
+import { useEntityRenderer } from "../../hooks/useEntityRenderer";
 import { useAssets } from "../../hooks/useAssets";
-import { useSimulationController } from "../../hooks/SimulationContext";
+import { useSimulation } from "../../hooks/SimulationContext";
 import { calculateSceneOffset } from "../../utils";
 
 // Extend Pixi.js components for @pixi/react
@@ -12,12 +14,12 @@ extend({
     Sprite,
 });
 
-export const SimulationScene = () => {
+export const Scene = () => {
     const { isLoaded } = useAssets();
     const { app } = useApplication();
-    const { boundingBox } = useSimulationController();
+    const { boundingBox } = useSimulation();
 
-    const entities = useSimulation();
+    const entities = useEntityRenderer();
 
     if (!isLoaded) {
         return null; // Or a loading spinner
@@ -33,7 +35,7 @@ export const SimulationScene = () => {
     return (
         <pixiContainer x={offsetX} y={offsetY}>
             {entities.map((entity) => (
-                <SimulationEntity
+                <Entity
                     key={entity.entityId}
                     {...entity}
                 />

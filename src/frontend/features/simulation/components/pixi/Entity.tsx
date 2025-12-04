@@ -1,6 +1,8 @@
+"use client";
+
 import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
-import { SimulationEntityState } from "../../types";
+import { SimulationEntityState } from "@features/playback";
 import { useAssets } from "../../hooks/useAssets";
 
 // Extend Pixi.js components for @pixi/react
@@ -9,7 +11,7 @@ extend({
     Sprite: PixiSprite,
 });
 
-export const SimulationEntity = ({ entityType, x, y, angle, children }: SimulationEntityState) => {
+export const Entity = ({ entityType, x, y, angle, children }: SimulationEntityState) => {
     const { getTexture } = useAssets();
     const texture = getTexture(entityType);
 
@@ -27,7 +29,7 @@ export const SimulationEntity = ({ entityType, x, y, angle, children }: Simulati
                 rotation={0}
             />
             {children?.map((child) => (
-                <SimulationEntity
+                <Entity
                     key={child.entityId}
                     {...child}
                 />
