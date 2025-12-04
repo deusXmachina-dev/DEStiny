@@ -82,8 +82,8 @@ class AGV(SimulationEntity):
             duration = distance / self._speed if distance > 0 else 0
             end_time = start_time + duration
 
-            # Record motion for AGV
-            env.record_motion(
+            # Record motion for AGV and yield the timeout
+            yield env.record_motion(
                 entity=self,
                 start_time=start_time,
                 end_time=end_time,
@@ -102,10 +102,6 @@ class AGV(SimulationEntity):
                 end_time=end_time,
                 parent=self,
             )
-
-            # Wait for the movement to complete
-            if duration > 0:
-                yield env.timeout(duration)
 
             self._current_location = end_location
 
