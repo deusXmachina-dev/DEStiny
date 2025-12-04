@@ -43,13 +43,13 @@ def test_store_location_put_get(env):
     loc = StoreLocation(env, x=0, y=0)
 
     def producer(env, loc):
-        yield loc.put_item("item1")
-        yield loc.put_item("item2")
+        yield loc.put_item(env, "item1")
+        yield loc.put_item(env, "item2")
 
     def consumer(env, loc):
-        item1 = yield loc.get_item()
+        item1 = yield loc.get_item(env)
         assert item1 == "item1"
-        item2 = yield loc.get_item()
+        item2 = yield loc.get_item(env)
         assert item2 == "item2"
 
     env.process(producer(env, loc))

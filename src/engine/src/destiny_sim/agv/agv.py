@@ -15,6 +15,8 @@ from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
 
 
+AGV_ACTIVE_METRIC = "Active AGVs"
+
 class AGV(SimulationEntity):
     """
     An Automated Guided Vehicle that moves along planned paths.
@@ -46,6 +48,7 @@ class AGV(SimulationEntity):
 
         if self._is_available:
             self._is_available = False
+            env.adjust_gauge(AGV_ACTIVE_METRIC, 1)
             env.process(self._process_queue(env))
 
     def _process_queue(
@@ -56,6 +59,7 @@ class AGV(SimulationEntity):
             plan = self._plan_queue.popleft()
             yield from self._execute_plan(env, plan)
         self._is_available = True
+        env.adjust_gauge(AGV_ACTIVE_METRIC, -1)
 
     def _execute_plan(
         self, env: RecordingEnvironment, plan: TripPlan
@@ -108,14 +112,14 @@ class AGV(SimulationEntity):
                 isinstance(source := waypoint.location, StoreLocation)
                 and waypoint.type == WaypointType.SOURCE
             ):
-                self._carried_item = yield source.get_item()
+                self._carried_item = yield source.get_item(env)
 
             # Handle drop at SINK
             if (
                 isinstance(sink := waypoint.location, StoreLocation)
                 and waypoint.type == WaypointType.SINK
             ):
-                yield sink.put_item(self._carried_item)
+                yield sink.put_item(env, self._carried_item)
                 self._carried_item = None
 
                 env.record_stay(
