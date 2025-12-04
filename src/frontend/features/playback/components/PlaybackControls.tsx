@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { formatTime } from "../utils";
+import { formatTime } from "@lib/utils";
 import { SPEED_OPTIONS } from "../constants";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {

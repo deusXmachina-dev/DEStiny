@@ -2,15 +2,34 @@
 
 import { PlaybackProvider, PlaybackControls, usePlayback } from "@features/playback";
 import { SimulationApp } from "@features/simulation";
+import { MetricsPanel } from "@features/metrics";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 function HomeContent() {
-  const { recording } = usePlayback();
-  const hasRecording = recording !== null;
+  const { hasRecording } = usePlayback();
 
   return (
     <div className="flex flex-col w-full h-screen">
+      {/* Main Content: Resizable Panels */}
       <div className="flex-1 min-h-0 w-full">
-        <SimulationApp />
+        <ResizablePanelGroup direction="horizontal">
+          {/* Left Panel: Simulation */}
+          <ResizablePanel defaultSize={75} minSize={50}>
+            <SimulationApp />
+          </ResizablePanel>
+          
+          {/* Resize Handle */}
+          <ResizableHandle withHandle />
+          
+          {/* Right Panel: Metrics */}
+          <ResizablePanel defaultSize={25} minSize={20}>
+            <MetricsPanel />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
       
       {/* Bottom Navigation Bar */}

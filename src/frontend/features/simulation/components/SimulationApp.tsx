@@ -10,11 +10,10 @@ import { Background } from "./pixi/Background";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);
-    const { recording } = usePlayback();
+    const { hasRecording } = usePlayback();
     const { theme } = useSimulation();
     
     // Dynamic positioning: center & large when no recording, top-right & small when recording exists
-    const hasRecording = recording !== null;
 
     return (
         <div ref={parentRef} className="w-full h-full relative">

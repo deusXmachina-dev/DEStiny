@@ -1,12 +1,4 @@
 import { SimulationRecording } from "./types";
-/**
- * Format time as MM:SS
- */
-export const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-};
 
 /**
  * Parse a JSON string into a SimulationRecording.

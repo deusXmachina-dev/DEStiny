@@ -20,9 +20,10 @@ export const Background = ({
     const draw = useCallback(
         (g: Graphics) => {
             g.clear();
-
+            
             const width = app.screen.width;
             const height = app.screen.height;
+
             const tilesX = Math.ceil(width / config.tileSize) + 1;
             const tilesY = Math.ceil(height / config.tileSize) + 1;
 
@@ -46,7 +47,7 @@ export const Background = ({
             }
             g.stroke();
         },
-        [app, config]
+        [config, app]
     );
 
     return <pixiGraphics draw={draw} />;

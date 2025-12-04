@@ -7,6 +7,7 @@ import { PlaybackClock } from "../components/PlaybackClock";
 interface PlaybackContextValue {
     // State
     recording: SimulationRecording | null;
+    hasRecording: boolean;
     simulationName: string;
     isPlaying: boolean;
     speed: number;
@@ -74,6 +75,7 @@ export const PlaybackProvider = ({ children, }: { children: ReactNode }) => {
 
     // Compute duration from recording
     const duration = recording?.duration || 0;
+    const hasRecording = recording !== null;
 
     // Actions
     const play = useCallback(() => setIsPlaying(true), []);
@@ -90,6 +92,7 @@ export const PlaybackProvider = ({ children, }: { children: ReactNode }) => {
 
     const value: PlaybackContextValue = {
         recording,
+        hasRecording,
         simulationName,
         isPlaying,
         speed,
