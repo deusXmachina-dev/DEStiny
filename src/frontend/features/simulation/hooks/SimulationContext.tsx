@@ -34,11 +34,44 @@ interface SimulationProviderProps {
     children: ReactNode;
 }
 
+/**
+ * Get initial recording from dummy data if in development mode.
+ * Uses dynamic import to avoid bundling dummy data in production.
+ * Controlled by NEXT_PUBLIC_DEV_RECORDING env variable.
+ * */
+function getInitialRecording(): {
+    recording: SimulationRecording | null;
+    name: string;
+} {
+    if (process.env.NODE_ENV !== "development") {
+        return { recording: null, name: "Upload Simulation" };
+    }
+
+    const devRecording = process.env.NEXT_PUBLIC_DEV_RECORDING;
+    if (!devRecording) {
+        return { recording: null, name: "Upload Simulation" };
+    }
+
+    // Only import dummy data in development to keep it out of production bundle
+    try {
+        // Dynamic require for development-only data
+        const recordingData = require(`@/${devRecording}`);
+        return { recording: recordingData as SimulationRecording, name: "Dummy Recording" };
+    } catch (error) {
+        // Fallback if dummy data is not available
+        console.warn(`Failed to load dev recording: ${devRecording}`, error);
+        return { recording: null, name: "Upload Simulation" };
+    }
+}
+
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [speed, setSpeed] = useState(1);
-    const [simulationName, setSimulationName] = useState("Upload Simulation");
-    const [recording, setRecording] = useState<SimulationRecording | null>(null);
+    
+    // Initialize recording and name synchronously before first render using lazy initializers
+    // Lazy initializers ensure getInitialRecording() only runs once on mount
+    const [simulationName, setSimulationName] = useState(() => getInitialRecording().name);
+    const [recording, setRecording] = useState<SimulationRecording | null>(() => getInitialRecording().recording);
     const [currentTime, setCurrentTime] = useState(0);
     const [seekTarget, setSeekTarget] = useState<number | null>(null);
     const [theme, setTheme] = useState<SimulationBackgroundTheme>("factory");

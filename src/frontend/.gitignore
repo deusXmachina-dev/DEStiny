@@ -1,2 +1,4 @@
 # Frontend specific ignores
 # Generic Node/Next.js ignores are now in the root .gitignore
+
+dummy_data/

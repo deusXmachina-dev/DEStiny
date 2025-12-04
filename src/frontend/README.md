@@ -29,6 +29,19 @@ bun dev
 
 Visit `http://localhost:3000` to see the app running.
 
+#### Auto-loading Dummy Data (Development Mode)
+
+In development mode, you can automatically load dummy data by setting the `NEXT_PUBLIC_DEBUG_DUMMY_FILE` environment variable. Create a `.env.local` file in the `src/frontend` directory:
+
+```bash
+# .env.local
+NEXT_PUBLIC_DEBUG_DUMMY_FILE=grid_fleet_recording.json
+# or
+NEXT_PUBLIC_DEBUG_DUMMY_FILE=bank_renege_recording.json
+```
+
+The app will automatically load the specified dummy data file on startup, eliminating the need to manually upload recordings during development.
+
 ### Building for Production
 
 ```bash

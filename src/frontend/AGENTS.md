@@ -36,6 +36,37 @@ frontend/
 - `@features/*` → `./features/*`
 - `@lib/*` → `./lib/*`
 
+## Import Conventions
+
+Use a **hybrid approach** for imports:
+
+### Use `@` aliases for:
+- **UI components**: `@/components/ui/button`
+- **Shared utilities**: `@lib/utils`
+- **Cross-feature imports**: `@features/simulation`
+- **External assets/data**: `@/dummy_data/grid_fleet_recording.json`
+- **Shared hooks**: `@/hooks/useFileUpload`
+
+### Use relative imports for:
+- **Within the same feature** (e.g., inside `features/simulation/`):
+  - Same directory: `./Component`
+  - Parent directory: `../types`
+  - Feature root: `../../utils`
+
+### Example (from `features/simulation/components/ui/PlaybackControls.tsx`):
+```typescript
+// External UI components - use @ aliases
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+
+// Within feature - use relative imports
+import { useSimulationController } from "../../hooks/SimulationContext";
+import { formatTime } from "../../utils";
+import { SPEED_OPTIONS } from "../../constants";
+```
+
+**Rationale**: `@` aliases provide stability for cross-boundary imports; relative imports show logical proximity within features.
+
 ## Key Rules
 
 1. **Client components**: Any file using PixiJS, hooks, or browser APIs needs `"use client";` at the top
