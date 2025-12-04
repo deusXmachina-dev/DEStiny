@@ -2,6 +2,7 @@
 Store locations: Sources, Sinks, and generic storage buffers.
 """
 
+from abc import abstractmethod
 from typing import Generic, List, TypeVar
 
 import simpy
@@ -12,6 +13,10 @@ from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
 
 T = TypeVar("T")
+
+
+SOURCE_ITEM_REQUEST_METRIC = "Items taken from source"
+SINK_ITEM_REQUEST_METRIC = "Items delivered to sink"
 
 
 class StoreLocation(Location, SimulationEntity, Generic[T]):
@@ -43,11 +48,11 @@ class StoreLocation(Location, SimulationEntity, Generic[T]):
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
 
-    def get_item(self) -> simpy.events.Event:
+    def get_item(self, env: RecordingEnvironment) -> simpy.events.Event:
         """Request an item from the store location."""
         return self.store.get()
 
-    def put_item(self, item: T) -> simpy.events.Event:
+    def put_item(self, env: RecordingEnvironment, item: T) -> simpy.events.Event:
         """Put an item into the store location."""
         return self.store.put(item)
 
@@ -57,6 +62,11 @@ class Source(StoreLocation[T]):
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
+    
+    def get_item(self, env: RecordingEnvironment) -> simpy.events.Event:
+        """Request an item from the store location."""
+        env.incr_counter(SOURCE_ITEM_REQUEST_METRIC)
+        return super().get_item(env)
 
 
 class Sink(StoreLocation[T]):
@@ -64,3 +74,8 @@ class Sink(StoreLocation[T]):
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
+    
+    def put_item(self, env: RecordingEnvironment, item: T) -> simpy.events.Event:
+        """Put an item into the store location."""
+        env.incr_counter(SINK_ITEM_REQUEST_METRIC)
+        return super().put_item(env, item)

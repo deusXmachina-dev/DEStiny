@@ -52,7 +52,7 @@ class TaskProvider:
 
         box = Box()
         env.record_stay(entity=box, start_time=env.now, parent=source)
-        yield source.put_item(box)
+        yield source.put_item(env, box)
 
         return AGVTask(source=source, sink=sink)
 

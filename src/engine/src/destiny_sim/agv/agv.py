@@ -108,14 +108,14 @@ class AGV(SimulationEntity):
                 isinstance(source := waypoint.location, StoreLocation)
                 and waypoint.type == WaypointType.SOURCE
             ):
-                self._carried_item = yield source.get_item()
+                self._carried_item = yield source.get_item(env)
 
             # Handle drop at SINK
             if (
                 isinstance(sink := waypoint.location, StoreLocation)
                 and waypoint.type == WaypointType.SINK
             ):
-                yield sink.put_item(self._carried_item)
+                yield sink.put_item(env, self._carried_item)
                 self._carried_item = None
 
                 env.record_stay(
