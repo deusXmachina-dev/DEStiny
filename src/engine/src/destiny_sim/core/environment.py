@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 from simpy import Environment
 
 from destiny_sim.core.timeline import MotionSegment, SimulationRecording
+from destiny_sim.core.metrics import MetricsContainer
 
 if TYPE_CHECKING:
     from destiny_sim.core.simulation_entity import SimulationEntity
@@ -31,6 +32,29 @@ class RecordingEnvironment(Environment):
         """
         super().__init__(initial_time=initial_time)
         self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
+        self._metrics_container = MetricsContainer()
+
+    def incr_counter(self, name: str, amount: int | float = 1, labels: dict[str, str] | None = None) -> None:
+        """
+        Increment a counter metric.
+        
+        Args:
+            name: Metric name
+            amount: Amount to increment by (default 1)
+            labels: Optional filtering labels
+        """
+        self._metrics_container.incr_counter(name, self.now, amount, labels)
+
+    def set_gauge(self, name: str, value: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Set a gauge metric value.
+        
+        Args:
+            name: Metric name
+            value: New value
+            labels: Optional filtering labels
+        """
+        self._metrics_container.set_gauge(name, self.now, value, labels)
 
     def record_disappearance(self, entity: Any, time: float | None = None) -> None:
         """
@@ -129,6 +153,7 @@ class RecordingEnvironment(Environment):
         return SimulationRecording(
             duration=self.now,
             segments_by_entity=self._segments_by_entity,
+            metrics=self._metrics_container.get_all(),
         )
 
     def save_recording(self, file_path: str) -> None:

@@ -9,7 +9,15 @@ All metrics use a columnar format (col_name: [values]) which is efficient for
 serialization and frontend consumption.
 """
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
+
+
+class MetricType(str, Enum):
+    """Enumeration of metric types."""
+    COUNTER = "counter"
+    GAUGE = "gauge"
+    GENERIC = "generic"
 
 
 @dataclass
@@ -19,14 +27,14 @@ class Metric:
     
     A metric has:
     - name: Unique identifier for the metric (e.g., "queue_length", "service_time")
-    - type: Semantic type hint (e.g., "counter", "gauge", "event") used for visualization
+    - type: MetricType enum value (e.g.: COUNTER, GAUGE, or GENERIC) used for visualization
     - labels: Key-value pairs for filtering/grouping (e.g., {"counter_id": "counter_1", "location": "bank"})
     - data: Columnar format dictionary where keys are column names and values are lists
     
     Example:
         Metric(
             name="queue_length",
-            type="gauge",
+            type=MetricType.GAUGE,
             labels={"counter_id": "counter_1"},
             data={
                 "timestamp": [0.0, 1.5, 3.2, 4.0, 5.5, 6.2],
@@ -37,7 +45,7 @@ class Metric:
     """
     
     name: str
-    type: str
+    type: MetricType
     labels: dict[str, str] = field(default_factory=dict)
     data: dict[str, list[Any]] = field(default_factory=dict)
     
@@ -74,7 +82,7 @@ class Metric:
         """
         return {
             "name": self.name,
-            "type": self.type,
+            "type": self.type.value,
             "labels": self.labels,
             "data": self.data,
         }
@@ -90,9 +98,78 @@ class Metric:
         Returns:
             Metric instance
         """
+        metric_type = data["type"]
+        # Handle both string and MetricType enum values
+        if isinstance(metric_type, str):
+            metric_type = MetricType(metric_type)
         return cls(
             name=data["name"],
-            type=data["type"],
+            type=metric_type,
             labels=data.get("labels", {}),
             data=data.get("data", {}),
         )
+
+
+class MetricsContainer:
+    """
+    Container for managing and recording metrics.
+    """
+
+    def __init__(self) -> None:
+        # Metrics storage: key is (name, sorted_labels_tuple) to ensure uniqueness
+        self._metrics: dict[tuple[str, tuple[tuple[str, str], ...]], Metric] = {}
+
+    def _get_metric_key(self, name: str, metric_type: MetricType, labels: dict[str, str] | None) -> tuple:
+        """Create a unique key for a metric based on name, type and labels."""
+        labels_tuple = tuple(sorted(labels.items())) if labels else ()
+        return (name, metric_type, labels_tuple)
+
+    def _get_or_create_metric(self, name: str, metric_type: MetricType, labels: dict[str, str] | None) -> Metric:
+        """Get existing metric or create a new one."""
+        key = self._get_metric_key(name, metric_type, labels)
+        if key not in self._metrics:
+            self._metrics[key] = Metric(
+                name=name,
+                type=metric_type,
+                labels=labels or {},
+                data={"timestamp": [], "value": []}
+            )
+        return self._metrics[key]
+
+    def incr_counter(self, name: str, time: float, amount: int | float = 1, labels: dict[str, str] | None = None) -> None:
+        """
+        Increment a counter metric.
+        
+        Args:
+            name: Metric name
+            time: Current simulation time
+            amount: Amount to increment by (default 1)
+            labels: Optional filtering labels
+        """
+        metric = self._get_or_create_metric(name, MetricType.COUNTER, labels)
+        
+        current_value = 0
+        if metric.data["value"]:
+            current_value = metric.data["value"][-1]
+            
+        new_value = current_value + amount
+        metric.data["timestamp"].append(time)
+        metric.data["value"].append(new_value)
+
+    def set_gauge(self, name: str, time: float, value: int | float, labels: dict[str, str] | None = None) -> None:
+        """
+        Set a gauge metric value.
+        
+        Args:
+            name: Metric name
+            time: Current simulation time
+            value: New value
+            labels: Optional filtering labels
+        """
+        metric = self._get_or_create_metric(name, MetricType.GAUGE, labels)
+        metric.data["timestamp"].append(time)
+        metric.data["value"].append(value)
+        
+    def get_all(self) -> list[Metric]:
+        """Return all recorded metrics."""
+        return list(self._metrics.values())
