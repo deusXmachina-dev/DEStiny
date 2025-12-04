@@ -2,7 +2,7 @@
 
 import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
-import { SimulationEntityState } from "@features/playback";
+import { SimulationEntityState } from "../../types";
 import { useAssets } from "../../hooks/useAssets";
 
 // Extend Pixi.js components for @pixi/react

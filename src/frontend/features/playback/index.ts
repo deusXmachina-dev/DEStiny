@@ -4,4 +4,4 @@ export { RecordingUploadButton } from "./components/RecordingUploadButton";
 export { formatTime } from "@lib/utils";
 
 // export types
-export type { SimulationRecording, SimulationMotionSegment, SimulationEntityState, SimulationEntityType, BoundingBox } from "./types";
+export type { SimulationRecording } from "./types";

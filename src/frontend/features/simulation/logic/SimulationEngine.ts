@@ -1,5 +1,6 @@
-import type { BoundingBox, SimulationEntityState, SimulationRecording } from "@features/playback";
-import { lerp } from "../utils";
+import type { SimulationRecording } from "@features/playback";
+import type { BoundingBox, SimulationEntityState } from "../types";
+import { lerp } from "../utils";    
 
 /**
  * SimulationEngine handles the core logic for simulation playback:

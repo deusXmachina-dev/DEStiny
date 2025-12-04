@@ -1,9 +1,11 @@
 "use client";
 
-import { createContext, useContext, useState, useMemo, ReactNode } from "react";
-import { BoundingBox, usePlayback } from "@features/playback";
+import { usePlayback } from "@features/playback";
+import { createContext, ReactNode,useContext, useMemo, useState } from "react";
+
 import { SimulationTheme } from "../constants";
 import { SimulationEngine } from "../logic/SimulationEngine";
+import { BoundingBox } from "../types";
 
 interface SimulationContextValue {
     // State

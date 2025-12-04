@@ -4,7 +4,7 @@ import { useTick } from "@pixi/react";
 import { useMemo, useRef, useState } from "react";
 import { usePlayback } from "@features/playback";
 import { SimulationEngine } from "../logic/SimulationEngine";
-import type { SimulationEntityState } from "@features/playback";
+import type { SimulationEntityState } from "../types";
 
 /**
  * Hook to manage entity rendering for PixiJS simulation.
