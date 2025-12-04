@@ -2,6 +2,7 @@
 
 import { Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
+
 import { ASSET_MAP } from "../constants";
 
 export const useAssets = () => {
@@ -36,7 +37,7 @@ export const useAssets = () => {
     // Helper to get texture by entity type
     const getTexture = (type: string): Texture => {
         const url = ASSET_MAP[type];
-        if (!url) return Texture.EMPTY;
+        if (!url) {return Texture.EMPTY;}
 
         // Assets.get() retrieves from the built-in cache
         return Assets.get(url) || Texture.EMPTY;

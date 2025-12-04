@@ -1,8 +1,8 @@
 "use client";
 
-import { PlaybackProvider, PlaybackControls, usePlayback } from "@features/playback";
-import { SimulationApp } from "@features/simulation";
 import { MetricsPanel } from "@features/metrics";
+import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
+import { SimulationApp } from "@features/simulation";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();

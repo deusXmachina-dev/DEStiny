@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { SimulationRecording } from "../types";
+import { createContext, ReactNode,useCallback, useContext, useState } from "react";
+
 import { PlaybackClock } from "../components/PlaybackClock";
+import { SimulationRecording } from "../types";
 
 interface PlaybackContextValue {
     // State
@@ -49,7 +50,8 @@ function getInitialRecording(): {
 
     // Only import dummy data in development to keep it out of production bundle
     try {
-        // Dynamic require for development-only data
+        // Dynamic import for development-only data
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const recordingData = require(`@/${devRecording}`);
         return { recording: recordingData as SimulationRecording, name: "Dummy Recording" };
     } catch (error) {

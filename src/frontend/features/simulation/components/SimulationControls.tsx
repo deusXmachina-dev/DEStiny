@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { X, Plus } from "lucide-react";
 import { RecordingUploadButton } from "@features/playback";
+import { Plus,X } from "lucide-react";
+import { useState } from "react";
+
+import { cn } from "@/lib/utils";
+
 import { ThemeSelector } from "./ThemeSelector";
 
 type ControlsPosition = "top" | "center";

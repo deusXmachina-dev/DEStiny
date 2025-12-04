@@ -1,8 +1,9 @@
 "use client";
 
-import { useTick } from "@pixi/react";
-import { useMemo, useRef, useState } from "react";
 import { usePlayback } from "@features/playback";
+import { useTick } from "@pixi/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { SimulationEngine } from "../logic/SimulationEngine";
 import type { SimulationEntityState } from "../types";
 
@@ -26,17 +27,27 @@ export const useEntityRenderer = () => {
 
     // Create engine instance when recording changes
     const engine = useMemo(() => {
-        if (!recording) return null;
-        lastRenderedTimeRef.current = -1;
+        if (!recording) {
+            return null;
+        }
         return new SimulationEngine(recording);
+    }, [recording]);
+
+    // Reset ref when recording changes
+    useEffect(() => {
+        lastRenderedTimeRef.current = -1;
     }, [recording]);
 
     // Use Pixi's tick to read currentTime and compute entities each frame
     useTick(() => {
-        if (!engine) return;
+        if (!engine) {
+            return;
+        }
 
         // Skip if time hasn't changed (optimization for paused state)
-        if (currentTime === lastRenderedTimeRef.current) return;
+        if (currentTime === lastRenderedTimeRef.current) {
+            return;
+        }
         lastRenderedTimeRef.current = currentTime;
 
         // Derive entities from current time

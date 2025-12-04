@@ -3,9 +3,7 @@ import type { BoundingBox } from "@features/playback";
 /**
  * Linear interpolation between two values.
  */
-export const lerp = (start: number, end: number, t: number): number => {
-    return start + (end - start) * t;
-};
+export const lerp = (start: number, end: number, t: number): number => start + (end - start) * t;
 
 
 /**

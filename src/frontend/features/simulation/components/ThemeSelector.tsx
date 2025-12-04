@@ -7,8 +7,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useSimulation } from "../hooks/SimulationContext";
+
 import { SimulationTheme, THEME_CONFIGS } from "../constants";
+import { useSimulation } from "../hooks/SimulationContext";
 
 const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 
     Object.keys(THEME_CONFIGS).map((key) => ({

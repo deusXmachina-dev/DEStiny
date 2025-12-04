@@ -1,6 +1,6 @@
 "use client";
 
-import { usePlayback, formatTime } from "@features/playback";
+import { formatTime,usePlayback } from "@features/playback";
 
 /**
  * MetricsPanel - Placeholder component for metrics visualization.

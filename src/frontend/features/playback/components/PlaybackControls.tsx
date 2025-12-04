@@ -1,12 +1,14 @@
 "use client";
 
-import { usePlayback } from "../hooks/PlaybackContext";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Play, Pause, RotateCcw } from "lucide-react";
 import { formatTime } from "@lib/utils";
+import { Pause, Play, RotateCcw } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+
 import { SPEED_OPTIONS } from "../constants";
+import { usePlayback } from "../hooks/PlaybackContext";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
     const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();

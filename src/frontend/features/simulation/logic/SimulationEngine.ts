@@ -1,4 +1,5 @@
 import type { SimulationRecording } from "@features/playback";
+
 import type { BoundingBox, SimulationEntityState } from "../types";
 import { lerp } from "../utils";    
 
@@ -39,7 +40,7 @@ export class SimulationEngine {
 
         // Calculate state for each entity
         Object.entries(this.recording.segments_by_entity).forEach(([id, segments]) => {
-            if (!segments || segments.length === 0) return;
+            if (!segments || segments.length === 0) {return;}
 
             // Get cached index or start at 0
             let index = this.segmentIndices[id] ?? 0;

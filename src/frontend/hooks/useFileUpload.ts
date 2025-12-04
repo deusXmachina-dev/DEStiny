@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface FileUploadState {
     file: File | null;
@@ -30,7 +30,9 @@ export const useFileUpload = ({
     
     // Use ref to avoid stale closure issues with onSuccess callback
     const onSuccessRef = useRef(onSuccess);
-    onSuccessRef.current = onSuccess;
+    useEffect(() => {
+        onSuccessRef.current = onSuccess;
+    }, [onSuccess]);
 
     const triggerFileUpload = useCallback(() => {
         const input = document.createElement('input');

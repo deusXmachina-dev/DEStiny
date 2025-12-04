@@ -36,7 +36,9 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
 
     // Compute bounding box from recording (memoized, computed once when recording changes)
     const boundingBox = useMemo<BoundingBox | null>(() => {
-        if (!recording) return null;
+        if (!recording) {
+            return null;
+        }
         const engine = new SimulationEngine(recording);
         return engine.getBoundingBox();
     }, [recording]);

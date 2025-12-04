@@ -29,6 +29,7 @@ const eslintConfig = defineConfig([
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "eqeqeq": ["error", "always", { null: "ignore" }],
       "curly": ["error", "all"],
+      "object-curly-spacing": ["error", "always"],
       "prefer-template": "error",
       "no-else-return": ["error", { allowElseIf: false }],
       "prefer-arrow-callback": "error",

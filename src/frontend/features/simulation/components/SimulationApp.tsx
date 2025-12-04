@@ -1,12 +1,13 @@
 "use client";
 
+import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
-import { Scene } from "./pixi/Scene";
-import { usePlayback } from "@features/playback";
+
 import { SimulationProvider, useSimulation } from "../hooks/SimulationContext";
-import { SimulationControls } from "./SimulationControls";
 import { Background } from "./pixi/Background";
+import { Scene } from "./pixi/Scene";
+import { SimulationControls } from "./SimulationControls";
 
 function SimulationAppContent() {
     const parentRef = useRef<HTMLDivElement>(null);

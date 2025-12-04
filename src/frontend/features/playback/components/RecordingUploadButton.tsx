@@ -1,7 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+
 import { useRecordingUpload } from "../hooks/useRecordingUpload";
 
 export function RecordingUploadButton() {
@@ -10,7 +12,7 @@ export function RecordingUploadButton() {
     return (
         <Button
             onClick={triggerUpload}
-            className={"gap-2 transition-all"}
+            className="gap-2 transition-all"
         >
             <Upload className="size-4" />
             Upload Recording

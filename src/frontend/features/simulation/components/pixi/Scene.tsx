@@ -2,11 +2,12 @@
 
 import { extend, useApplication } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
-import { Entity } from "./Entity";
-import { useEntityRenderer } from "../../hooks/useEntityRenderer";
-import { useAssets } from "../../hooks/useAssets";
+
 import { useSimulation } from "../../hooks/SimulationContext";
+import { useAssets } from "../../hooks/useAssets";
+import { useEntityRenderer } from "../../hooks/useEntityRenderer";
 import { calculateSceneOffset } from "../../utils";
+import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react
 extend({

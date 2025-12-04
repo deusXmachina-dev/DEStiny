@@ -3,7 +3,8 @@
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
-import { THEME_CONFIGS, SimulationTheme } from "../../constants";
+
+import { SimulationTheme,THEME_CONFIGS } from "../../constants";
 
 extend({ Graphics });
 
@@ -21,8 +22,8 @@ export const Background = ({
         (g: Graphics) => {
             g.clear();
             
-            const width = app.screen.width;
-            const height = app.screen.height;
+            const { width } = app.screen;
+            const { height } = app.screen;
 
             const tilesX = Math.ceil(width / config.tileSize) + 1;
             const tilesY = Math.ceil(height / config.tileSize) + 1;

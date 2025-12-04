@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback } from "react";
+
 import { useFileUpload } from "@/hooks/useFileUpload";
-import { usePlayback } from "./PlaybackContext";
+
 import { parseRecording } from "../utils";
+import { usePlayback } from "./PlaybackContext";
 
 export function useRecordingUpload() {
     const { setRecording, pause } = usePlayback();
