@@ -11,6 +11,8 @@ To record segments use env helper methods.
 from dataclasses import dataclass, field
 from typing import Any
 
+from destiny_sim.core.metrics import Metric
+
 
 @dataclass(frozen=True)
 class MotionSegment:
@@ -75,12 +77,22 @@ class SimulationRecording:
 
     duration: float
     segments_by_entity: dict[str, list[MotionSegment]] = field(default_factory=dict)
+    metrics: list[Metric] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        """
+        Convert recording to dictionary for JSON serialization.
+        
+        Includes motion segments and metrics in a format suitable for frontend consumption.
+        """
+
+        result = {
             "duration": self.duration,
             "segments_by_entity": {
                 entity_id: [seg.to_dict() for seg in segments]
                 for entity_id, segments in self.segments_by_entity.items()
             },
+            "metrics": [metric.to_dict() for metric in self.metrics],
         }
+
+        return result
