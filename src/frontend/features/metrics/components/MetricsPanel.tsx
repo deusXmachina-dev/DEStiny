@@ -2,37 +2,53 @@
 
 import { usePlayback } from "@features/playback";
 
+import { MetricsProvider, useMetrics } from "../hooks";
+
 import { ChartLineStep } from "./charts/LineChart";
+import { MetricsSelector } from "./MetricsSelector";
 
-
-export function MetricsPanel() {
-  const { recording, hasRecording, currentTime, duration } = usePlayback();
-
-  // Get metrics from the recording
-  const metrics = recording?.metrics || [];
+function MetricsPanelContent() {
+  const { hasRecording, currentTime, duration } = usePlayback();
+  const {
+    displayedMetrics,
+    visibleMetrics,
+    metricOrder,
+    handleToggleVisibility,
+    handleMoveUp,
+    handleMoveDown,
+  } = useMetrics();
 
   return (
     <div className="w-full h-full flex flex-col bg-gray-50 border-l border-gray-200">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-800">Metrics</h2>
+        {hasRecording && metricOrder.length > 0 && (
+          <MetricsSelector
+            visibleMetrics={visibleMetrics}
+            metricOrder={metricOrder}
+            onToggleVisibility={handleToggleVisibility}
+            onMoveUp={handleMoveUp}
+            onMoveDown={handleMoveDown}
+          />
+        )}
       </div>
             
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {!hasRecording ? (
           <div className="flex items-center justify-center h-full text-muted-foreground">
-                No recording loaded
+            No recording loaded
           </div>
-        ) : metrics.length === 0 ? (
+        ) : metricOrder.length === 0 ? (
           <div className="flex items-center justify-center h-full text-muted-foreground">
-                No metrics available in this recording
+            No metrics available in this recording
           </div>
         ) : (
-          metrics.map((metric, index) => (
-            <ChartLineStep 
-              key={`${metric.name}-${index}`} 
-              metric={metric} 
+          displayedMetrics.map((metric, index) => (
+            <ChartLineStep
+              key={`${metric.name}-${index}`}
+              metric={metric}
               currentTime={currentTime}
               maxDuration={duration}
             />
@@ -43,3 +59,10 @@ export function MetricsPanel() {
   );
 }
 
+export function MetricsPanel() {
+  return (
+    <MetricsProvider>
+      <MetricsPanelContent />
+    </MetricsProvider>
+  );
+}
