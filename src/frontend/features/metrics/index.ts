@@ -1,2 +1,2 @@
 export { MetricsPanel } from "./components/MetricsPanel";
-export type { Metric } from "./types";
+export type { Metric, MetricType, MetricData } from "./types";
