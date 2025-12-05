@@ -2,14 +2,7 @@
 
 import { formatTime } from "@lib/utils"
 import { Area, CartesianGrid, AreaChart, XAxis, YAxis } from "recharts"
-import { Badge } from "@/components/ui/badge"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartConfig,
   ChartContainer,
@@ -18,7 +11,8 @@ import {
 } from "@/components/ui/chart"
 
 import { Metric } from "../../types"
-import { transformMetricData } from "../../utils"
+import { useMetricData } from "../../hooks"
+import { ChartLayout } from "./ChartLayout"
 import { useMemo } from "react"
 
 const chartConfig = {
@@ -35,16 +29,8 @@ interface AreaChartWithStepsProps {
 }
 
 export function AreaChartWithSteps({ metric, maxDuration = 600, currentTime = maxDuration }: AreaChartWithStepsProps) {
-  // Transform data from parallel arrays to Recharts format
-  const chartData = useMemo(() => transformMetricData(metric), [metric]);
-  
-  const visibleData = useMemo(() => {
-    let data = chartData.filter(point => point.timestamp <= currentTime);
-    if (data.length === 0) {
-      data = [chartData[0]];
-    }
-    return data;
-  }, [chartData, currentTime]);
+  // Transform data and calculate visible data
+  const { chartData, visibleData } = useMetricData({ metric, currentTime });
 
   // Get the current value at the playback time
   const currentValue = useMemo(() => {
@@ -52,39 +38,18 @@ export function AreaChartWithSteps({ metric, maxDuration = 600, currentTime = ma
     return visibleData[visibleData.length - 1].value;
   }, [visibleData]);
 
-  // Handle empty data
-  if (!chartData || chartData.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{metric.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-[200px] text-muted-foreground">
-            No data to display
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Format badge value
+  const badgeValue = currentValue !== null 
+    ? (Number.isInteger(currentValue) ? currentValue : currentValue.toFixed(1))
+    : null;
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{metric.name}</CardTitle>
-          {currentValue !== null && (
-            <Badge
-              variant="outline"
-              className="text-xl font-bold tabular-nums bg-accent"
-            >
-              {Number.isInteger(currentValue) ? currentValue : currentValue.toFixed(1)}
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+    <ChartLayout
+      title={metric.name}
+      badge={badgeValue}
+      isEmpty={!chartData || chartData.length === 0}
+    >
+      <ChartContainer config={chartConfig}>
           <AreaChart
             accessibilityLayer
             data={chartData}
@@ -140,7 +105,6 @@ export function AreaChartWithSteps({ metric, maxDuration = 600, currentTime = ma
             />
           </AreaChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+    </ChartLayout>
   )
 }

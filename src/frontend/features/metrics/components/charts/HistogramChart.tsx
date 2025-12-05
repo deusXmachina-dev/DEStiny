@@ -1,12 +1,5 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartConfig,
   ChartContainer,
@@ -17,7 +10,8 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useMemo } from "react"
 
 import { Metric } from "../../types"
-import { transformMetricData } from "../../utils"
+import { useMetricData } from "../../hooks"
+import { ChartLayout } from "./ChartLayout"
 
 const chartConfig = {
   count: {
@@ -33,16 +27,8 @@ interface HistogramChartProps {
 }
 
 export function HistogramChart({ metric, maxDuration = 600, currentTime = maxDuration }: HistogramChartProps) {
-  // Transform data from parallel arrays to Recharts format
-  const chartData = useMemo(() => transformMetricData(metric), [metric]);
-  
-  const visibleData = useMemo(() => {
-    let data = chartData.filter(point => point.timestamp <= currentTime);
-    if (data.length === 0) {
-      data = [chartData[0]];
-    }
-    return data;
-  }, [chartData, currentTime]);
+  // Transform data and calculate visible data
+  const { chartData, visibleData } = useMetricData({ metric, currentTime });
 
   // Calculate histogram bins from visible data
   const histogramData = useMemo(() => {
@@ -115,39 +101,13 @@ export function HistogramChart({ metric, maxDuration = 600, currentTime = maxDur
     return histogramData.reduce((sum, bin) => sum + bin.count, 0);
   }, [histogramData]);
 
-  // Handle empty data
-  if (!chartData || chartData.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{metric.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-[200px] text-muted-foreground">
-            No data to display
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{metric.name}</CardTitle>
-          {totalCount > 0 && (
-            <Badge
-              variant="outline"
-              className="text-xl font-bold tabular-nums bg-accent"
-            >
-              {totalCount}
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+    <ChartLayout
+      title={metric.name}
+      badge={totalCount > 0 ? totalCount : null}
+      isEmpty={!chartData || chartData.length === 0}
+    >
+      <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
             data={histogramData}
@@ -193,7 +153,6 @@ export function HistogramChart({ metric, maxDuration = 600, currentTime = maxDur
             />
           </BarChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+    </ChartLayout>
   )
 }
