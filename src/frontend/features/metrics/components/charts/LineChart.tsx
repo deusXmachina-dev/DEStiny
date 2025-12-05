@@ -18,6 +18,7 @@ import {
 
 import { Metric } from "../../types"
 import { transformMetricData } from "../../utils"
+import { useMemo } from "react"
 
 const chartConfig = {
   value: {
@@ -28,11 +29,12 @@ const chartConfig = {
 
 interface ChartLineStepProps {
   metric: Metric;
+  maxDuration?: number;
 }
 
-export function ChartLineStep({ metric }: ChartLineStepProps) {
+export function ChartLineStep({ metric, maxDuration = 600 }: ChartLineStepProps) {
   // Transform data from parallel arrays to Recharts format
-  const chartData = transformMetricData(metric);
+  const chartData = useMemo(() => transformMetricData(metric), [metric]);
 
   // Handle empty data
   if (!chartData || chartData.length === 0) {
@@ -68,10 +70,12 @@ export function ChartLineStep({ metric }: ChartLineStepProps) {
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="timestamp"
+              type="number"
+              interval="preserveStartEnd"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
               tickFormatter={(value) => formatTime(value)}
+              domain={[0, maxDuration]}
             />
             <ChartTooltip
               content={
