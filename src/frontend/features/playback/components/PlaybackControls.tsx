@@ -1,7 +1,7 @@
 "use client";
 
 import { formatTime } from "@lib/utils";
-import { Pause, Play, RotateCcw } from "lucide-react";
+import { FastForward, Pause, Play, Rewind, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,10 +13,6 @@ import { usePlayback } from "../hooks/PlaybackContext";
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
   const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();
 
-  const handleRestart = () => {
-    seek(0);
-  };
-
   return (
     <div className="flex flex-col gap-2 w-full">
             
@@ -25,12 +21,12 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
         <div className="flex items-center gap-2">
           <Button
             disabled={disabled}
-            onClick={handleRestart}
+            onClick={() => seek(0)}
             size="icon"
             className="size-9"
-            title="Restart"
+            title="Seek to start"
           >
-            <RotateCcw className="size-4" />
+            <Rewind className="size-4" />
           </Button>
           <Button
             disabled={disabled}
@@ -44,6 +40,15 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
             ) : (
               <Play className="size-4" />
             )}
+          </Button>
+          <Button
+            disabled={disabled}
+            onClick={() => seek(duration)}
+            size="icon"
+            className="size-9"
+            title="Seek to end"
+          >
+            <FastForward className="size-4" />
           </Button>
         </div>
 
