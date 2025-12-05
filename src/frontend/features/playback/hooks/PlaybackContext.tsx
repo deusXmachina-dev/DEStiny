@@ -4,6 +4,7 @@ import { createContext, ReactNode,useCallback, useContext, useState } from "reac
 
 import { PlaybackClock } from "../components/PlaybackClock";
 import { SimulationRecording } from "../types";
+import { setDefaultWithDevOverride } from "@/lib/utils";
 
 interface PlaybackContextValue {
     // State
@@ -69,7 +70,7 @@ function getInitialRecording(): {
  */
 export const PlaybackProvider = ({ children, }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState(setDefaultWithDevOverride(1, 20));
   const [simulationName, setSimulationName] = useState(() => getInitialRecording().name);
   const [recording, setRecording] = useState<SimulationRecording | null>(() => getInitialRecording().recording);
   const [currentTime, setCurrentTime] = useState(0);
