@@ -31,29 +31,29 @@ interface SimulationProviderProps {
  * Must be used within a PlaybackProvider.
  */
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
-    const { recording } = usePlayback();
-    const [theme, setTheme] = useState<SimulationTheme>("factory");
+  const { recording } = usePlayback();
+  const [theme, setTheme] = useState<SimulationTheme>("factory");
 
-    // Compute bounding box from recording (memoized, computed once when recording changes)
-    const boundingBox = useMemo<BoundingBox | null>(() => {
-        if (!recording) {
-            return null;
-        }
-        const engine = new SimulationEngine(recording);
-        return engine.getBoundingBox();
-    }, [recording]);
+  // Compute bounding box from recording (memoized, computed once when recording changes)
+  const boundingBox = useMemo<BoundingBox | null>(() => {
+    if (!recording) {
+      return null;
+    }
+    const engine = new SimulationEngine(recording);
+    return engine.getBoundingBox();
+  }, [recording]);
 
-    const value: SimulationContextValue = {
-        theme,
-        boundingBox,
-        setTheme,
-    };
+  const value: SimulationContextValue = {
+    theme,
+    boundingBox,
+    setTheme,
+  };
 
-    return (
-        <SimulationContext.Provider value={value}>
-            {children}
-        </SimulationContext.Provider>
-    );
+  return (
+    <SimulationContext.Provider value={value}>
+      {children}
+    </SimulationContext.Provider>
+  );
 };
 
 /**
@@ -61,11 +61,11 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
  * Must be used within a SimulationProvider (which must be inside a PlaybackProvider).
  */
 export const useSimulation = (): SimulationContextValue => {
-    const context = useContext(SimulationContext);
-    if (!context) {
-        throw new Error("useSimulation must be used within a SimulationProvider");
-    }
-    return context;
+  const context = useContext(SimulationContext);
+  if (!context) {
+    throw new Error("useSimulation must be used within a SimulationProvider");
+  }
+  return context;
 };
 
 // Export types for external use

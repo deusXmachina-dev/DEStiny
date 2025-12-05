@@ -10,7 +10,7 @@ import { usePlaybackTicker } from "../hooks/usePlaybackTicker";
  * runs whenever the PlaybackProvider is mounted.
  */
 export const PlaybackClock = () => {
-    usePlaybackTicker();
-    return null;
+  usePlaybackTicker();
+  return null;
 };
 

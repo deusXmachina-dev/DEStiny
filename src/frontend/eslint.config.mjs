@@ -30,6 +30,9 @@ const eslintConfig = defineConfig([
       "eqeqeq": ["error", "always", { null: "ignore" }],
       "curly": ["error", "all"],
       "object-curly-spacing": ["error", "always"],
+      
+      // Indentation
+      "indent": ["error", 2, { SwitchCase: 1 }],
       "prefer-template": "error",
       "no-else-return": ["error", { allowElseIf: false }],
       "prefer-arrow-callback": "error",

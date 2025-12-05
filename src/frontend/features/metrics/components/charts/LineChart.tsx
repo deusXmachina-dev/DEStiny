@@ -1,11 +1,11 @@
 "use client"
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { formatTime } from "@lib/utils"
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -15,10 +15,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Metric } from "@features/metrics/types"
-import { formatTimestamp, transformMetricData } from "@features/metrics/utils"
 
-export const description = "A line chart with step"
+import { Metric } from "../../types"
+import { transformMetricData } from "../../utils"
 
 const chartConfig = {
   value: {
@@ -72,18 +71,22 @@ export function ChartLineStep({ metric }: ChartLineStepProps) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => formatTimestamp(value)}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
+              tickFormatter={(value) => formatTime(value)}
             />
             <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent 
-                labelFormatter={(value) => `Time: ${formatTimestamp(value as number)}`}
-              />}
+              content={
+                <ChartTooltipContent
+                  className="w-[150px]"
+                  nameKey="value"
+                  labelKey="timestamp"
+                  labelFormatter={(_value, payload) => {
+                    const timestamp = payload?.[0]?.payload?.timestamp;
+                    if (timestamp !== undefined) {
+                      return `Time: ${formatTime(timestamp)}`;
+                    }
+                  }}
+                />
+              }
             />
             <Line
               dataKey="value"

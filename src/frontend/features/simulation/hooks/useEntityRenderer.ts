@@ -19,41 +19,41 @@ import type { SimulationEntityState } from "../types";
  * owns time advancement; this hook is purely reactive.
  */
 export const useEntityRenderer = () => {
-    const { recording, currentTime } = usePlayback();
-    const [entities, setEntities] = useState<SimulationEntityState[]>([]);
+  const { recording, currentTime } = usePlayback();
+  const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
-    // Track the last rendered time to avoid redundant calculations
-    const lastRenderedTimeRef = useRef<number>(-1);
+  // Track the last rendered time to avoid redundant calculations
+  const lastRenderedTimeRef = useRef<number>(-1);
 
-    // Create engine instance when recording changes
-    const engine = useMemo(() => {
-        if (!recording) {
-            return null;
-        }
-        return new SimulationEngine(recording);
-    }, [recording]);
+  // Create engine instance when recording changes
+  const engine = useMemo(() => {
+    if (!recording) {
+      return null;
+    }
+    return new SimulationEngine(recording);
+  }, [recording]);
 
-    // Reset ref when recording changes
-    useEffect(() => {
-        lastRenderedTimeRef.current = -1;
-    }, [recording]);
+  // Reset ref when recording changes
+  useEffect(() => {
+    lastRenderedTimeRef.current = -1;
+  }, [recording]);
 
-    // Use Pixi's tick to read currentTime and compute entities each frame
-    useTick(() => {
-        if (!engine) {
-            return;
-        }
+  // Use Pixi's tick to read currentTime and compute entities each frame
+  useTick(() => {
+    if (!engine) {
+      return;
+    }
 
-        // Skip if time hasn't changed (optimization for paused state)
-        if (currentTime === lastRenderedTimeRef.current) {
-            return;
-        }
-        lastRenderedTimeRef.current = currentTime;
+    // Skip if time hasn't changed (optimization for paused state)
+    if (currentTime === lastRenderedTimeRef.current) {
+      return;
+    }
+    lastRenderedTimeRef.current = currentTime;
 
-        // Derive entities from current time
-        const rootEntities = engine.getEntitiesAtTime(currentTime);
-        setEntities(rootEntities);
-    });
+    // Derive entities from current time
+    const rootEntities = engine.getEntitiesAtTime(currentTime);
+    setEntities(rootEntities);
+  });
 
-    return entities;
+  return entities;
 };

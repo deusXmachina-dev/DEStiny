@@ -10,30 +10,30 @@ import { Scene } from "./pixi/Scene";
 import { SimulationControls } from "./SimulationControls";
 
 function SimulationAppContent() {
-    const parentRef = useRef<HTMLDivElement>(null);
-    const { hasRecording } = usePlayback();
-    const { theme } = useSimulation();
+  const parentRef = useRef<HTMLDivElement>(null);
+  const { hasRecording } = usePlayback();
+  const { theme } = useSimulation();
     
-    // Dynamic positioning: center & large when no recording, top-right & small when recording exists
+  // Dynamic positioning: center & large when no recording, top-right & small when recording exists
 
-    return (
-        <div ref={parentRef} className="w-full h-full relative">
-            <Application resizeTo={parentRef}>
-                <Background theme={theme}/>
-                <Scene />
-            </Application>
-            {/* Simulation Controls */}
-            { /* TODO: This should be moved to the parent component */ }
-            <SimulationControls position={hasRecording ? "top" : "center"} />
-        </div>
-    );
+  return (
+    <div ref={parentRef} className="w-full h-full relative">
+      <Application resizeTo={parentRef}>
+        <Background theme={theme}/>
+        <Scene />
+      </Application>
+      {/* Simulation Controls */}
+      { /* TODO: This should be moved to the parent component */ }
+      <SimulationControls position={hasRecording ? "top" : "center"} />
+    </div>
+  );
 }
 
 export default function SimulationApp() {
-    return (
-        <SimulationProvider>
-            <SimulationAppContent />
-        </SimulationProvider>
-    );
+  return (
+    <SimulationProvider>
+      <SimulationAppContent />
+    </SimulationProvider>
+  );
 }
 

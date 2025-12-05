@@ -8,21 +8,21 @@ import { parseRecording } from "../utils";
 import { usePlayback } from "./PlaybackContext";
 
 export function useRecordingUpload() {
-    const { setRecording, pause } = usePlayback();
+  const { setRecording, pause } = usePlayback();
 
-    const handleUpload = useCallback((_file: File, content: string) => {
-        const parsed = parseRecording(content);
-        if (parsed) {
-            setRecording(parsed);
-            pause();
-        }
-    }, [setRecording, pause]);
+  const handleUpload = useCallback((_file: File, content: string) => {
+    const parsed = parseRecording(content);
+    if (parsed) {
+      setRecording(parsed);
+      pause();
+    }
+  }, [setRecording, pause]);
 
-    const { triggerFileUpload } = useFileUpload({
-        acceptFileTypes: ".json",
-        onSuccess: handleUpload,
-    });
+  const { triggerFileUpload } = useFileUpload({
+    acceptFileTypes: ".json",
+    onSuccess: handleUpload,
+  });
 
-    return { triggerUpload: triggerFileUpload };
+  return { triggerUpload: triggerFileUpload };
 }
 
