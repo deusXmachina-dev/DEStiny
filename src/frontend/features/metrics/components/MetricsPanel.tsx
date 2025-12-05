@@ -7,6 +7,7 @@ import { MetricsProvider, useMetrics } from "../hooks";
 import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { MetricsSelector } from "./MetricsSelector";
 import { ClientOnly } from "@/components/common/ClientOnly";
+import { HistogramChart } from "./charts/HistogramChart";
 
 function MetricsPanelContent() {
   const { hasRecording, currentTime, duration } = usePlayback();
@@ -47,12 +48,21 @@ function MetricsPanelContent() {
           </div>
         ) : (
           displayedMetrics.map((metric, index) => (
-            <AreaChartWithSteps
-              key={`${metric.name}-${index}`}
-              metric={metric}
-              currentTime={currentTime}
-              maxDuration={duration}
-            />
+            metric.type === "sample" ? (
+              <HistogramChart
+                key={`${metric.name}-${index}`}
+                metric={metric}
+                currentTime={currentTime}
+                maxDuration={duration}
+              />
+            ) : (
+              <AreaChartWithSteps
+                key={`${metric.name}-${index}`}
+                metric={metric}
+                currentTime={currentTime}
+                maxDuration={duration}
+              />
+            )
           ))
         )}
       </div>
