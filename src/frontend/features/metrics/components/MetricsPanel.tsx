@@ -4,7 +4,7 @@ import { usePlayback } from "@features/playback";
 
 import { MetricsProvider, useMetrics } from "../hooks";
 
-import { ChartLineStep } from "./charts/LineChart";
+import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { MetricsSelector } from "./MetricsSelector";
 import { ClientOnly } from "@/components/common/ClientOnly";
 
@@ -47,7 +47,7 @@ function MetricsPanelContent() {
           </div>
         ) : (
           displayedMetrics.map((metric, index) => (
-            <ChartLineStep
+            <AreaChartWithSteps
               key={`${metric.name}-${index}`}
               metric={metric}
               currentTime={currentTime}

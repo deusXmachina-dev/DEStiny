@@ -1,7 +1,7 @@
 "use client"
 
 import { formatTime } from "@lib/utils"
-import { Area, CartesianGrid, AreaChart, Line, XAxis, YAxis } from "recharts"
+import { Area, CartesianGrid, AreaChart, XAxis, YAxis } from "recharts"
 import { Badge } from "@/components/ui/badge"
 
 import {
@@ -28,13 +28,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-interface ChartLineStepProps {
+interface AreaChartWithStepsProps {
   metric: Metric;
-  currentTime?: number;
   maxDuration?: number;
+  currentTime?: number;
 }
 
-export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: ChartLineStepProps) {
+export function AreaChartWithSteps({ metric, maxDuration = 600, currentTime = maxDuration }: AreaChartWithStepsProps) {
   // Transform data from parallel arrays to Recharts format
   const chartData = useMemo(() => transformMetricData(metric), [metric]);
   
