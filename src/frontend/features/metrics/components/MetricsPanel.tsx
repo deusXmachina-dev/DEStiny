@@ -6,6 +6,7 @@ import { MetricsProvider, useMetrics } from "../hooks";
 
 import { ChartLineStep } from "./charts/LineChart";
 import { MetricsSelector } from "./MetricsSelector";
+import { ClientOnly } from "@/components/common/ClientOnly";
 
 function MetricsPanelContent() {
   const { hasRecording, currentTime, duration } = usePlayback();
@@ -61,8 +62,10 @@ function MetricsPanelContent() {
 
 export function MetricsPanel() {
   return (
-    <MetricsProvider>
+    <ClientOnly>      
+        <MetricsProvider>
       <MetricsPanelContent />
     </MetricsProvider>
+    </ClientOnly>
   );
 }
