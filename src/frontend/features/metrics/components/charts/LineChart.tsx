@@ -1,7 +1,8 @@
 "use client"
 
 import { formatTime } from "@lib/utils"
-import { Area, AreaChart, CartesianGrid, ComposedChart, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Area, CartesianGrid, AreaChart, Line, XAxis, YAxis } from "recharts"
+import { Badge } from "@/components/ui/badge"
 
 import {
   Card,
@@ -23,7 +24,7 @@ import { useMemo } from "react"
 const chartConfig = {
   value: {
     label: "Value",
-    color: "var(--chart-1)",
+    color: "var(--primary)",
   },
 } satisfies ChartConfig
 
@@ -38,18 +39,18 @@ export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: 
   const chartData = useMemo(() => transformMetricData(metric), [metric]);
   
   const visibleData = useMemo(() => {
-    return chartData.filter(point => point.timestamp <= currentTime);
+    let data = chartData.filter(point => point.timestamp <= currentTime);
+    if (data.length === 0) {
+      data = [chartData[0]];
+    }
+    return data;
   }, [chartData, currentTime]);
 
-  // Calculate Y-axis domain from all data to keep scale consistent
-  const yDomain = useMemo(() => {
-    if (chartData.length === 0) return [0, 1];
-    const values = chartData.map(d => d.value);
-    const max = Math.max(...values);
-    // Round up to nearest nice number for better tick spacing
-    const niceMax = Math.ceil(max * 1.1); // Add 10% padding
-    return [0, niceMax];
-  }, [chartData]);
+  // Get the current value at the playback time
+  const currentValue = useMemo(() => {
+    if (visibleData.length === 0) return null;
+    return visibleData[visibleData.length - 1].value;
+  }, [visibleData]);
 
   // Handle empty data
   if (!chartData || chartData.length === 0) {
@@ -70,11 +71,21 @@ export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{metric.name}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{metric.name}</CardTitle>
+          {currentValue !== null && (
+            <Badge
+              variant="outline"
+              className="text-xl font-bold tabular-nums bg-accent"
+            >
+              {Number.isInteger(currentValue) ? currentValue : currentValue.toFixed(1)}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <ComposedChart
+          <AreaChart
             accessibilityLayer
             data={chartData}
             style={{
@@ -98,13 +109,11 @@ export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: 
             <YAxis
               type="number"
               width={35}
-              tickSize={10}
               tickLine={false}
               axisLine={false}
-              domain={yDomain}
               allowDecimals={false}
             />
-{/*             <ChartTooltip
+            <ChartTooltip
               content={
                 <ChartTooltipContent
                   className="w-[150px]"
@@ -118,13 +127,6 @@ export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: 
                   }}
                 />
               }
-            /> */}
-            <Line
-              dataKey="value"
-              type="step"
-              stroke="var(--color-value)"
-              strokeWidth={2}
-              dot={false}
             />
             <Area
               data={visibleData}
@@ -134,8 +136,9 @@ export function ChartLineStep({ metric, currentTime = 300, maxDuration = 600 }: 
               strokeWidth={2}
               isAnimationActive={false}
               fill="var(--color-value)"
+              fillOpacity={0.2}
             />
-          </ComposedChart>
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>
