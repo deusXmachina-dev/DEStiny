@@ -5,7 +5,8 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 import { SimulationTheme } from "../constants";
 import { SimulationEngine } from "../logic/SimulationEngine";
-import { BoundingBox } from "../types";
+import { calculateBlueprintBoundingBox } from "../utils";
+import { BoundingBox, SimulationBlueprint } from "../types";
 
 interface ScreenSize {
     width: number;
@@ -20,11 +21,13 @@ interface SimulationContextValue {
     boundingBox: BoundingBox | null;
     screenSize: ScreenSize;
     mode: AppMode;
+    blueprint: SimulationBlueprint | null;
     
     // Actions
     setTheme: (theme: SimulationTheme) => void;
     setScreenSize: (screenSize: ScreenSize) => void;
     setMode: (mode: AppMode) => void;
+    setBlueprint: (blueprint: SimulationBlueprint | null) => void;
 }
 
 const SimulationContext = createContext<SimulationContextValue | undefined>(undefined);
@@ -46,24 +49,30 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
   const [theme, setTheme] = useState<SimulationTheme>("factory");
   const [screenSize, setScreenSize] = useState<ScreenSize>({ width: 0, height: 0 });
   const [mode, setMode] = useState<AppMode>("simulation");
+  const [blueprint, setBlueprint] = useState<SimulationBlueprint | null>(null);
 
-  // Compute bounding box from recording (memoized, computed once when recording changes)
+  // Compute bounding box from recording or blueprint (memoized, computed once when source changes)
   const boundingBox = useMemo<BoundingBox | null>(() => {
+    if (mode === "builder") {
+      return calculateBlueprintBoundingBox(blueprint);
+    }
     if (!recording) {
       return null;
     }
     const engine = new SimulationEngine(recording);
     return engine.getBoundingBox();
-  }, [recording]);
+  }, [mode, recording, blueprint]);
 
   const value: SimulationContextValue = {
     theme,
     boundingBox,
     screenSize,
     mode,
+    blueprint,
     setTheme,
     setScreenSize,
     setMode,
+    setBlueprint,
   };
 
   return (

@@ -1,4 +1,4 @@
-import type { BoundingBox } from "./types";
+import type { BoundingBox, BlueprintEntity, SimulationBlueprint, SimulationEntityState } from "./types";
 
 /**
  * Linear interpolation between two values.
@@ -27,5 +27,67 @@ export const calculateSceneOffset = (
   const offsetY = (screenHeight - worldHeight) / 2 - minY;
 
   return { offsetX, offsetY };
+};
+
+/**
+ * Convert blueprint entities to simulation entity states for rendering.
+ * Extracts x, y, and angle from entity parameters.
+ */
+export const blueprintToEntityStates = (
+  blueprint: SimulationBlueprint | null
+): SimulationEntityState[] => {
+  if (!blueprint) {
+    return [];
+  }
+
+  return blueprint.entities.map((entity: BlueprintEntity) => {
+    const x = typeof entity.parameters.x === "number" ? entity.parameters.x : 0;
+    const y = typeof entity.parameters.y === "number" ? entity.parameters.y : 0;
+    const angle = typeof entity.parameters.angle === "number" ? entity.parameters.angle : 0;
+
+    return {
+      entityId: entity.uuid,
+      entityType: entity.entityType as SimulationEntityState["entityType"],
+      x,
+      y,
+      angle,
+      children: [],
+    };
+  });
+};
+
+/**
+ * Calculate bounding box from blueprint entities.
+ */
+export const calculateBlueprintBoundingBox = (
+  blueprint: SimulationBlueprint | null
+): BoundingBox | null => {
+  if (!blueprint || blueprint.entities.length === 0) {
+    return null;
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const entity of blueprint.entities) {
+    const x = typeof entity.parameters.x === "number" ? entity.parameters.x : 0;
+    const y = typeof entity.parameters.y === "number" ? entity.parameters.y : 0;
+
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+  }
+
+  // Add some padding
+  const padding = 50;
+  return {
+    minX: minX - padding,
+    minY: minY - padding,
+    maxX: maxX + padding,
+    maxY: maxY + padding,
+  };
 };
 
