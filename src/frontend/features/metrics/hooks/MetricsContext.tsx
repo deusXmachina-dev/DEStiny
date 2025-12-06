@@ -30,10 +30,10 @@ interface MetricsProviderProps {
 export function MetricsProvider({
   children,
 }: MetricsProviderProps) {
-  const { recording } = usePlayback();
+  const { recording, simulationName } = usePlayback();
   const metrics = recording?.metrics || [];
   const [config, setConfig] = useLocalStorage<MetricsConfig>(
-    "destiny-metrics-config",
+    `destiny-metrics-config-${simulationName}`,
     {
       visibleMetrics: [],
       metricOrder: [],
