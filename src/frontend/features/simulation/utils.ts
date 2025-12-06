@@ -1,4 +1,4 @@
-import type { BoundingBox } from "@features/playback";
+import type { BoundingBox } from "./types";
 
 /**
  * Linear interpolation between two values.

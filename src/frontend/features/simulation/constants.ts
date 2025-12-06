@@ -1,4 +1,4 @@
-import { SimulationEntityType } from "@features/playback";
+import { SimulationEntityType } from "./types";
 
 /**
  * Asset URL mapping for entity types.
