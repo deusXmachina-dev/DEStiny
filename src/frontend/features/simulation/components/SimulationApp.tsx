@@ -4,13 +4,13 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
-import { SimulationProvider, useSimulation } from "../hooks/SimulationContext";
+import { useSimulation } from "../hooks/SimulationContext";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { SimulationControls } from "./SimulationControls";
 import { ResizeListener } from "./ResizeListener";
 
-function SimulationAppContent() {
+export default function SimulationApp() {
   const parentRef = useRef<HTMLDivElement>(null);
   const { hasRecording } = usePlayback();
   const { theme } = useSimulation();
@@ -30,12 +30,3 @@ function SimulationAppContent() {
     </div>
   );
 }
-
-export default function SimulationApp() {
-  return (
-    <SimulationProvider>
-      <SimulationAppContent />
-    </SimulationProvider>
-  );
-}
-

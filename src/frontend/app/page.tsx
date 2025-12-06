@@ -2,7 +2,7 @@
 
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { SimulationApp } from "@features/simulation";
+import { SimulationApp, SimulationProvider } from "@features/simulation";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
@@ -35,7 +35,9 @@ function HomeContent() {
 export default function Home() {
   return (
     <PlaybackProvider>
-      <HomeContent />
+      <SimulationProvider>
+        <HomeContent />
+      </SimulationProvider>
     </PlaybackProvider>
   );
 }
