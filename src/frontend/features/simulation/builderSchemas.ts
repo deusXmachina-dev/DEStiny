@@ -27,6 +27,14 @@ export const PERSON_SCHEMA: BuilderEntitySchema = {
 };
 
 /**
+ * Registry of all available builder schemas.
+ * Used by the builder UI to populate the toolbox.
+ */
+export const AVAILABLE_SCHEMAS: BuilderEntitySchema[] = [
+  PERSON_SCHEMA,
+];
+
+/**
  * Example blueprint for a simple Person walk scenario.
  * 
  * This demonstrates what a blueprint would look like for a Person
