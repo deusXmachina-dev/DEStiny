@@ -2,9 +2,10 @@
 
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { SimulationTheme,THEME_CONFIGS } from "../../constants";
+import { useSimulation } from "../../hooks/SimulationContext";
 
 extend({ Graphics });
 
@@ -15,15 +16,16 @@ interface BackgroundProps {
 export const Background = ({
   theme = "factory",
 }: BackgroundProps) => {
-  const { app } = useApplication();
+  const { screenSize } = useSimulation();
   const config = THEME_CONFIGS[theme];
 
   const draw = useCallback(
     (g: Graphics) => {
       g.clear();
+
+      console.log("app.screen changed", screenSize);
             
-      const { width } = app.screen;
-      const { height } = app.screen;
+      const { width, height } = screenSize;
 
       const tilesX = Math.ceil(width / config.tileSize) + 1;
       const tilesY = Math.ceil(height / config.tileSize) + 1;
@@ -48,7 +50,7 @@ export const Background = ({
       }
       g.stroke();
     },
-    [config, app]
+    [config, screenSize]
   );
 
   return <pixiGraphics draw={draw} />;

@@ -2,6 +2,7 @@
 
 import { extend, useApplication } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
+import { useEffect } from "react";
 
 import { useSimulation } from "../../hooks/SimulationContext";
 import { useAssets } from "../../hooks/useAssets";
@@ -17,8 +18,7 @@ extend({
 
 export const Scene = () => {
   const { isLoaded } = useAssets();
-  const { app } = useApplication();
-  const { boundingBox } = useSimulation();
+  const { boundingBox, screenSize } = useSimulation();
 
   const entities = useEntityRenderer();
 
@@ -29,8 +29,8 @@ export const Scene = () => {
   // Calculate centering offset based on bounding box
   const { offsetX, offsetY } = calculateSceneOffset(
     boundingBox,
-    app.screen.width,
-    app.screen.height
+    screenSize.width,
+    screenSize.height
   );
 
   return (

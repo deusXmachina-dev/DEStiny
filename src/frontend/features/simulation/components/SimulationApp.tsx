@@ -8,6 +8,7 @@ import { SimulationProvider, useSimulation } from "../hooks/SimulationContext";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { SimulationControls } from "./SimulationControls";
+import { ResizeListener } from "./ResizeListener";
 
 function SimulationAppContent() {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,7 @@ function SimulationAppContent() {
   return (
     <div ref={parentRef} className="w-full h-full relative">
       <Application resizeTo={parentRef}>
+        <ResizeListener />
         <Background theme={theme}/>
         <Scene />
       </Application>

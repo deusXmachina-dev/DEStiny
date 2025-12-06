@@ -7,13 +7,20 @@ import { SimulationTheme } from "../constants";
 import { SimulationEngine } from "../logic/SimulationEngine";
 import { BoundingBox } from "../types";
 
+interface ScreenSize {
+    width: number;
+    height: number;
+}
+
 interface SimulationContextValue {
     // State
     theme: SimulationTheme;
     boundingBox: BoundingBox | null;
+    screenSize: ScreenSize;
     
     // Actions
     setTheme: (theme: SimulationTheme) => void;
+    setScreenSize: (screenSize: ScreenSize) => void;
 }
 
 const SimulationContext = createContext<SimulationContextValue | undefined>(undefined);
@@ -33,6 +40,7 @@ interface SimulationProviderProps {
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
   const { recording } = usePlayback();
   const [theme, setTheme] = useState<SimulationTheme>("factory");
+  const [screenSize, setScreenSize] = useState<ScreenSize>({ width: 0, height: 0 });
 
   // Compute bounding box from recording (memoized, computed once when recording changes)
   const boundingBox = useMemo<BoundingBox | null>(() => {
@@ -46,7 +54,9 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
   const value: SimulationContextValue = {
     theme,
     boundingBox,
+    screenSize,
     setTheme,
+    setScreenSize,
   };
 
   return (
@@ -69,5 +79,5 @@ export const useSimulation = (): SimulationContextValue => {
 };
 
 // Export types for external use
-export type { SimulationContextValue };
+export type { SimulationContextValue, ScreenSize };
 
