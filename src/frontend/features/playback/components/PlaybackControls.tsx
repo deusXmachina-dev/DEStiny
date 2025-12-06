@@ -65,7 +65,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
             max={duration || 1}
             step={0.01}
             onValueChange={(vals) => seek(vals[0])}
-            className="flex-1 **:data-[slot=slider-track]"
+            className="flex-1"
           />
           <span className="text-sm min-w-[45px]">
             {formatTime(duration)}
