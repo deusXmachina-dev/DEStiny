@@ -2,8 +2,10 @@
 
 import { extend, useApplication } from "@pixi/react";
 import { Graphics } from "pixi.js";
-import { useCallback } from "react";
-import { THEME_CONFIGS, SimulationTheme } from "../../constants";
+import { useCallback, useEffect } from "react";
+
+import { SimulationTheme,THEME_CONFIGS } from "../../constants";
+import { useSimulation } from "../../hooks/SimulationContext";
 
 extend({ Graphics });
 
@@ -12,44 +14,46 @@ interface BackgroundProps {
 }
 
 export const Background = ({
-    theme = "factory",
+  theme = "factory",
 }: BackgroundProps) => {
-    const { app } = useApplication();
-    const config = THEME_CONFIGS[theme];
+  const { screenSize } = useSimulation();
+  const config = THEME_CONFIGS[theme];
 
-    const draw = useCallback(
-        (g: Graphics) => {
-            g.clear();
+  const draw = useCallback(
+    (g: Graphics) => {
+      g.clear();
 
-            const width = app.screen.width;
-            const height = app.screen.height;
-            const tilesX = Math.ceil(width / config.tileSize) + 1;
-            const tilesY = Math.ceil(height / config.tileSize) + 1;
+      console.log("app.screen changed", screenSize);
+            
+      const { width, height } = screenSize;
 
-            // Draw checkerboard tiles
-            for (let y = 0; y < tilesY; y++) {
-                for (let x = 0; x < tilesX; x++) {
-                    g.rect(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
-                    g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
-                }
-            }
+      const tilesX = Math.ceil(width / config.tileSize) + 1;
+      const tilesY = Math.ceil(height / config.tileSize) + 1;
 
-            // Draw grid lines
-            g.setStrokeStyle({ width: 2, color: config.grid });
-            for (let x = 0; x <= tilesX; x++) {
-                g.moveTo(x * config.tileSize, 0);
-                g.lineTo(x * config.tileSize, height);
-            }
-            for (let y = 0; y <= tilesY; y++) {
-                g.moveTo(0, y * config.tileSize);
-                g.lineTo(width, y * config.tileSize);
-            }
-            g.stroke();
-        },
-        [app, config]
-    );
+      // Draw checkerboard tiles
+      for (let y = 0; y < tilesY; y++) {
+        for (let x = 0; x < tilesX; x++) {
+          g.rect(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
+          g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
+        }
+      }
 
-    return <pixiGraphics draw={draw} />;
+      // Draw grid lines
+      g.setStrokeStyle({ width: 2, color: config.grid });
+      for (let x = 0; x <= tilesX; x++) {
+        g.moveTo(x * config.tileSize, 0);
+        g.lineTo(x * config.tileSize, height);
+      }
+      for (let y = 0; y <= tilesY; y++) {
+        g.moveTo(0, y * config.tileSize);
+        g.lineTo(width, y * config.tileSize);
+      }
+      g.stroke();
+    },
+    [config, screenSize]
+  );
+
+  return <pixiGraphics draw={draw} />;
 };
 
 export default Background;

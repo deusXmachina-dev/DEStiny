@@ -1,17 +1,26 @@
 "use client";
 
-import { createContext, useContext, useState, useMemo, ReactNode } from "react";
-import { BoundingBox, usePlayback } from "@features/playback";
+import { usePlayback } from "@features/playback";
+import { createContext, ReactNode,useContext, useMemo, useState } from "react";
+
 import { SimulationTheme } from "../constants";
 import { SimulationEngine } from "../logic/SimulationEngine";
+import { BoundingBox } from "../types";
+
+interface ScreenSize {
+    width: number;
+    height: number;
+}
 
 interface SimulationContextValue {
     // State
     theme: SimulationTheme;
     boundingBox: BoundingBox | null;
+    screenSize: ScreenSize;
     
     // Actions
     setTheme: (theme: SimulationTheme) => void;
+    setScreenSize: (screenSize: ScreenSize) => void;
 }
 
 const SimulationContext = createContext<SimulationContextValue | undefined>(undefined);
@@ -29,27 +38,32 @@ interface SimulationProviderProps {
  * Must be used within a PlaybackProvider.
  */
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
-    const { recording } = usePlayback();
-    const [theme, setTheme] = useState<SimulationTheme>("factory");
+  const { recording } = usePlayback();
+  const [theme, setTheme] = useState<SimulationTheme>("factory");
+  const [screenSize, setScreenSize] = useState<ScreenSize>({ width: 0, height: 0 });
 
-    // Compute bounding box from recording (memoized, computed once when recording changes)
-    const boundingBox = useMemo<BoundingBox | null>(() => {
-        if (!recording) return null;
-        const engine = new SimulationEngine(recording);
-        return engine.getBoundingBox();
-    }, [recording]);
+  // Compute bounding box from recording (memoized, computed once when recording changes)
+  const boundingBox = useMemo<BoundingBox | null>(() => {
+    if (!recording) {
+      return null;
+    }
+    const engine = new SimulationEngine(recording);
+    return engine.getBoundingBox();
+  }, [recording]);
 
-    const value: SimulationContextValue = {
-        theme,
-        boundingBox,
-        setTheme,
-    };
+  const value: SimulationContextValue = {
+    theme,
+    boundingBox,
+    screenSize,
+    setTheme,
+    setScreenSize,
+  };
 
-    return (
-        <SimulationContext.Provider value={value}>
-            {children}
-        </SimulationContext.Provider>
-    );
+  return (
+    <SimulationContext.Provider value={value}>
+      {children}
+    </SimulationContext.Provider>
+  );
 };
 
 /**
@@ -57,13 +71,13 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
  * Must be used within a SimulationProvider (which must be inside a PlaybackProvider).
  */
 export const useSimulation = (): SimulationContextValue => {
-    const context = useContext(SimulationContext);
-    if (!context) {
-        throw new Error("useSimulation must be used within a SimulationProvider");
-    }
-    return context;
+  const context = useContext(SimulationContext);
+  if (!context) {
+    throw new Error("useSimulation must be used within a SimulationProvider");
+  }
+  return context;
 };
 
 // Export types for external use
-export type { SimulationContextValue };
+export type { SimulationContextValue, ScreenSize };
 

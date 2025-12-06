@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+
 import { usePlayback } from "./PlaybackContext";
 
 /**
@@ -13,66 +14,66 @@ import { usePlayback } from "./PlaybackContext";
  * Must be used within a PlaybackProvider.
  */
 export const usePlaybackTicker = () => {
-    const { isPlaying, speed, duration, seekTarget, setCurrentTime, clearSeekTarget } = usePlayback();
+  const { isPlaying, speed, duration, seekTarget, setCurrentTime, clearSeekTarget } = usePlayback();
     
-    const accumulatedTimeRef = useRef<number>(0);
-    const lastTimestampRef = useRef<number | null>(null);
-    const rafIdRef = useRef<number | null>(null);
+  const accumulatedTimeRef = useRef<number>(0);
+  const lastTimestampRef = useRef<number | null>(null);
+  const rafIdRef = useRef<number | null>(null);
 
-    // Handle seek target - update accumulated time when user seeks
-    useEffect(() => {
-        if (seekTarget !== null) {
-            accumulatedTimeRef.current = seekTarget * 1000; // Convert to ms
-            lastTimestampRef.current = null; // Reset timestamp to avoid jump
-            clearSeekTarget();
+  // Handle seek target - update accumulated time when user seeks
+  useEffect(() => {
+    if (seekTarget !== null) {
+      accumulatedTimeRef.current = seekTarget * 1000; // Convert to ms
+      lastTimestampRef.current = null; // Reset timestamp to avoid jump
+      clearSeekTarget();
+    }
+  }, [seekTarget, clearSeekTarget]);
+
+  // Main animation loop
+  useEffect(() => {
+    if (!isPlaying) {
+      // Clean up when paused
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      lastTimestampRef.current = null;
+      return;
+    }
+
+    const tick = (timestamp: number) => {
+      if (lastTimestampRef.current !== null) {
+        const deltaMs = timestamp - lastTimestampRef.current;
+        accumulatedTimeRef.current += deltaMs * speed;
+
+        const durationMs = duration * 1000;
+        if (accumulatedTimeRef.current > durationMs) {
+          accumulatedTimeRef.current = durationMs;
         }
-    }, [seekTarget, clearSeekTarget]);
 
-    // Main animation loop
-    useEffect(() => {
-        if (!isPlaying) {
-            // Clean up when paused
-            if (rafIdRef.current !== null) {
-                cancelAnimationFrame(rafIdRef.current);
-                rafIdRef.current = null;
-            }
-            lastTimestampRef.current = null;
-            return;
-        }
+        const simTimeSeconds = accumulatedTimeRef.current / 1000;
+        setCurrentTime(simTimeSeconds);
+      }
 
-        const tick = (timestamp: number) => {
-            if (lastTimestampRef.current !== null) {
-                const deltaMs = timestamp - lastTimestampRef.current;
-                accumulatedTimeRef.current += deltaMs * speed;
+      lastTimestampRef.current = timestamp;
+      rafIdRef.current = requestAnimationFrame(tick);
+    };
 
-                const durationMs = duration * 1000;
-                if (accumulatedTimeRef.current > durationMs) {
-                    accumulatedTimeRef.current = durationMs;
-                }
+    rafIdRef.current = requestAnimationFrame(tick);
 
-                const simTimeSeconds = accumulatedTimeRef.current / 1000;
-                setCurrentTime(simTimeSeconds);
-            }
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
+  }, [isPlaying, speed, duration, setCurrentTime]);
 
-            lastTimestampRef.current = timestamp;
-            rafIdRef.current = requestAnimationFrame(tick);
-        };
-
-        rafIdRef.current = requestAnimationFrame(tick);
-
-        return () => {
-            if (rafIdRef.current !== null) {
-                cancelAnimationFrame(rafIdRef.current);
-                rafIdRef.current = null;
-            }
-        };
-    }, [isPlaying, speed, duration, setCurrentTime]);
-
-    // Reset when duration changes (new recording loaded)
-    useEffect(() => {
-        accumulatedTimeRef.current = 0;
-        lastTimestampRef.current = null;
-        setCurrentTime(0);
-    }, [duration, setCurrentTime]);
+  // Reset when duration changes (new recording loaded)
+  useEffect(() => {
+    accumulatedTimeRef.current = 0;
+    lastTimestampRef.current = null;
+    setCurrentTime(0);
+  }, [duration, setCurrentTime]);
 };
 
