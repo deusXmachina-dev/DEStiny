@@ -4,10 +4,10 @@ import { usePlayback } from "@features/playback";
 import { useTick } from "@pixi/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useSimulation } from "./SimulationContext";
 import { SimulationEngine } from "../logic/SimulationEngine";
-import { blueprintToEntityStates } from "../utils";
 import type { SimulationEntityState } from "../types";
+import { blueprintToEntityStates } from "../utils";
+import { useSimulation } from "./SimulationContext";
 
 /**
  * Hook to manage entity rendering for PixiJS simulation.
@@ -43,6 +43,11 @@ export const useEntityRenderer = () => {
     lastRenderedTimeRef.current = -1;
   }, [recording]);
 
+  // Reset ref when mode changes to force recalculation
+  useEffect(() => {
+    lastRenderedTimeRef.current = -1;
+  }, [mode]);
+
   // Convert blueprint to entities when in builder mode
   const blueprintEntities = useMemo(() => {
     if (mode === "builder") {
@@ -70,7 +75,8 @@ export const useEntityRenderer = () => {
     }
 
     // Skip if time hasn't changed (optimization for paused state)
-    if (currentTime === lastRenderedTimeRef.current) {
+    // But force update if we just switched modes (lastRenderedTimeRef.current === -1)
+    if (currentTime === lastRenderedTimeRef.current && lastRenderedTimeRef.current !== -1) {
       return;
     }
     lastRenderedTimeRef.current = currentTime;
