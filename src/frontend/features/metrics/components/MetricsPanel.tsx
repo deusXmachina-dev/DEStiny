@@ -21,10 +21,10 @@ function MetricsPanelContent() {
   } = useMetrics();
 
   return (
-    <div className="w-full h-full flex flex-col bg-gray-50 border-l border-gray-200">
+    <div className="w-full h-full flex flex-col bg-background border-l border-border">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-800">Metrics</h2>
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Metrics</h2>
         {hasRecording && metricOrder.length > 0 && (
           <MetricsSelector
             visibleMetrics={visibleMetrics}

@@ -17,13 +17,13 @@ function HomeContent() {
         </div>
           
         {/* Right Panel: Metrics (30%) */}
-        <div className="w-[30%] h-full border-l border-gray-200">
+        <div className="w-[30%] h-full border-l border-border">
           <MetricsPanel />
         </div>
       </div>
       
       {/* Bottom Navigation Bar */}
-      <div className="bg-gray-100 border-t border-gray-300 shadow-lg">
+      <div className="border-t border-border shadow-lg">
         <div className="p-4 max-w-7xl mx-auto">
           <PlaybackControls disabled={!hasRecording} />
         </div>
