@@ -41,7 +41,7 @@ export function ChartLayout({ title, badge, isEmpty, children }: ChartLayoutProp
           <CardTitle>{title}</CardTitle>
           {badge !== null && badge !== undefined && (
             <Badge
-              className="text-xl font-bold tabular-nums"
+              className="text-lg tabular-nums"
             >
               {badge}
             </Badge>

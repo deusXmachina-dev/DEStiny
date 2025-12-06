@@ -141,7 +141,13 @@ export function HistogramChart({ metric, maxDuration = 600, currentTime = maxDur
                   className="w-[150px]"
                   nameKey="count"
                   labelKey="label"
-                  labelFormatter={(value) => `Range: ${value}`}
+                  labelFormatter={(_value, payload) => {
+                    const label = payload?.[0]?.payload?.label;
+                    if (label !== undefined) {
+                      return `Range: ${label}`;
+                    }
+                    return null;
+                  }}
                 />
               }
             />
