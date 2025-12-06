@@ -1,4 +1,4 @@
-import type { BoundingBox, BlueprintEntity, SimulationBlueprint, SimulationEntityState } from "./types";
+import type { BoundingBox, BlueprintEntity, ParameterValue, SimulationBlueprint, SimulationEntityState } from "./types";
 
 /**
  * Linear interpolation between two values.
@@ -88,6 +88,58 @@ export const calculateBlueprintBoundingBox = (
     minY: minY - padding,
     maxX: maxX + padding,
     maxY: maxY + padding,
+  };
+};
+
+/**
+ * Convert screen coordinates to world coordinates.
+ * Accounts for the scene offset that centers the content.
+ */
+export const screenToWorldCoordinates = (
+  screenX: number,
+  screenY: number,
+  offsetX: number,
+  offsetY: number
+): { x: number; y: number } => {
+  return {
+    x: screenX - offsetX,
+    y: screenY - offsetY,
+  };
+};
+
+/**
+ * Create a new blueprint entity from a schema and position.
+ */
+export const createBlueprintEntity = (
+  entityType: string,
+  parameters: Record<string, "string" | "number">,
+  x: number,
+  y: number
+): BlueprintEntity => {
+  // Generate UUID
+  const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Create parameters object with default values based on schema
+  const entityParameters: Record<string, ParameterValue> = {
+    x,
+    y,
+  };
+
+  // Add default values for other parameters based on their types
+  for (const [key, type] of Object.entries(parameters)) {
+    if (key !== "x" && key !== "y") {
+      if (type === "number") {
+        entityParameters[key] = 0;
+      } else {
+        entityParameters[key] = "";
+      }
+    }
+  }
+
+  return {
+    entityType,
+    uuid,
+    parameters: entityParameters,
   };
 };
 
