@@ -2,10 +2,11 @@
 
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { SimulationApp, SimulationProvider } from "@features/simulation";
+import { BuilderPanel, SimulationApp, SimulationProvider, useSimulation } from "@features/simulation";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
+  const { mode } = useSimulation();
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -16,9 +17,9 @@ function HomeContent() {
           <SimulationApp />
         </div>
           
-        {/* Right Panel: Metrics (30%) */}
+        {/* Right Panel: Metrics or Builder (30%) */}
         <div className="w-[30%] h-full border-l border-border">
-          <MetricsPanel />
+          {mode === "simulation" ? <MetricsPanel /> : <BuilderPanel />}
         </div>
       </div>
       
