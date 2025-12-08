@@ -4,9 +4,9 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
-import { DragProvider } from "../hooks/drag/DragContext";
+import { DndProvider } from "../hooks/dnd/DndContext";
+import { useCanvasDrop } from "../hooks/dnd/useCanvasDrop";
 import { useSimulation } from "../hooks/SimulationContext";
-import { useCanvasDrop } from "../hooks/drag/useCanvasDrop";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
@@ -26,11 +26,11 @@ export default function SimulationApp() {
       onDrop={onDrop}
     >
       <Application resizeTo={parentRef}>
-        <DragProvider>
+        <DndProvider>
           <ResizeListener />
           <Background theme={theme}/>
           <Scene />
-        </DragProvider>
+        </DndProvider>
       </Application>
       {/* Simulation Controls */}
       { /* TODO: This should be moved to the parent component */ }

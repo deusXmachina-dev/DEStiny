@@ -3,7 +3,7 @@
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect } from "react";
 
-import { useDrag } from "./DragContext";
+import { useDnd } from "./DndContext";
 import { useSimulation } from "../SimulationContext";
 
 /**
@@ -12,23 +12,23 @@ import { useSimulation } from "../SimulationContext";
  * Sets up pointerdown event handler on a specific entity container to initiate drag.
  * This hook should be used ONCE per entity component.
  * 
- * It works in conjunction with useStageDragHandlers, which handles drag move and end.
+ * It works in conjunction with useDndManager, which handles drag move and end.
  * 
  * The drag flow:
  * 1. This hook handles pointerdown (drag start) on individual entities
- * 2. useStageDragHandlers handles pointermove (drag move) and pointerup (drag end) on the stage
+ * 2. useDndManager handles pointermove (drag move) and pointerup (drag end) on the stage
  * 
  * Only active when mode is "builder".
  * 
  * @param containerRef - Ref to the PixiJS Container for this entity
  * @param entityId - Unique identifier for the entity
  */
-export const useEntityDragStart = (
+export const useDraggable = (
   containerRef: RefObject<Container | null>,
   entityId: string | undefined
 ) => {
   const { mode, blueprint, setBlueprint } = useSimulation();
-  const { startDrag } = useDrag();
+  const { startDrag } = useDnd();
   const isBuilderMode = mode === "builder";
 
   useEffect(() => {

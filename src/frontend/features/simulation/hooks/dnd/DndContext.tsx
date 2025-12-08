@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useRef } from "react";
 
 import type { SimulationBlueprint } from "../../types";
 
-interface DragState {
+interface DndState {
   target: Container | null;
   offset: { x: number; y: number };
   entityId: string | null;
@@ -13,7 +13,7 @@ interface DragState {
   setBlueprint: ((blueprint: SimulationBlueprint) => void) | null;
 }
 
-interface DragContextValue {
+interface DndContextValue {
   startDrag: (
     target: Container,
     entityId: string,
@@ -22,25 +22,25 @@ interface DragContextValue {
     offset: { x: number; y: number }
   ) => void;
   endDrag: () => void;
-  getDragState: () => DragState;
+  getDndState: () => DndState;
 }
 
-const DragContext = createContext<DragContextValue | undefined>(undefined);
+const DndContext = createContext<DndContextValue | undefined>(undefined);
 
-interface DragProviderProps {
+interface DndProviderProps {
   children: ReactNode;
 }
 
 /**
- * DragProvider - Manages drag state for entity drag and drop.
+ * DndProvider - Manages drag state for entity drag and drop.
  * 
  * Uses refs to store drag state (no re-renders needed since drag
  * operations are handled imperatively via PixiJS event handlers).
  * 
  * Must be used within a Pixi Application context.
  */
-export const DragProvider = ({ children }: DragProviderProps) => {
-  const dragStateRef = useRef<DragState>({
+export const DndProvider = ({ children }: DndProviderProps) => {
+  const dndStateRef = useRef<DndState>({
     target: null,
     offset: { x: 0, y: 0 },
     entityId: null,
@@ -55,7 +55,7 @@ export const DragProvider = ({ children }: DragProviderProps) => {
     setBlueprint: (blueprint: SimulationBlueprint) => void,
     offset: { x: number; y: number }
   ) => {
-    dragStateRef.current = {
+    dndStateRef.current = {
       target,
       offset,
       entityId,
@@ -66,10 +66,10 @@ export const DragProvider = ({ children }: DragProviderProps) => {
   };
 
   const endDrag = () => {
-    if (dragStateRef.current.target) {
-      dragStateRef.current.target.alpha = 1;
+    if (dndStateRef.current.target) {
+      dndStateRef.current.target.alpha = 1;
     }
-    dragStateRef.current = {
+    dndStateRef.current = {
       target: null,
       offset: { x: 0, y: 0 },
       entityId: null,
@@ -78,25 +78,25 @@ export const DragProvider = ({ children }: DragProviderProps) => {
     };
   };
 
-  const getDragState = () => dragStateRef.current;
+  const getDndState = () => dndStateRef.current;
 
-  const value: DragContextValue = {
+  const value: DndContextValue = {
     startDrag,
     endDrag,
-    getDragState,
+    getDndState,
   };
 
-  return <DragContext.Provider value={value}>{children}</DragContext.Provider>;
+  return <DndContext.Provider value={value}>{children}</DndContext.Provider>;
 };
 
 /**
- * Hook to access drag context.
- * Must be used within a DragProvider.
+ * Hook to access dnd context.
+ * Must be used within a DndProvider.
  */
-export const useDrag = (): DragContextValue => {
-  const context = useContext(DragContext);
+export const useDnd = (): DndContextValue => {
+  const context = useContext(DndContext);
   if (!context) {
-    throw new Error("useDrag must be used within a DragProvider");
+    throw new Error("useDnd must be used within a DndProvider");
   }
   return context;
 };
