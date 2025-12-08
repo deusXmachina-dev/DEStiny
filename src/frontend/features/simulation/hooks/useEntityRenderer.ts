@@ -32,7 +32,9 @@ export const useEntityRenderer = () => {
   const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
   // Track the last rendered time to avoid redundant calculations
-  const lastRenderedTimeRef = useRef<number>(-1);
+  const lastRenderedTimeRef = useRef<number | null>(null);
+  // Flag to force update when recording or mode changes
+  const shouldForceUpdateRef = useRef<boolean>(true);
 
   // Create engine instance when recording changes
   const engine = useMemo(() => {
@@ -42,14 +44,16 @@ export const useEntityRenderer = () => {
     return new SimulationEngine(recording);
   }, [recording]);
 
-  // Reset ref when recording changes
+  // Reset refs when recording changes to force recalculation
   useEffect(() => {
-    lastRenderedTimeRef.current = -1;
+    lastRenderedTimeRef.current = null;
+    shouldForceUpdateRef.current = true;
   }, [recording]);
 
-  // Reset ref when mode changes to force recalculation
+  // Reset refs when mode changes to force recalculation
   useEffect(() => {
-    lastRenderedTimeRef.current = -1;
+    lastRenderedTimeRef.current = null;
+    shouldForceUpdateRef.current = true;
   }, [mode]);
 
   // Convert blueprint to entities when in builder mode
@@ -79,11 +83,12 @@ export const useEntityRenderer = () => {
     }
 
     // Skip if time hasn't changed (optimization for paused state)
-    // But force update if we just switched modes (lastRenderedTimeRef.current === -1)
-    if (currentTime === lastRenderedTimeRef.current && lastRenderedTimeRef.current !== -1) {
+    // But force update if we just switched modes or recording
+    if (currentTime === lastRenderedTimeRef.current && !shouldForceUpdateRef.current) {
       return;
     }
     lastRenderedTimeRef.current = currentTime;
+    shouldForceUpdateRef.current = false;
 
     // Derive entities from current time
     const rootEntities = engine.getEntitiesAtTime(currentTime);
