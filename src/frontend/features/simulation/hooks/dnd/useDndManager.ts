@@ -5,7 +5,7 @@ import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { useDnd } from "./DndContext";
 
@@ -29,7 +29,7 @@ import { useDnd } from "./DndContext";
  * - A BuilderProvider (for blueprint mutations)
  */
 export const useDndManager = () => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { getDndState, endDrag } = useDnd();
   const { moveEntity } = useBuilder();
   const { app } = useApplication();

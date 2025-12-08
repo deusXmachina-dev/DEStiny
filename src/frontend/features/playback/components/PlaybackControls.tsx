@@ -6,14 +6,14 @@ import { FastForward, Hammer, Monitor,Pause, Play, Rewind, RotateCcw } from "luc
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
   const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();
-  const { mode, setMode } = useAppMode();
+  const { mode, setMode } = useAppState();
 
   return (
     <div className="flex flex-col gap-2 w-full">

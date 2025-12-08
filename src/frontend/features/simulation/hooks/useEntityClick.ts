@@ -4,7 +4,7 @@ import { useBuilder } from "@features/builder";
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect, useRef } from "react";
 
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { useDnd } from "./dnd/DndContext";
 
@@ -25,7 +25,7 @@ export const useEntityClick = (
   containerRef: RefObject<Container | null>,
   entityId: string | undefined
 ) => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { getDndState } = useDnd();
   const { openEditor, isEditorOpen, isJustClosed } = useBuilder();
   const isBuilderMode = mode === "builder";

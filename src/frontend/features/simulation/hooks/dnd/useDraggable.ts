@@ -3,7 +3,7 @@
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect } from "react";
 
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { useDnd } from "./DndContext";
 
@@ -28,7 +28,7 @@ export const useDraggable = (
   containerRef: RefObject<Container | null>,
   entityId: string | undefined
 ) => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { startDrag } = useDnd();
   const isBuilderMode = mode === "builder";
 

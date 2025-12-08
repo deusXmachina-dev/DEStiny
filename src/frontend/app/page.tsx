@@ -5,11 +5,11 @@ import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
 import { BuilderPanel, SimulationApp } from "@features/simulation";
 
-import { AppModeProvider, useAppMode } from "@/context/AppModeContext";
+import { AppStateProvider, useAppState } from "@/context/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -38,12 +38,12 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <AppModeProvider>
+    <AppStateProvider>
       <BuilderProvider>
         <PlaybackProvider>
           <HomeContent />
         </PlaybackProvider>
       </BuilderProvider>
-    </AppModeProvider>
+    </AppStateProvider>
   );
 }

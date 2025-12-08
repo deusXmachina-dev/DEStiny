@@ -3,7 +3,7 @@
 import { useBuilder } from "@features/builder";
 import { RefObject } from "react";
 
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 /**
  * Hook to handle dropping new entities onto the canvas.
@@ -18,7 +18,7 @@ import { useAppMode } from "@/context/AppModeContext";
  * @returns Object with onDragOver and onDrop handlers
  */
 export const useCanvasDrop = (containerRef: RefObject<HTMLDivElement | null>) => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { addEntity } = useBuilder();
 
   const handleDragOver = (e: React.DragEvent) => {

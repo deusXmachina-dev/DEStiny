@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { useBuilderEntities } from "./useBuilderEntities";
 import { useSimulationEntities } from "./useSimulationEntities";
@@ -11,7 +11,7 @@ import { useSimulationEntities } from "./useSimulationEntities";
  * Must be used within:
  * - A Pixi Application context (because of useTick in internal hooks)
  * - A PlaybackProvider (for playback state)
- * - An AppModeProvider (for mode)
+ * - An AppStateProvider (for application state)
  * - A BuilderProvider (for blueprint in builder mode)
  * 
  * This hook delegates to specific hooks based on the current app mode:
@@ -21,7 +21,7 @@ import { useSimulationEntities } from "./useSimulationEntities";
  * The separation of concerns makes this hook simple and maintainable.
  */
 export const useEntityRenderer = () => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   
   // React Hook rules require us to call both hooks unconditionally,
   // but we control their activity via the enabled flag

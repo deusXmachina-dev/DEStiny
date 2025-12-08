@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppMode } from "@/context/AppModeContext";
+import { useAppState } from "@/context/AppStateContext";
 
 import { AVAILABLE_SCHEMAS } from "../../builderSchemas";
 import type { ParameterValue } from "../../types";
@@ -118,7 +118,7 @@ const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormPr
 };
 
 export const EntityEditor = () => {
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { blueprint, selectedEntityId, isEditorOpen, closeEditor, updateEntity, removeEntity } = useBuilder();
   
   // Load entity data when dialog opens
