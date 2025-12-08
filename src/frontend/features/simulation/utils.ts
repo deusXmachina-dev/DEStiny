@@ -81,14 +81,60 @@ export const updateBlueprintEntityPosition = (
   entities: blueprint.entities.map((entity) =>
     entity.uuid === entityId
       ? {
-        ...entity,
-        parameters: {
-          ...entity.parameters,
-          x,
-          y,
-        },
-      }
+          ...entity,
+          parameters: {
+            ...entity.parameters,
+            x,
+            y,
+          },
+        }
       : entity
   ),
 });
+
+/**
+ * Remove an entity from the blueprint by its UUID.
+ */
+export const removeBlueprintEntity = (
+  blueprint: SimulationBlueprint,
+  entityId: string
+): SimulationBlueprint => ({
+  ...blueprint,
+  entities: blueprint.entities.filter((entity) => entity.uuid !== entityId),
+});
+
+/**
+ * Update parameters of an entity in the blueprint.
+ */
+export const updateBlueprintEntityParameters = (
+  blueprint: SimulationBlueprint,
+  entityId: string,
+  parameters: Record<string, ParameterValue>
+): SimulationBlueprint => ({
+  ...blueprint,
+  entities: blueprint.entities.map((entity) =>
+    entity.uuid === entityId
+      ? {
+          ...entity,
+          parameters: {
+            ...entity.parameters,
+            ...parameters,
+          },
+        }
+      : entity
+  ),
+});
+
+/**
+ * Find a blueprint entity by its UUID.
+ */
+export const findBlueprintEntity = (
+  blueprint: SimulationBlueprint | null,
+  entityId: string
+): BlueprintEntity | undefined => {
+  if (!blueprint) {
+    return undefined;
+  }
+  return blueprint.entities.find((entity) => entity.uuid === entityId);
+};
 
