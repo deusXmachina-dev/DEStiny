@@ -4,6 +4,7 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
+import { DragProvider } from "../hooks/DragContext";
 import { useSimulation } from "../hooks/SimulationContext";
 import { createBlueprintEntity } from "../utils";
 import { Background } from "./pixi/Background";
@@ -67,9 +68,11 @@ export default function SimulationApp() {
       onDrop={handleDrop}
     >
       <Application resizeTo={parentRef}>
-        <ResizeListener />
-        <Background theme={theme}/>
-        <Scene />
+        <DragProvider>
+          <ResizeListener />
+          <Background theme={theme}/>
+          <Scene />
+        </DragProvider>
       </Application>
       {/* Simulation Controls */}
       { /* TODO: This should be moved to the parent component */ }

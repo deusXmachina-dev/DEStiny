@@ -2,8 +2,10 @@
 
 import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
+import { useRef } from "react";
 
 import { useAssets } from "../../hooks/useAssets";
+import { useEntityDragStart } from "../../hooks/useEntityDragStart";
 import { SimulationEntityState } from "../../types";
 
 // Extend Pixi.js components for @pixi/react
@@ -12,12 +14,17 @@ extend({
   Sprite: PixiSprite,
 });
 
-export const Entity = ({ entityType, x, y, angle, children }: SimulationEntityState) => {
+export const Entity = ({ entityType, x, y, angle, children, entityId }: SimulationEntityState) => {
   const { getTexture } = useAssets();
   const texture = getTexture(entityType);
+  const containerRef = useRef<Container | null>(null);
+
+  // Set up drag start handler for this entity (only active in builder mode)
+  useEntityDragStart(containerRef, entityId);
 
   return (
     <pixiContainer
+      ref={containerRef}
       x={x}
       y={y}
       rotation={angle}

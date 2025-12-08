@@ -68,3 +68,27 @@ export const createBlueprintEntity = (
   };
 };
 
+/**
+ * Update the position of an entity in the blueprint.
+ */
+export const updateBlueprintEntityPosition = (
+  blueprint: SimulationBlueprint,
+  entityId: string,
+  x: number,
+  y: number
+): SimulationBlueprint => ({
+  ...blueprint,
+  entities: blueprint.entities.map((entity) =>
+    entity.uuid === entityId
+      ? {
+        ...entity,
+        parameters: {
+          ...entity.parameters,
+          x,
+          y,
+        },
+      }
+      : entity
+  ),
+});
+

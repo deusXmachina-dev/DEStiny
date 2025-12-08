@@ -5,6 +5,7 @@ import { Container, Sprite } from "pixi.js";
 
 import { useAssets } from "../../hooks/useAssets";
 import { useEntityRenderer } from "../../hooks/useEntityRenderer";
+import { useStageDragHandlers } from "../../hooks/useStageDragHandlers";
 import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react
@@ -16,6 +17,9 @@ extend({
 export const Scene = () => {
   const { isLoaded } = useAssets();
   const entities = useEntityRenderer();
+  
+  // Set up stage-level drag handlers (only active in builder mode)
+  useStageDragHandlers();
 
   if (!isLoaded) {
     return null; // Or a loading spinner
