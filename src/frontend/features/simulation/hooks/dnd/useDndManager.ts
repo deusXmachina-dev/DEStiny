@@ -1,11 +1,12 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { updateBlueprintEntityPosition } from "../../utils";
-import { useSimulation } from "../SimulationContext";
+import { useAppMode } from "@/context/AppModeContext";
+
 import { useDnd } from "./DndContext";
 
 /**
@@ -25,10 +26,12 @@ import { useDnd } from "./DndContext";
  * Must be used within:
  * - A Pixi Application context (for app.stage)
  * - A DndProvider (for drag state)
+ * - A BuilderProvider (for blueprint mutations)
  */
 export const useDndManager = () => {
-  const { mode } = useSimulation();
+  const { mode } = useAppMode();
   const { getDndState, endDrag } = useDnd();
+  const { moveEntity } = useBuilder();
   const { app } = useApplication();
   const isBuilderMode = mode === "builder";
   const stageRef = useRef(app.stage);
@@ -67,18 +70,12 @@ export const useDndManager = () => {
 
     const onDragEnd = () => {
       const dndState = getDndState();
-      if (!dndState.target || !dndState.blueprint || !dndState.entityId || !dndState.setBlueprint) {
+      if (!dndState.target || !dndState.entityId) {
         return;
       }
 
-      // Update blueprint with new position
-      const newBlueprint = updateBlueprintEntityPosition(
-        dndState.blueprint,
-        dndState.entityId,
-        dndState.target.x,
-        dndState.target.y
-      );
-      dndState.setBlueprint(newBlueprint);
+      // Update blueprint with new position via BuilderContext
+      moveEntity(dndState.entityId, dndState.target.x, dndState.target.y);
 
       // Reset drag state
       endDrag();
@@ -94,5 +91,5 @@ export const useDndManager = () => {
       cleanupStage.off("pointerup", onDragEnd);
       cleanupStage.off("pointerupoutside", onDragEnd);
     };
-  }, [isBuilderMode, app, getDndState, endDrag]);
+  }, [isBuilderMode, app, getDndState, endDrag, moveEntity]);
 };

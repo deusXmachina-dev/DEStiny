@@ -1,9 +1,9 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { RefObject } from "react";
 
-import { createBlueprintEntity } from "../../utils";
-import { useSimulation } from "../SimulationContext";
+import { useAppMode } from "@/context/AppModeContext";
 
 /**
  * Hook to handle dropping new entities onto the canvas.
@@ -18,7 +18,8 @@ import { useSimulation } from "../SimulationContext";
  * @returns Object with onDragOver and onDrop handlers
  */
 export const useCanvasDrop = (containerRef: RefObject<HTMLDivElement | null>) => {
-  const { mode, blueprint, setBlueprint } = useSimulation();
+  const { mode } = useAppMode();
+  const { addEntity } = useBuilder();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -45,21 +46,8 @@ export const useCanvasDrop = (containerRef: RefObject<HTMLDivElement | null>) =>
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Create new entity
-      const newEntity = createBlueprintEntity(entityType, parameters, x, y);
-
-      // Add to blueprint
-      const currentBlueprint = blueprint || {
-        simParams: {
-          initialTime: 0,
-        },
-        entities: [],
-      };
-
-      setBlueprint({
-        ...currentBlueprint,
-        entities: [...currentBlueprint.entities, newEntity],
-      });
+      // Add entity via BuilderContext
+      addEntity(entityType, parameters, x, y);
     } catch (error) {
       console.error("Error handling drop:", error);
     }

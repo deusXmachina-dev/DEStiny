@@ -3,22 +3,16 @@
 import { Container } from "pixi.js";
 import { createContext, ReactNode, useContext, useMemo, useRef } from "react";
 
-import type { SimulationBlueprint } from "../../types";
-
 interface DndState {
   target: Container | null;
   offset: { x: number; y: number };
   entityId: string | null;
-  blueprint: SimulationBlueprint | null;
-  setBlueprint: ((blueprint: SimulationBlueprint) => void) | null;
 }
 
 interface DndContextValue {
   startDrag: (
     target: Container,
     entityId: string,
-    blueprint: SimulationBlueprint,
-    setBlueprint: (blueprint: SimulationBlueprint) => void,
     offset: { x: number; y: number }
   ) => void;
   endDrag: () => void;
@@ -37,6 +31,9 @@ interface DndProviderProps {
  * Uses refs to store drag state (no re-renders needed since drag
  * operations are handled imperatively via PixiJS event handlers).
  * 
+ * This is a pure "drag and drop" mechanism - it only tracks visual drag state.
+ * Blueprint mutations are handled by BuilderContext, not here.
+ * 
  * Must be used within a Pixi Application context.
  */
 export const DndProvider = ({ children }: DndProviderProps) => {
@@ -44,23 +41,17 @@ export const DndProvider = ({ children }: DndProviderProps) => {
     target: null,
     offset: { x: 0, y: 0 },
     entityId: null,
-    blueprint: null,
-    setBlueprint: null,
   });
 
   const startDrag = (
     target: Container,
     entityId: string,
-    blueprint: SimulationBlueprint,
-    setBlueprint: (blueprint: SimulationBlueprint) => void,
     offset: { x: number; y: number }
   ) => {
     dndStateRef.current = {
       target,
       offset,
       entityId,
-      blueprint,
-      setBlueprint,
     };
     target.alpha = 0.5;
   };
@@ -73,8 +64,6 @@ export const DndProvider = ({ children }: DndProviderProps) => {
       target: null,
       offset: { x: 0, y: 0 },
       entityId: null,
-      blueprint: null,
-      setBlueprint: null,
     };
   };
 

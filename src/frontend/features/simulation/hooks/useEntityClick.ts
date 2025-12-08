@@ -1,11 +1,12 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect, useRef } from "react";
 
+import { useAppMode } from "@/context/AppModeContext";
+
 import { useDnd } from "./dnd/DndContext";
-import { useEntityEditor } from "./EntityEditorContext";
-import { useSimulation } from "./SimulationContext";
 
 /**
  * Hook to handle clicks on entities (opens editor).
@@ -24,9 +25,9 @@ export const useEntityClick = (
   containerRef: RefObject<Container | null>,
   entityId: string | undefined
 ) => {
-  const { mode } = useSimulation();
+  const { mode } = useAppMode();
   const { getDndState } = useDnd();
-  const { openEditor, isEditorOpen, isJustClosed } = useEntityEditor();
+  const { openEditor, isEditorOpen, isJustClosed } = useBuilder();
   const isBuilderMode = mode === "builder";
   const wasDraggingRef = useRef(false);
 

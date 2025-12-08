@@ -1,13 +1,12 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import { useSimulation } from "../../hooks/SimulationContext";
-
 export function ExportBlueprintButton() {
-  const { blueprint } = useSimulation();
+  const { blueprint } = useBuilder();
 
   const handleExportBlueprint = () => {
     if (!blueprint) {

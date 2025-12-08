@@ -1,13 +1,15 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { usePlayback } from "@features/playback";
 import { useTick } from "@pixi/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useAppMode } from "@/context/AppModeContext";
+
 import { SimulationEngine } from "../logic/SimulationEngine";
 import type { SimulationEntityState } from "../types";
 import { blueprintToEntityStates } from "../utils";
-import { useSimulation } from "./SimulationContext";
 
 /**
  * Hook to manage entity rendering for PixiJS simulation.
@@ -15,7 +17,8 @@ import { useSimulation } from "./SimulationContext";
  * Must be used within:
  * - A Pixi Application context (because of useTick)
  * - A PlaybackProvider (for playback state)
- * - A SimulationProvider (for mode and blueprint)
+ * - An AppModeProvider (for mode)
+ * - A BuilderProvider (for blueprint in builder mode)
  * 
  * This hook reads currentTime from the global playback context and derives
  * entity states using SimulationEngine in simulation mode, or from blueprint
@@ -24,7 +27,8 @@ import { useSimulation } from "./SimulationContext";
  */
 export const useEntityRenderer = () => {
   const { recording, currentTime } = usePlayback();
-  const { mode, blueprint } = useSimulation();
+  const { mode } = useAppMode();
+  const { blueprint } = useBuilder();
   const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
   // Track the last rendered time to avoid redundant calculations

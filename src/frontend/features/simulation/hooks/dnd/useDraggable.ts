@@ -3,7 +3,8 @@
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect } from "react";
 
-import { useSimulation } from "../SimulationContext";
+import { useAppMode } from "@/context/AppModeContext";
+
 import { useDnd } from "./DndContext";
 
 /**
@@ -27,12 +28,12 @@ export const useDraggable = (
   containerRef: RefObject<Container | null>,
   entityId: string | undefined
 ) => {
-  const { mode, blueprint, setBlueprint } = useSimulation();
+  const { mode } = useAppMode();
   const { startDrag } = useDnd();
   const isBuilderMode = mode === "builder";
 
   useEffect(() => {
-    if (!isBuilderMode || !containerRef.current || !blueprint || !entityId) {
+    if (!isBuilderMode || !containerRef.current || !entityId) {
       // Reset interactivity when not in builder mode
       if (containerRef.current) {
         containerRef.current.eventMode = "auto";
@@ -62,8 +63,8 @@ export const useDraggable = (
         y: container.y - pointerPos.y,
       };
 
-      // Start drag via context
-      startDrag(container, entityId, blueprint, setBlueprint, offset);
+      // Start drag via context (no blueprint/setBlueprint needed)
+      startDrag(container, entityId, offset);
     };
 
     // Set up container-level handler for drag start
@@ -72,5 +73,5 @@ export const useDraggable = (
     return () => {
       container.off("pointerdown", onDragStart);
     };
-  }, [isBuilderMode, blueprint, setBlueprint, entityId, startDrag, containerRef]);
+  }, [isBuilderMode, entityId, startDrag, containerRef]);
 };

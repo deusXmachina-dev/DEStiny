@@ -1,5 +1,6 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -13,16 +14,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppMode } from "@/context/AppModeContext";
 
 import { AVAILABLE_SCHEMAS } from "../../builderSchemas";
-import { useEntityEditor } from "../../hooks/EntityEditorContext";
-import { useSimulation } from "../../hooks/SimulationContext";
 import type { ParameterValue } from "../../types";
-import {
-  findBlueprintEntity,
-  removeBlueprintEntity,
-  updateBlueprintEntityParameters,
-} from "../../utils";
+import { findBlueprintEntity } from "../../utils";
 
 /**
  * Helper function to find schema by entity type.
@@ -122,8 +118,8 @@ const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormPr
 };
 
 export const EntityEditor = () => {
-  const { blueprint, setBlueprint, mode } = useSimulation();
-  const { selectedEntityId, isEditorOpen, closeEditor } = useEntityEditor();
+  const { mode } = useAppMode();
+  const { blueprint, selectedEntityId, isEditorOpen, closeEditor, updateEntity, removeEntity } = useBuilder();
   
   // Load entity data when dialog opens
   const entity = useMemo(() => {
@@ -148,26 +144,20 @@ export const EntityEditor = () => {
   }
 
   const handleSave = (formValues: Record<string, ParameterValue>) => {
-    if (!blueprint || !selectedEntityId) {
+    if (!selectedEntityId) {
       return;
     }
 
-    const updatedBlueprint = updateBlueprintEntityParameters(
-      blueprint,
-      selectedEntityId,
-      formValues
-    );
-    setBlueprint(updatedBlueprint);
+    updateEntity(selectedEntityId, formValues);
     closeEditor();
   };
 
   const handleDelete = () => {
-    if (!blueprint || !selectedEntityId) {
+    if (!selectedEntityId) {
       return;
     }
 
-    const updatedBlueprint = removeBlueprintEntity(blueprint, selectedEntityId);
-    setBlueprint(updatedBlueprint);
+    removeEntity(selectedEntityId);
     closeEditor();
   };
 

@@ -1,14 +1,15 @@
 "use client";
 
+import { BuilderProvider } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { BuilderPanel, SimulationApp, SimulationProvider, useSimulation } from "@features/simulation";
-import { DndProvider } from "@features/simulation/hooks/dnd/DndContext";
-import { EntityEditorProvider } from "@features/simulation/hooks/EntityEditorContext";
+import { BuilderPanel, SimulationApp } from "@features/simulation";
+
+import { AppModeProvider, useAppMode } from "@/context/AppModeContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode } = useSimulation();
+  const { mode } = useAppMode();
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -37,14 +38,12 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <PlaybackProvider>
-      <SimulationProvider>
-        <DndProvider>
-          <EntityEditorProvider>
-            <HomeContent />
-          </EntityEditorProvider>
-        </DndProvider>
-      </SimulationProvider>
-    </PlaybackProvider>
+    <AppModeProvider>
+      <BuilderProvider>
+        <PlaybackProvider>
+          <HomeContent />
+        </PlaybackProvider>
+      </BuilderProvider>
+    </AppModeProvider>
   );
 }
