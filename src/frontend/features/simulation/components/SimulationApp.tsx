@@ -5,16 +5,16 @@ import { Application } from "@pixi/react";
 import { useRef } from "react";
 
 import { useSimulation } from "../hooks/SimulationContext";
-import { calculateSceneOffset, createBlueprintEntity, screenToWorldCoordinates } from "../utils";
+import { createBlueprintEntity } from "../utils";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
-import { SimulationControls } from "./SimulationControls";
 import { ResizeListener } from "./ResizeListener";
+import { SimulationControls } from "./SimulationControls";
 
 export default function SimulationApp() {
   const parentRef = useRef<HTMLDivElement>(null);
   const { hasRecording } = usePlayback();
-  const { theme, mode, blueprint, setBlueprint, boundingBox, screenSize } = useSimulation();
+  const { theme, mode, blueprint, setBlueprint } = useSimulation();
     
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -34,20 +34,10 @@ export default function SimulationApp() {
 
       // Get drop coordinates relative to the container
       const rect = parentRef.current?.getBoundingClientRect();
-      if (!rect) return;
+      if (!rect) {return;}
 
-      const screenX = e.clientX - rect.left;
-      const screenY = e.clientY - rect.top;
-
-      // Calculate offset for coordinate conversion
-      const { offsetX, offsetY } = calculateSceneOffset(
-        boundingBox,
-        screenSize.width,
-        screenSize.height
-      );
-
-      // Convert to world coordinates
-      const { x, y } = screenToWorldCoordinates(screenX, screenY, offsetX, offsetY);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
       // Create new entity
       const newEntity = createBlueprintEntity(entityType, parameters, x, y);

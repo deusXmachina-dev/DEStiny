@@ -1,12 +1,9 @@
 "use client";
 
-import { usePlayback } from "@features/playback";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 import { SimulationTheme } from "../constants";
-import { SimulationEngine } from "../logic/SimulationEngine";
-import { calculateBlueprintBoundingBox } from "../utils";
-import { BoundingBox, SimulationBlueprint } from "../types";
+import { SimulationBlueprint } from "../types";
 
 interface ScreenSize {
     width: number;
@@ -18,7 +15,6 @@ export type AppMode = "simulation" | "builder";
 interface SimulationContextValue {
     // State
     theme: SimulationTheme;
-    boundingBox: BoundingBox | null;
     screenSize: ScreenSize;
     mode: AppMode;
     blueprint: SimulationBlueprint | null;
@@ -39,33 +35,18 @@ interface SimulationProviderProps {
 /**
  * SimulationProvider - State specific to the PixiJS movement simulation.
  * 
- * This provider contains only simulation concerns (theme, boundingBox).
- * It consumes PlaybackProvider for recording data to compute the bounding box.
+ * This provider contains only simulation concerns (theme, mode, blueprint).
  * 
  * Must be used within a PlaybackProvider.
  */
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
-  const { recording } = usePlayback();
   const [theme, setTheme] = useState<SimulationTheme>("factory");
   const [screenSize, setScreenSize] = useState<ScreenSize>({ width: 0, height: 0 });
   const [mode, setMode] = useState<AppMode>("simulation");
   const [blueprint, setBlueprint] = useState<SimulationBlueprint | null>(null);
 
-  // Compute bounding box from recording or blueprint (memoized, computed once when source changes)
-  const boundingBox = useMemo<BoundingBox | null>(() => {
-    if (mode === "builder") {
-      return calculateBlueprintBoundingBox(blueprint);
-    }
-    if (!recording) {
-      return null;
-    }
-    const engine = new SimulationEngine(recording);
-    return engine.getBoundingBox();
-  }, [mode, recording, blueprint]);
-
   const value: SimulationContextValue = {
     theme,
-    boundingBox,
     screenSize,
     mode,
     blueprint,
@@ -95,4 +76,4 @@ export const useSimulation = (): SimulationContextValue => {
 };
 
 // Export types for external use
-export type { SimulationContextValue, ScreenSize };
+export type { ScreenSize,SimulationContextValue };
