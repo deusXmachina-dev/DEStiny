@@ -4,13 +4,13 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
-import { DndProvider } from "../hooks/dnd/DndContext";
 import { useCanvasDrop } from "../hooks/dnd/useCanvasDrop";
 import { useSimulation } from "../hooks/SimulationContext";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
 import { SimulationControls } from "./SimulationControls";
+import { EntityEditor } from "./ui/EntityEditor";
 
 export default function SimulationApp() {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -26,15 +26,15 @@ export default function SimulationApp() {
       onDrop={onDrop}
     >
       <Application resizeTo={parentRef}>
-        <DndProvider>
-          <ResizeListener />
-          <Background theme={theme}/>
-          <Scene />
-        </DndProvider>
+        <ResizeListener />
+        <Background theme={theme}/>
+        <Scene />
       </Application>
       {/* Simulation Controls */}
       { /* TODO: This should be moved to the parent component */ }
       <SimulationControls position={hasRecording ? "top" : "center"} />
+      {/* Entity Editor */}
+      <EntityEditor />
     </div>
   );
 }

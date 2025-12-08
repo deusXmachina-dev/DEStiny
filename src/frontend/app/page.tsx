@@ -3,6 +3,8 @@
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
 import { BuilderPanel, SimulationApp, SimulationProvider, useSimulation } from "@features/simulation";
+import { DndProvider } from "@features/simulation/hooks/dnd/DndContext";
+import { EntityEditorProvider } from "@features/simulation/hooks/EntityEditorContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
@@ -37,7 +39,11 @@ export default function Home() {
   return (
     <PlaybackProvider>
       <SimulationProvider>
-        <HomeContent />
+        <DndProvider>
+          <EntityEditorProvider>
+            <HomeContent />
+          </EntityEditorProvider>
+        </DndProvider>
       </SimulationProvider>
     </PlaybackProvider>
   );
