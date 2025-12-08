@@ -13,13 +13,6 @@ export interface SimulationEntityState {
     children: SimulationEntityState[];
 }
 
-export interface BoundingBox {
-    minX: number;
-    minY: number;
-    maxX: number;
-    maxY: number;
-}
-
 export interface SimulationMotionSegment {
     entityId: string;
     entityType: SimulationEntityType;

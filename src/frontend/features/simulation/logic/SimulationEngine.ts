@@ -1,6 +1,6 @@
 import type { SimulationRecording } from "@features/playback";
 
-import type { BoundingBox, SimulationEntityState } from "../types";
+import type { SimulationEntityState } from "../types";
 import { lerp } from "../utils";    
 
 /**
@@ -106,25 +106,6 @@ export class SimulationEngine {
     });
 
     return rootEntities;
-  }
-
-  /**
-     * Calculate the bounding box of all entities across the entire recording.
-     * Returns the min/max x/y coordinates that encompass all entity positions.
-     */
-  getBoundingBox(): BoundingBox {
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-    Object.values(this.recording.segments_by_entity).forEach(segments => {
-      segments.forEach(seg => {
-        minX = Math.min(minX, seg.startX, seg.endX);
-        minY = Math.min(minY, seg.startY, seg.endY);
-        maxX = Math.max(maxX, seg.startX, seg.endX);
-        maxY = Math.max(maxY, seg.startY, seg.endY);
-      });
-    });
-
-    return { minX, minY, maxX, maxY };
   }
 }
 
