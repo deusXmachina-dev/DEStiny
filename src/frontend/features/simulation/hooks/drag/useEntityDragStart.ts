@@ -4,7 +4,7 @@ import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect } from "react";
 
 import { useDrag } from "./DragContext";
-import { useSimulation } from "./SimulationContext";
+import { useSimulation } from "../SimulationContext";
 
 /**
  * Hook to make an individual entity container draggable (handles drag start).

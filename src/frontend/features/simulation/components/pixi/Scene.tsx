@@ -5,7 +5,7 @@ import { Container, Sprite } from "pixi.js";
 
 import { useAssets } from "../../hooks/useAssets";
 import { useEntityRenderer } from "../../hooks/useEntityRenderer";
-import { useStageDragHandlers } from "../../hooks/useStageDragHandlers";
+import { useStageDragHandlers } from "../../hooks/drag/useStageDragHandlers";
 import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react

@@ -3,7 +3,7 @@
 import { Container } from "pixi.js";
 import { createContext, ReactNode, useContext, useRef } from "react";
 
-import type { SimulationBlueprint } from "../types";
+import type { SimulationBlueprint } from "../../types";
 
 interface DragState {
   target: Container | null;

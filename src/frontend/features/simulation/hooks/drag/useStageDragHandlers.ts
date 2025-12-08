@@ -4,9 +4,9 @@ import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { updateBlueprintEntityPosition } from "../utils";
+import { updateBlueprintEntityPosition } from "../../utils";
 import { useDrag } from "./DragContext";
-import { useSimulation } from "./SimulationContext";
+import { useSimulation } from "../SimulationContext";
 
 /**
  * Hook to handle stage-level drag operations (move and end).

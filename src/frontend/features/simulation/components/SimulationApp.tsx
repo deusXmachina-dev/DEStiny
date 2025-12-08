@@ -4,9 +4,9 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
-import { DragProvider } from "../hooks/DragContext";
+import { DragProvider } from "../hooks/drag/DragContext";
 import { useSimulation } from "../hooks/SimulationContext";
-import { createBlueprintEntity } from "../utils";
+import { useCanvasDrop } from "../hooks/drag/useCanvasDrop";
 import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
@@ -15,57 +15,15 @@ import { SimulationControls } from "./SimulationControls";
 export default function SimulationApp() {
   const parentRef = useRef<HTMLDivElement>(null);
   const { hasRecording } = usePlayback();
-  const { theme, mode, blueprint, setBlueprint } = useSimulation();
-    
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "copy";
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    
-    if (mode !== "builder") {
-      return;
-    }
-
-    try {
-      const data = JSON.parse(e.dataTransfer.getData("application/json"));
-      const { entityType, parameters } = data;
-
-      // Get drop coordinates relative to the container
-      const rect = parentRef.current?.getBoundingClientRect();
-      if (!rect) {return;}
-
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      // Create new entity
-      const newEntity = createBlueprintEntity(entityType, parameters, x, y);
-
-      // Add to blueprint
-      const currentBlueprint = blueprint || {
-        simParams: {
-          initialTime: 0,
-        },
-        entities: [],
-      };
-
-      setBlueprint({
-        ...currentBlueprint,
-        entities: [...currentBlueprint.entities, newEntity],
-      });
-    } catch (error) {
-      console.error("Error handling drop:", error);
-    }
-  };
+  const { theme } = useSimulation();
+  const { onDragOver, onDrop } = useCanvasDrop(parentRef);
 
   return (
     <div
       ref={parentRef}
       className="w-full h-full relative"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <Application resizeTo={parentRef}>
         <DragProvider>
