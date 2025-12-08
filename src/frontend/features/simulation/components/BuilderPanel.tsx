@@ -1,6 +1,7 @@
 "use client";
 
 import { AVAILABLE_SCHEMAS } from "../builderSchemas";
+import { ExportBlueprintButton } from "./ui/ExportBlueprintButton";
 
 export function BuilderPanel() {
   const handleDragStart = (e: React.DragEvent, schema: typeof AVAILABLE_SCHEMAS[0]) => {
@@ -41,6 +42,11 @@ export function BuilderPanel() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Footer with Export Button */}
+      <div className="p-4 border-t border-border">
+        <ExportBlueprintButton />
       </div>
     </div>
   );
