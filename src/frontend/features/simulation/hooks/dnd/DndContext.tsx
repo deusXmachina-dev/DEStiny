@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "pixi.js";
-import { createContext, ReactNode, useContext, useRef } from "react";
+import { createContext, ReactNode, useContext, useMemo, useRef } from "react";
 
 import type { SimulationBlueprint } from "../../types";
 
@@ -80,11 +80,16 @@ export const DndProvider = ({ children }: DndProviderProps) => {
 
   const getDndState = () => dndStateRef.current;
 
-  const value: DndContextValue = {
-    startDrag,
-    endDrag,
-    getDndState,
-  };
+  // Memoize the context value to prevent unnecessary re-renders of consumers.
+  // The functions are stable (they only reference the ref), so the value never needs to change.
+  const value: DndContextValue = useMemo(
+    () => ({
+      startDrag,
+      endDrag,
+      getDndState,
+    }),
+    [] // Empty deps: functions are stable and only reference the ref
+  );
 
   return <DndContext.Provider value={value}>{children}</DndContext.Provider>;
 };
