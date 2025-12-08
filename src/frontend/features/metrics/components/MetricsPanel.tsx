@@ -2,12 +2,12 @@
 
 import { usePlayback } from "@features/playback";
 
-import { MetricsProvider, useMetrics } from "../hooks";
-
-import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
-import { MetricsSelector } from "./MetricsSelector";
 import { ClientOnly } from "@/components/common/ClientOnly";
+
+import { MetricsProvider, useMetrics } from "../hooks";
+import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { HistogramChart } from "./charts/HistogramChart";
+import { MetricsSelector } from "./MetricsSelector";
 
 function MetricsPanelContent() {
   const { hasRecording, currentTime, duration } = usePlayback();
@@ -73,9 +73,9 @@ function MetricsPanelContent() {
 export function MetricsPanel() {
   return (
     <ClientOnly>      
-        <MetricsProvider>
-      <MetricsPanelContent />
-    </MetricsProvider>
+      <MetricsProvider>
+        <MetricsPanelContent />
+      </MetricsProvider>
     </ClientOnly>
   );
 }

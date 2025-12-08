@@ -5,8 +5,8 @@ import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
 import { updateBlueprintEntityPosition } from "../../utils";
-import { useDnd } from "./DndContext";
 import { useSimulation } from "../SimulationContext";
+import { useDnd } from "./DndContext";
 
 /**
  * Hook to handle stage-level drag operations (move and end).

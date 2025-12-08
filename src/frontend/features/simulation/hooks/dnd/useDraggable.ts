@@ -3,8 +3,8 @@
 import { Container, FederatedPointerEvent } from "pixi.js";
 import { RefObject, useEffect } from "react";
 
-import { useDnd } from "./DndContext";
 import { useSimulation } from "../SimulationContext";
+import { useDnd } from "./DndContext";
 
 /**
  * Hook to make an individual entity container draggable (handles drag start).
