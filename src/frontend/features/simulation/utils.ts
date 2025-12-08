@@ -1,4 +1,4 @@
-import type { BoundingBox, BlueprintEntity, ParameterValue, SimulationBlueprint, SimulationEntityState } from "./types";
+import type { BlueprintEntity, BoundingBox, ParameterValue, SimulationBlueprint, SimulationEntityState } from "./types";
 
 /**
  * Linear interpolation between two values.
@@ -100,12 +100,10 @@ export const screenToWorldCoordinates = (
   screenY: number,
   offsetX: number,
   offsetY: number
-): { x: number; y: number } => {
-  return {
-    x: screenX - offsetX,
-    y: screenY - offsetY,
-  };
-};
+): { x: number; y: number } => ({
+  x: screenX - offsetX,
+  y: screenY - offsetY,
+});
 
 /**
  * Create a new blueprint entity from a schema and position.
