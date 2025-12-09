@@ -1,0 +1,72 @@
+name: Build, Test, and Deploy CI
+
+permissions:
+    contents: read
+    checks: write
+    id-token: write
+    pull-requests: read
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'petr**'
+      - 'filip**'
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  SERVICE_BASE_NAME: voice-agents-backend
+  REGION: europe-central2
+  BACKEND_IMAGE_NAME: europe-central2-docker.pkg.dev/senseflow-462313/senseflow-container-repo/voice-agents-backend:${{ github.sha }}
+
+jobs:
+  build-test-deploy:
+    name: Build And Test
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 'Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Docker Auth'
+        run: 'gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push
+        uses: useblacksmith/build-push-action@v1
+        with:
+          context: backend
+          file: ./backend/Dockerfile
+          load: true
+          tags: ${{ env.BACKEND_IMAGE_NAME }}
+
+      - name: Run Tests in Container
+        env:
+          DEBUG: true
+        run: |
+          docker run --rm \
+            --network host \
+            --env-file <(env) \
+            -v "/reports_dir:/reports_dir" \
+            ${{ env.BACKEND_IMAGE_NAME }} \
+            pytest --junitxml=/reports_dir/pytest-report.xml
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v2
+        if: ${{ !cancelled() }}
+        with:
+          name: pytest
+          path: /reports_dir/pytest-report.xml
+          reporter: java-junit
+          fail-on-error: true
