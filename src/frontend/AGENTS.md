@@ -15,11 +15,7 @@ frontend/
 │   ├── ui/                 # shadcn/ui components
 │   └── common/             # Shared UI components
 ├── features/simulation/
-│   ├── components/
-│   │   ├── pixi/           # Pixi rendering
-│   │   └── ui/             # React controls
-│   ├── hooks/              # Context providers, custom hooks
-│   ├── logic/              # Business logic (SimulationEngine)
+│   ├── components/          
 │   ├── constants.ts
 │   ├── types.ts
 │   ├── utils.ts
@@ -84,6 +80,7 @@ import { SPEED_OPTIONS } from "../../constants";
 bun dev           # Dev server at localhost:3000
 bun run build     # Production build
 bun run lint      # ESLint
+bun run format    # Prettier
 bunx shadcn@latest add <component>  # Add shadcn component
 ```
 
