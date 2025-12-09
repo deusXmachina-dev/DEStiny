@@ -17,9 +17,9 @@ on:
       - 'main'
 
 env:
-  SERVICE_BASE_NAME: voice-agents-backend
+  SERVICE_BASE_NAME: destiny-backend
   REGION: europe-central2
-  BACKEND_IMAGE_NAME: europe-central2-docker.pkg.dev/senseflow-462313/senseflow-container-repo/voice-agents-backend:${{ github.sha }}
+  BACKEND_IMAGE_NAME: europe-central2-docker.pkg.dev/dxm-dev-1/dxm-container-repo/destiny-backend:${{ github.sha }}
 
 jobs:
   build-test-deploy:
@@ -43,16 +43,19 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and push
+
+      - name: Build and push backend image
         uses: useblacksmith/build-push-action@v1
         with:
-          context: backend
-          file: ./backend/Dockerfile
+          context: src
+          file: ./src/backend/Dockerfile
           load: true
+          push: true
           tags: ${{ env.BACKEND_IMAGE_NAME }}
 
       - name: Run Tests in Container
         env:
+          SECRET_KEY: TEST_SECRET_KEY
           DEBUG: true
         run: |
           docker run --rm \
@@ -60,7 +63,7 @@ jobs:
             --env-file <(env) \
             -v "/reports_dir:/reports_dir" \
             ${{ env.BACKEND_IMAGE_NAME }} \
-            pytest --junitxml=/reports_dir/pytest-report.xml
+            sh -c "cd /backend && uv run pytest tests/ --junitxml=/reports_dir/backend-pytest-report.xml && uv run pytest /engine/src/tests/ --junitxml=/reports_dir/engine-pytest-report.xml"
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v2
