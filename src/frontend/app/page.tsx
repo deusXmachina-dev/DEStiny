@@ -3,9 +3,10 @@
 import { BuilderPanel, BuilderProvider, BuilderViewport } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { SimulationApp } from "@features/simulation";
+import { SimulationViewport } from "@features/simulation";
 import { EditorPanel } from "@features/editor";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useAppState, AppStateProvider } from "@/context/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
