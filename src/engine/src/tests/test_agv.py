@@ -78,14 +78,17 @@ def test_agv_records_carried_item_motion(env):
 
     recording = env.get_recording()
 
-    # Find box segments (should have parent = agv while carried
+    # Find box segments (should have parent = agv while carried)
     all_segments = [
         s for segments in recording.segments_by_entity.values() for s in segments
     ]
     box_segments = [s for s in all_segments if s.entity_type == "box"]
     assert len(box_segments) >= 1
 
-    assert all(s.parent_id == agv.id for s in box_segments)
+    # Only motion/stay segments while carried should have parent (not disappearance)
+    motion_segments = [s for s in box_segments if s.start_time != s.end_time]
+    assert len(motion_segments) >= 1
+    assert all(s.parent_id == agv.id for s in motion_segments)
 
 
 def test_agv_transport_item(env):
