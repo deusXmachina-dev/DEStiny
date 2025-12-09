@@ -26,7 +26,9 @@ export const useSimulationEntities = (): SimulationEntityState[] => {
 
   // Create engine instance when recording changes
   const engine = useMemo(() => {
-    if (!recording) {return null;}
+    if (!recording) {
+      return null;
+    }
     return new SimulationEngine(recording);
   }, [recording]);
 
@@ -38,7 +40,9 @@ export const useSimulationEntities = (): SimulationEntityState[] => {
   // Use Pixi's tick to read currentTime and compute entities each frame
   useTick(() => {
     if (!engine) {
-      if (entities.length > 0) {setEntities([]);}
+      if (entities.length > 0) {
+        setEntities([]);
+      }
       return;
     }
 

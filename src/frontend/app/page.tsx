@@ -18,15 +18,27 @@ import {
 } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
+import { useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
 
 type AppMode = "simulation" | "builder";
 
 function HomeContent() {
-  const { hasRecording } = usePlayback();
-  const [mode, setMode] = useState<("simulation" | "builder")>("simulation");
+  const { hasRecording, pause, seek } = usePlayback();
+  const [mode, setMode] = useState<AppMode>("simulation");
+
+  const handleModeChange = (value: string): void => {
+    if (value !== "simulation" && value !== "builder") {
+      return;
+    }
+
+    setMode(value);
+    if (value === "builder") {
+      pause();
+      seek(0);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -50,7 +62,7 @@ function HomeContent() {
         <div className="w-[30%] h-full border-l flex flex-col">
           <Tabs
             value={mode}
-            onValueChange={(value) => setMode(value as AppMode)}
+            onValueChange={handleModeChange}
             className="flex flex-col h-full gap-0"
           >
             <div className="border-l border-b border-border p-4 flex justify-center">

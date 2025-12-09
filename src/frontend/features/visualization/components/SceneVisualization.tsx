@@ -24,12 +24,10 @@ interface SceneVisualizationProps {
  *
  * Must be used within a VisualizationProvider.
  */
-export const SceneVisualization = ({
-  children,
-}: SceneVisualizationProps) => {
+export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
   const { theme, getInteractionCallbacks } = useVisualization();
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
