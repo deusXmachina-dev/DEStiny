@@ -4,4 +4,4 @@ export { PlaybackProvider, usePlayback } from "./hooks/PlaybackContext";
 export { formatTime } from "@lib/utils";
 
 // export types
-export type { SimulationRecording } from "./types";
+export type { SimulationMotionSegment, SimulationRecording } from "./types";

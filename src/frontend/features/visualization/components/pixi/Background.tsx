@@ -1,11 +1,11 @@
 "use client";
 
-import { extend, useApplication } from "@pixi/react";
+import { extend } from "@pixi/react";
 import { Graphics } from "pixi.js";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
+import { useSimulation } from "../../../simulation/hooks/SimulationContext";
 import { SimulationTheme,THEME_CONFIGS } from "../../constants";
-import { useSimulation } from "../../hooks/SimulationContext";
 
 extend({ Graphics });
 

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { SimulationTheme, THEME_CONFIGS } from "../constants";
+import { SimulationTheme, THEME_CONFIGS } from "../../visualization/constants";
 import { useSimulation } from "../hooks/SimulationContext";
 
 const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 

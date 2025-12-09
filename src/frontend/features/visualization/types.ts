@@ -12,17 +12,3 @@ export interface SimulationEntityState {
     angle: number;
     children: SimulationEntityState[];
 }
-
-export interface SimulationMotionSegment {
-    entityId: string;
-    entityType: SimulationEntityType;
-    parentId: string | null;
-    startTime: number;
-    endTime: number | null;
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-    startAngle: number;
-    endAngle: number;
-}

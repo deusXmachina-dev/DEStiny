@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useState } from "react";
 
-import { SimulationTheme } from "../constants";
+import { SimulationTheme } from "../../visualization/constants";
 
 interface ScreenSize {
     width: number;

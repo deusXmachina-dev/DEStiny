@@ -1,5 +1,5 @@
 import { Metric } from "@features/metrics";
-import { SimulationMotionSegment } from "@features/simulation";
+import { SimulationEntityType } from "@features/visualization";
 
 
 export interface SimulationRecording {
@@ -10,3 +10,16 @@ export interface SimulationRecording {
     metrics?: Metric[];
 }
 
+export interface SimulationMotionSegment {
+    entityId: string;
+    entityType: SimulationEntityType;
+    parentId: string | null;
+    startTime: number;
+    endTime: number | null;
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    startAngle: number;
+    endAngle: number;
+}

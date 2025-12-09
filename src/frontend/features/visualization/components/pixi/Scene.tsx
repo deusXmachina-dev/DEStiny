@@ -3,9 +3,9 @@
 import { extend } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
 
-import { useAssets } from "../../hooks/useAssets";
-import { useEntityRenderer } from "../../hooks/useEntityRenderer";
 import { useDndManager } from "../../../builder/hooks/dnd/useDndManager";
+import { useEntityRenderer } from "../../../simulation/hooks/useEntityRenderer";
+import { useAssets } from "../../hooks/useAssets";
 import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react
