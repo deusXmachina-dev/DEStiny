@@ -1,1 +1,1 @@
-export { default as SimulationApp } from "./components/SimulationApp";
+export { SimulationViewport } from "./components/SimulationViewport";

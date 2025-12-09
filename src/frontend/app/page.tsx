@@ -1,9 +1,9 @@
 "use client";
 
-import { BuilderPanel, BuilderProvider } from "@features/builder";
+import { BuilderPanel, BuilderProvider, BuilderViewport } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { SimulationApp } from "@features/simulation";
+import { SimulationViewport } from "@features/simulation";
 
 import { AppStateProvider, useAppState } from "@/context/AppStateContext";
 
@@ -17,7 +17,7 @@ function HomeContent() {
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Simulation (70%) */}
         <div className="w-[70%] h-full">
-          <SimulationApp />
+          {mode === "simulation" ? <SimulationViewport /> : <BuilderViewport />}
         </div>
           
         {/* Right Panel: Metrics or Builder (30%) */}

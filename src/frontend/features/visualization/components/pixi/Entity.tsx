@@ -4,9 +4,8 @@ import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
 import { useRef } from "react";
 
-import { useDraggable } from "../../../builder/hooks/dnd/useDraggable";
-import { useEntityClick } from "../../../builder/hooks/useEntityClick";
 import { useAssets } from "../../hooks/useAssets";
+import { useVisualization } from "../../hooks/VisualizationContext";
 import { SimulationEntityState } from "../../types";
 
 // Extend Pixi.js components for @pixi/react
@@ -17,14 +16,14 @@ extend({
 
 export const Entity = ({ entityType, x, y, angle, children, entityId }: SimulationEntityState) => {
   const { getTexture } = useAssets();
+  const { hooks } = useVisualization();
   const texture = getTexture(entityType);
   const containerRef = useRef<Container | null>(null);
 
-  // Set up drag start handler for this entity (only active in builder mode)
-  useDraggable(containerRef, entityId);
-
-  // Set up click handler for this entity (only active in builder mode)
-  useEntityClick(containerRef, entityId);
+  // Call entity-level hook if provided (e.g., useDraggable + useEntityClick in builder mode)
+  if (hooks.useEntity) {
+    hooks.useEntity(containerRef, entityId);
+  }
 
   return (
     <pixiContainer

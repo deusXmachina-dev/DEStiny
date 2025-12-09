@@ -3,9 +3,8 @@
 import { extend } from "@pixi/react";
 import { Container, Sprite } from "pixi.js";
 
-import { useDndManager } from "../../../builder/hooks/dnd/useDndManager";
-import { useEntityRenderer } from "../../../simulation/hooks/useEntityRenderer";
 import { useAssets } from "../../hooks/useAssets";
+import { useVisualization } from "../../hooks/VisualizationContext";
 import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react
@@ -16,10 +15,12 @@ extend({
 
 export const Scene = () => {
   const { isLoaded } = useAssets();
-  const entities = useEntityRenderer();
+  const { entities, hooks } = useVisualization();
   
-  // Set up stage-level drag handlers (only active in builder mode)
-  useDndManager();
+  // Call scene-level hook if provided (e.g., useDndManager in builder mode)
+  if (hooks.useScene) {
+    hooks.useScene();
+  }
 
   if (!isLoaded) {
     return null; // Or a loading spinner
