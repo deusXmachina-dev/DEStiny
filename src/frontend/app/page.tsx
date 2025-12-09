@@ -1,13 +1,10 @@
 "use client";
 
 import {
+  BuilderInteractionHandler,
   BuilderPanel,
   BuilderProvider,
-  createBuilderHooks,
-  DndProvider,
   EntityEditor,
-  useBuilderEntities,
-  useCanvasDrop,
 } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import {
@@ -21,7 +18,7 @@ import {
 } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -35,20 +32,6 @@ function HomeContent() {
   const { mode, setMode } = useAppState();
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Builder-specific logic - always call hooks, conditionally use results
-  const builderEntitiesFromHook = useBuilderEntities();
-  const builderEntities = mode === "builder" ? builderEntitiesFromHook : undefined;
-  
-  const builderHooks = useMemo(
-    () => (mode === "builder" ? createBuilderHooks() : {}),
-    [mode]
-  );
-  
-  const dropHandlers = useCanvasDrop(parentRef);
-  const { onDragOver, onDrop } = mode === "builder" 
-    ? dropHandlers 
-    : { onDragOver: undefined, onDrop: undefined };
-
   const handleTabChange = (value: string) => {
     setMode(value as AppMode);
   };
@@ -59,20 +42,15 @@ function HomeContent() {
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Visualization (70%) */}
         <div className="w-[70%] h-full">
-          <VisualizationProvider entities={builderEntities} hooks={builderHooks}>
-            <DndProvider enabled={mode === "builder"}>
-              <SceneVisualization
-                parentRef={parentRef}
-                onDragOver={onDragOver}
-                onDrop={onDrop}
-              >
-                {mode === "simulation" && <SimulationEntityUpdater />}
-              </SceneVisualization>
-              {mode === "builder" && <EntityEditor />}
-              {mode === "simulation" && (
-                <SimulationControls position={hasRecording ? "top" : "center"} />
-              )}
-            </DndProvider>
+          <VisualizationProvider interactive={mode === "builder"}>
+            <SceneVisualization parentRef={parentRef}>
+              {mode === "simulation" && <SimulationEntityUpdater />}
+              {mode === "builder" && <BuilderInteractionHandler />}
+            </SceneVisualization>
+            {mode === "builder" && <EntityEditor />}
+            {mode === "simulation" && (
+              <SimulationControls position={hasRecording ? "top" : "center"} />
+            )}
           </VisualizationProvider>
         </div>
 

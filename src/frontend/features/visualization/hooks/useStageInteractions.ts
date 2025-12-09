@@ -1,39 +1,31 @@
 "use client";
 
-import { useBuilder } from "@features/builder";
 import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { useAppState } from "@/context/AppStateContext";
-
-import { useDnd } from "./DndContext";
+import { endDrag, getDndState } from "./useEntityInteractions";
+import { useVisualization } from "./VisualizationContext";
 
 /**
  * Hook to handle stage-level drag operations (move and end).
  *
  * Sets up global event handlers on the PixiJS stage for:
  * - pointermove: Updates entity position during drag
- * - pointerup/pointerupoutside: Finalizes drag and updates blueprint
+ * - pointerup/pointerupoutside: Finalizes drag and invokes onEntityDragEnd callback
  *
- * This hook should be used ONCE at the Scene/Application level.
- * It works in conjunction with useDraggable, which handles drag initiation.
+ * This hook should be used ONCE at the Scene level.
+ * It works in conjunction with useEntityInteractions, which handles drag initiation.
  *
- * The drag flow:
- * 1. useDraggable handles pointerdown (drag start) on individual entities
- * 2. This hook handles pointermove (drag move) and pointerup (drag end) on the stage
+ * Only active when interactive is true in VisualizationContext.
  *
  * Must be used within:
  * - A Pixi Application context (for app.stage)
- * - A DndProvider (for drag state)
- * - A BuilderProvider (for blueprint mutations)
+ * - A VisualizationProvider (for callbacks)
  */
-export const useDndManager = () => {
-  const { mode } = useAppState();
-  const { getDndState, endDrag } = useDnd();
-  const { moveEntity } = useBuilder();
+export const useStageInteractions = () => {
+  const { getInteractionCallbacks, interactive } = useVisualization();
   const { app } = useApplication();
-  const isBuilderMode = mode === "builder";
   const stageRef = useRef(app.stage);
 
   // Update stage ref when app changes
@@ -41,20 +33,21 @@ export const useDndManager = () => {
     stageRef.current = app.stage;
   }, [app]);
 
-  // Set up stage-level drag handlers once (only in builder mode)
+  // Set up stage-level drag handlers once
   useEffect(() => {
-    if (!isBuilderMode) {
+    if (!interactive) {
       return;
     }
 
-    // Set up stage to be interactive
     const currentStage = stageRef.current;
+
+    // Set up stage to be interactive
     currentStage.eventMode = "static";
     currentStage.hitArea = app.screen;
 
     const onDragMove = (event: FederatedPointerEvent) => {
       const dndState = getDndState();
-      if (!dndState.target || !dndState.target.parent) {
+      if (!dndState.target || !dndState.target.parent || !dndState.isDragging) {
         return;
       }
 
@@ -70,12 +63,17 @@ export const useDndManager = () => {
 
     const onDragEnd = () => {
       const dndState = getDndState();
-      if (!dndState.target || !dndState.entityId) {
+      if (!dndState.target || !dndState.entityId || !dndState.isDragging) {
         return;
       }
 
-      // Update blueprint with new position via BuilderContext
-      moveEntity(dndState.entityId, dndState.target.x, dndState.target.y);
+      // Invoke callback with new position
+      const callbacks = getInteractionCallbacks();
+      callbacks.onEntityDragEnd?.(
+        dndState.entityId,
+        dndState.target.x,
+        dndState.target.y
+      );
 
       // Reset drag state
       endDrag();
@@ -91,5 +89,5 @@ export const useDndManager = () => {
       cleanupStage.off("pointerup", onDragEnd);
       cleanupStage.off("pointerupoutside", onDragEnd);
     };
-  }, [isBuilderMode, app, getDndState, endDrag, moveEntity]);
+  }, [app, getInteractionCallbacks, interactive]);
 };

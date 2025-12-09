@@ -15,7 +15,7 @@ frontend/
 │   ├── ui/                 # shadcn/ui components
 │   └── common/             # Shared UI components
 ├── features/simulation/
-│   ├── components/          
+│   ├── components/
 │   ├── constants.ts
 │   ├── types.ts
 │   ├── utils.ts

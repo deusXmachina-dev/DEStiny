@@ -1,13 +1,6 @@
 "use client";
 
-import { Container } from "pixi.js";
-import {
-  createContext,
-  ReactNode,
-  RefObject,
-  useContext,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useRef, useState } from "react";
 
 import { SimulationTheme } from "../constants";
 import type { SimulationEntityState } from "../types";
@@ -17,11 +10,14 @@ interface ScreenSize {
   height: number;
 }
 
-export interface VisualizationHooks {
-  useScene?: () => void;
-  useEntity?: (
-    containerRef: RefObject<Container | null>,
-    entityId: string | undefined
+export interface InteractionCallbacks {
+  onEntityDragEnd?: (entityId: string, x: number, y: number) => void;
+  onEntityClick?: (entityId: string) => void;
+  onCanvasDrop?: (
+    entityType: string,
+    parameters: Record<string, "string" | "number">,
+    x: number,
+    y: number
   ) => void;
 }
 
@@ -30,14 +26,16 @@ interface VisualizationContextValue {
   theme: SimulationTheme;
   screenSize: ScreenSize;
   entities: SimulationEntityState[];
+  interactive: boolean;
 
   // Actions
   setTheme: (theme: SimulationTheme) => void;
   setScreenSize: (screenSize: ScreenSize) => void;
   setEntities: (entities: SimulationEntityState[]) => void;
 
-  // Hooks
-  hooks: VisualizationHooks;
+  // Interaction callbacks
+  registerInteractionCallbacks: (callbacks: InteractionCallbacks) => void;
+  getInteractionCallbacks: () => InteractionCallbacks;
 }
 
 const VisualizationContext = createContext<
@@ -46,26 +44,25 @@ const VisualizationContext = createContext<
 
 interface VisualizationProviderProps {
   children: ReactNode;
-  entities?: SimulationEntityState[];
-  hooks?: VisualizationHooks;
+  interactive?: boolean;
 }
 
 /**
  * VisualizationProvider - State specific to the PixiJS visualization runtime.
  *
  * This provider contains visualization runtime concerns (theme, screenSize, entities).
- * Entities and hooks can be provided by parent components (BuilderViewport or SimulationViewport).
  *
- * Supports Controlled vs Uncontrolled pattern for entities:
- * - Controlled (Builder Mode): 'entities' prop is provided, so it takes precedence.
- * - Uncontrolled (Simulation Mode): 'entities' prop is undefined, so internal state is used.
+ * Children components (SimulationEntityUpdater, BuilderInteractionHandler) are responsible
+ * for updating entities via setEntities.
  *
- * Must be used within a PlaybackProvider.
+ * Children can register interaction callbacks via registerInteractionCallbacks.
+ * The visualization layer will invoke these callbacks when interactions occur.
+ *
+ * @param interactive - Whether entities should be interactive (default: true)
  */
 export const VisualizationProvider = ({
   children,
-  entities: externalEntities,
-  hooks = {},
+  interactive = true,
 }: VisualizationProviderProps) => {
   const [theme, setTheme] = useState<SimulationTheme>("factory");
   const [screenSize, setScreenSize] = useState<ScreenSize>({
@@ -73,22 +70,28 @@ export const VisualizationProvider = ({
     height: 0,
   });
 
-  // Internal state for simulation mode (uncontrolled)
-  const [internalEntities, setInternalEntities] = useState<
-    SimulationEntityState[]
-  >([]);
+  // Entity state - updated by children (SimulationEntityUpdater or BuilderInteractionHandler)
+  const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
-  // Derived state: Use external entities if provided (builder), otherwise internal (simulation)
-  const entities = externalEntities ?? internalEntities;
+  // Interaction callbacks - stored in ref to avoid re-renders
+  const interactionCallbacksRef = useRef<InteractionCallbacks>({});
+
+  const registerInteractionCallbacks = (callbacks: InteractionCallbacks) => {
+    interactionCallbacksRef.current = callbacks;
+  };
+
+  const getInteractionCallbacks = () => interactionCallbacksRef.current;
 
   const value: VisualizationContextValue = {
     theme,
     screenSize,
     entities,
+    interactive,
     setTheme,
     setScreenSize,
-    setEntities: setInternalEntities, // Always update internal state, but it only affects output in simulation mode
-    hooks,
+    setEntities,
+    registerInteractionCallbacks,
+    getInteractionCallbacks,
   };
 
   return (

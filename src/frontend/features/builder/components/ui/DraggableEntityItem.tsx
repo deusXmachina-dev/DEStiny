@@ -7,10 +7,16 @@ import type { AVAILABLE_SCHEMAS } from "../../builderSchemas";
 
 interface DraggableEntityItemProps {
   schema: (typeof AVAILABLE_SCHEMAS)[0];
-  onDragStart: (e: React.DragEvent, schema: (typeof AVAILABLE_SCHEMAS)[0]) => void;
+  onDragStart: (
+    e: React.DragEvent,
+    schema: (typeof AVAILABLE_SCHEMAS)[0]
+  ) => void;
 }
 
-export function DraggableEntityItem({ schema, onDragStart }: DraggableEntityItemProps) {
+export function DraggableEntityItem({
+  schema,
+  onDragStart,
+}: DraggableEntityItemProps) {
   const dragImageRef = useRef<HTMLImageElement>(null);
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -41,6 +47,7 @@ export function DraggableEntityItem({ schema, onDragStart }: DraggableEntityItem
         </div>
       </div>
       {/* Hidden image for drag preview */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={dragImageRef}
         src={schema.icon}
