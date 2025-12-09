@@ -4,13 +4,16 @@ import { BuilderPanel, BuilderProvider, BuilderViewport } from "@features/builde
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
 import { SimulationViewport } from "@features/simulation";
-import { EditorPanel } from "@features/editor";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useAppState, AppStateProvider } from "@/context/AppStateContext";
+import { useAppState, AppStateProvider, type AppMode } from "@/context/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode } = useAppState();
+  const { mode, setMode } = useAppState();
+
+  const handleTabChange = (value: string) => {
+    setMode(value as AppMode);
+  };
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -21,24 +24,24 @@ function HomeContent() {
           {mode === "simulation" ? <SimulationViewport /> : <BuilderViewport />}
         </div>
           
-        {/* Right Panel: Metrics/Editor (30%) */}
+        {/* Right Panel: Metrics/Builder (30%) */}
         <div className="w-[30%] h-full border-l flex flex-col">
-          <Tabs defaultValue="metrics" className="flex flex-col h-full gap-0">
+          <Tabs value={mode} onValueChange={handleTabChange} className="flex flex-col h-full gap-0">
             <div className="border-l border-b border-border p-4 flex justify-center">
               <TabsList className="h-10 p-[6px]">
-                <TabsTrigger value="metrics" className="text-md p-4 font-mono">
-                  Metrics
+                <TabsTrigger value="simulation" className="text-md p-4 font-mono">
+                  Simulation
                 </TabsTrigger>
-                <TabsTrigger value="editor" className="text-md p-4 font-mono">
-                  Editor
+                <TabsTrigger value="builder" className="text-md p-4 font-mono">
+                  Builder
                 </TabsTrigger>
               </TabsList>
             </div>
-            <TabsContent value="metrics" className="flex-1 min-h-0 mt-0">
+            <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
               <MetricsPanel />
             </TabsContent>
-            <TabsContent value="editor" className="flex-1 min-h-0 mt-0">
-              <EditorPanel />
+            <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
+              <BuilderPanel />
             </TabsContent>
           </Tabs>
         </div>
