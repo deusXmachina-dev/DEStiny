@@ -9,21 +9,29 @@ def test_human_schema_generation():
     """Test that Human entity generates correct parameter schema."""
     schema = Human.get_parameters_schema()
     
+    # Schema should have entityType, icon, and parameters
+    assert "entityType" in schema
+    assert "icon" in schema
+    assert "parameters" in schema
+    assert schema["entityType"] == "human"
+    
+    params = schema["parameters"]
+    
     # Should have all the parameters from Human.__init__ (excluding self and env)
-    assert "x" in schema
-    assert "y" in schema
-    assert "targetX" in schema
-    assert "targetY" in schema
+    assert "x" in params
+    assert "y" in params
+    assert "targetX" in params
+    assert "targetY" in params
     
     # All should be "number" type (float)
-    assert schema["x"] == "number"
-    assert schema["y"] == "number"
-    assert schema["targetX"] == "number"
-    assert schema["targetY"] == "number"
+    assert params["x"] == "number"
+    assert params["y"] == "number"
+    assert params["targetX"] == "number"
+    assert params["targetY"] == "number"
     
     # Should not include self or env
-    assert "self" not in schema
-    assert "env" not in schema
+    assert "self" not in params
+    assert "env" not in params
 
 
 def test_schema_type_mapping():
@@ -43,15 +51,16 @@ def test_schema_type_mapping():
             super().__init__(env)
     
     schema = TestEntity.get_parameters_schema()
+    params = schema["parameters"]
     
-    assert schema["num_int"] == "number"
-    assert schema["num_float"] == "number"
-    assert schema["text"] == "string"
-    assert schema["flag"] == "boolean"
+    assert params["num_int"] == "number"
+    assert params["num_float"] == "number"
+    assert params["text"] == "string"
+    assert params["flag"] == "boolean"
     
     # Should exclude self and env
-    assert "self" not in schema
-    assert "env" not in schema
+    assert "self" not in params
+    assert "env" not in params
 
 
 def test_schema_with_no_parameters():
@@ -65,8 +74,12 @@ def test_schema_with_no_parameters():
     
     schema = MinimalEntity.get_parameters_schema()
     
-    # Should be empty (only self and env, which are excluded)
-    assert schema == {}
+    # Should have entityType, icon, and parameters (parameters should be empty)
+    assert "entityType" in schema
+    assert "icon" in schema
+    assert "parameters" in schema
+    assert schema["entityType"] == "minimal"
+    assert schema["parameters"] == {}
 
 
 def test_schema_excludes_kwargs():
@@ -85,11 +98,12 @@ def test_schema_excludes_kwargs():
             super().__init__(env)
     
     schema = KwargsEntity.get_parameters_schema()
+    params = schema["parameters"]
     
     # Should only include normal_param
-    assert "normal_param" in schema
-    assert schema["normal_param"] == "number"
+    assert "normal_param" in params
+    assert params["normal_param"] == "number"
     
     # Should exclude args and kwargs
-    assert "args" not in schema
-    assert "kwargs" not in schema
+    assert "args" not in params
+    assert "kwargs" not in params
