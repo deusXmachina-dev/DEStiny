@@ -1,7 +1,7 @@
 import type { SimulationRecording } from "@features/playback";
+import type { SimulationMotionSegment } from "@features/playback";
 import { describe, expect,it } from "vitest";
 
-import type { SimulationMotionSegment } from "../types";
 import { SimulationEngine } from "./SimulationEngine";
 
 // Helper to create a motion segment with defaults

@@ -1,6 +1,6 @@
 import type { SimulationRecording } from "@features/playback";
+import type { SimulationEntityState } from "@features/visualization";
 
-import type { SimulationEntityState } from "../types";
 import { lerp } from "../utils";    
 
 /**
