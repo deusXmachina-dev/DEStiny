@@ -1,14 +1,13 @@
 "use client";
 
 import { RecordingUploadButton } from "@features/playback";
+import { ThemeSelector } from "@features/visualization/components/ThemeSelector";
 import { Plus,X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-import { ThemeSelector } from "../../visualization/components/ThemeSelector";
 
 type ControlsPosition = "top" | "center";
 
