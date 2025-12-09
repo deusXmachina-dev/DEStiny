@@ -23,6 +23,7 @@ export const Background = ({
     (g: Graphics) => {
       g.clear();
 
+      // eslint-disable-next-line no-console
       console.log("app.screen changed", screenSize);
             
       const { width, height } = screenSize;
@@ -57,4 +58,3 @@ export const Background = ({
 };
 
 export default Background;
-
