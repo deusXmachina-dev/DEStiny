@@ -1,0 +1,5 @@
+/venv
+/.venv
+poetry.lock
+test.db
+/media
