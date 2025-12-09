@@ -2,13 +2,13 @@
 
 import { createContext, ReactNode, useContext, useRef, useState } from "react";
 
-import type { ParameterValue, SimulationBlueprint } from "../../simulation/types";
+import type { ParameterValue, SimulationBlueprint } from "../types";
 import {
   createBlueprintEntity,
   removeBlueprintEntity,
   updateBlueprintEntityParameters,
   updateBlueprintEntityPosition,
-} from "../../simulation/utils";
+} from "../utils";
 
 interface BuilderContextValue {
   // State

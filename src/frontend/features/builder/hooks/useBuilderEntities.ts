@@ -1,10 +1,10 @@
 "use client";
 
 import { useBuilder } from "@features/builder";
+import type { SimulationEntityState } from "@features/visualization";
 import { useMemo } from "react";
 
-import type { SimulationEntityState } from "../../simulation/types";
-import { blueprintToEntityStates } from "../../simulation/utils";
+import { blueprintToEntityStates } from "../utils";
 
 /**
  * Hook to derive simulation entities from the builder blueprint.
