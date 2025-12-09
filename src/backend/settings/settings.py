@@ -108,20 +108,6 @@ WSGI_APPLICATION = "wsgi.application"
 # Database - not needed for stateless API
 DATABASES = {}
 
-# Cache
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("CACHE_REDIS_HOST", "redis://localhost:6379/1"),
-        "TIMEOUT": 60 * 60 * 24,
-    },
-}
-
-
-# Password validation - not needed without auth
-# AUTH_PASSWORD_VALIDATORS removed
-
-
 # Internationalization
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"

@@ -14,11 +14,3 @@ SECURE_REDIRECT_EXEMPT = []
 SECURE_PROXY_SSL_HEADER = None
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-
-# Use simple cache for tests (no Redis dependency)
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
-    },
-}
