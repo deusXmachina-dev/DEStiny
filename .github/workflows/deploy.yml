@@ -70,6 +70,6 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: pytest
-          path: /reports_dir/pytest-report.xml
+          path: /reports_dir/*.xml
           reporter: java-junit
           fail-on-error: true
