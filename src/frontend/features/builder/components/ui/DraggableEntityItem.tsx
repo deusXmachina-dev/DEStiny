@@ -3,14 +3,11 @@
 import Image from "next/image";
 import { useRef } from "react";
 
-import type { AVAILABLE_SCHEMAS } from "../../builderSchemas";
+import type { BuilderEntitySchema } from "../../types";
 
 interface DraggableEntityItemProps {
-  schema: (typeof AVAILABLE_SCHEMAS)[0];
-  onDragStart: (
-    e: React.DragEvent,
-    schema: (typeof AVAILABLE_SCHEMAS)[0]
-  ) => void;
+  schema: BuilderEntitySchema;
+  onDragStart: (e: React.DragEvent, schema: BuilderEntitySchema) => void;
 }
 
 export function DraggableEntityItem({

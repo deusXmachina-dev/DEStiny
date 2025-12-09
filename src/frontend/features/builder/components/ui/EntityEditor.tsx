@@ -15,15 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { AVAILABLE_SCHEMAS } from "../../builderSchemas";
+import { useBuilderSchemas } from "../../hooks/useBuilderSchemas";
 import type { ParameterValue } from "../../types";
 import { findBlueprintEntity } from "../../utils";
-
-/**
- * Helper function to find schema by entity type.
- */
-const findSchemaByEntityType = (entityType: string) =>
-  AVAILABLE_SCHEMAS.find((schema) => schema.entityType === entityType);
 
 /**
  * Form component for editing entity parameters.
@@ -126,6 +120,7 @@ export const EntityEditor = () => {
     updateEntity,
     removeEntity,
   } = useBuilder();
+  const { schemas } = useBuilderSchemas();
 
   // Load entity data when dialog opens
   const entity = useMemo(() => {
@@ -135,11 +130,12 @@ export const EntityEditor = () => {
     return null;
   }, [isEditorOpen, selectedEntityId, blueprint]);
 
-  if (!entity) {
-    return null;
-  }
+  // Find schema for the current entity
+  const schema = useMemo(() => {
+    if (!entity) return null;
+    return schemas.find((s) => s.entityType === entity.entityType) ?? null;
+  }, [entity, schemas]);
 
-  const schema = findSchemaByEntityType(entity?.entityType ?? "");
   if (!entity || !schema) {
     return null;
   }

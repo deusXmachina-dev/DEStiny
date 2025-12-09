@@ -3,15 +3,15 @@
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
-import { AVAILABLE_SCHEMAS } from "../builderSchemas";
+import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
+import type { BuilderEntitySchema } from "../types";
 import { DraggableEntityItem } from "./ui/DraggableEntityItem";
 import { ExportBlueprintButton } from "./ui/ExportBlueprintButton";
 
 function BuilderPanelContent() {
-  const handleDragStart = (
-    e: React.DragEvent,
-    schema: (typeof AVAILABLE_SCHEMAS)[0]
-  ) => {
+  const { schemas, isLoading, error } = useBuilderSchemas();
+
+  const handleDragStart = (e: React.DragEvent, schema: BuilderEntitySchema) => {
     e.dataTransfer.effectAllowed = "copy";
     e.dataTransfer.setData(
       "application/json",
@@ -25,13 +25,23 @@ function BuilderPanelContent() {
   return (
     <SidePanel>
       <SidePanel.Content className="grid grid-cols-2 auto-rows-min gap-2">
-        {AVAILABLE_SCHEMAS.map((schema, index) => (
-          <DraggableEntityItem
-            key={`${schema.entityType}-${index}`}
-            schema={schema}
-            onDragStart={handleDragStart}
-          />
-        ))}
+        {isLoading && (
+          <div className="text-sm text-muted-foreground">Loading schemas...</div>
+        )}
+        {error && (
+          <div className="text-sm text-destructive">
+            Error loading schemas: {error.message}
+          </div>
+        )}
+        {!isLoading &&
+          !error &&
+          schemas.map((schema, index) => (
+            <DraggableEntityItem
+              key={`${schema.entityType}-${index}`}
+              schema={schema}
+              onDragStart={handleDragStart}
+            />
+          ))}
       </SidePanel.Content>
 
       <SidePanel.Footer>

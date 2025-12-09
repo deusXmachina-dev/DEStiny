@@ -2,27 +2,30 @@
  * Schema definitions for the drag-and-drop scenario builder.
  */
 
+import type { components } from "@/types/api";
+
 /**
  * Parameter type definitions for builder entities.
  * Primitive types supported by the builder.
+ * These match the string values returned by the API.
  */
-export type ParameterType = "string" | "number";
+export type ParameterType = "string" | "number" | "boolean";
 
 /**
- * Parameter value can be a string or number.
+ * Parameter value can be a string, number, or boolean.
  */
-export type ParameterValue = string | number;
+export type ParameterValue = string | number | boolean;
 
 /**
  * Builder Entity Schema - defines what entities can be used in the builder,
  * their icons, and what parameters they accept.
+ * 
+ * This type is compatible with the OpenAPI-generated BuilderEntitySchema,
+ * but provides more specific typing for the parameters field.
  */
-export interface BuilderEntitySchema {
-  /** The type of entity (e.g., "human", "agv", "robot") */
-  entityType: string;
-  /** Path to the icon/image asset for this entity */
-  icon: string;
-  /** Parameters this entity accepts, mapping parameter name to its type */
+export interface BuilderEntitySchema // todo: get rid of this - probly nicer schema on BE
+  extends Omit<components["schemas"]["BuilderEntitySchema"], "parameters"> {
+  /** Parameters this entity accepts, mapping parameter name to its type string */
   parameters: Record<string, ParameterType>;
 }
 
