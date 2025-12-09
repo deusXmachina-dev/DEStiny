@@ -10,21 +10,18 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /backend
 
 # Make sure that top level directories are included in the PYTHONPATH
-ENV PYTHONPATH "${PYTHONPATH}:/backend"
+ENV PYTHONPATH=/backend
 
 # Copy engine first (dependency)
 COPY engine /backend/engine
 
-# Copy backend pyproject.toml
-COPY backend/pyproject.toml /backend/pyproject.toml
+# Copy backend directory (including pyproject.toml and all source files)
+COPY backend /backend
 
 # Install backend dependencies (this will install destiny-sim from the local engine path)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -e /backend/engine && \
     pip install --no-cache-dir -e /backend
-
-# Copy the backend directory contents into the container
-COPY backend /backend
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
