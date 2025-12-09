@@ -16,9 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppState } from "@/context/AppStateContext";
 
+import type { ParameterValue } from "../../../simulation/types";
+import { findBlueprintEntity } from "../../../simulation/utils";
 import { AVAILABLE_SCHEMAS } from "../../builderSchemas";
-import type { ParameterValue } from "../../types";
-import { findBlueprintEntity } from "../../utils";
 
 /**
  * Helper function to find schema by entity type.

@@ -3,8 +3,8 @@
 import { useBuilder } from "@features/builder";
 import { useMemo } from "react";
 
-import type { SimulationEntityState } from "../types";
-import { blueprintToEntityStates } from "../utils";
+import type { SimulationEntityState } from "../../simulation/types";
+import { blueprintToEntityStates } from "../../simulation/utils";
 
 /**
  * Hook to derive simulation entities from the builder blueprint.

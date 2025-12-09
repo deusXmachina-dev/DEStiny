@@ -2,7 +2,7 @@
 
 import { useAppState } from "@/context/AppStateContext";
 
-import { useBuilderEntities } from "./useBuilderEntities";
+import { useBuilderEntities } from "../../builder/hooks/useBuilderEntities";
 import { useSimulationEntities } from "./useSimulationEntities";
 
 /**

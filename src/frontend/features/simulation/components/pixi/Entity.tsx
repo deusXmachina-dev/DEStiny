@@ -4,9 +4,9 @@ import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
 import { useRef } from "react";
 
-import { useDraggable } from "../../hooks/dnd/useDraggable";
+import { useDraggable } from "../../../builder/hooks/dnd/useDraggable";
 import { useAssets } from "../../hooks/useAssets";
-import { useEntityClick } from "../../hooks/useEntityClick";
+import { useEntityClick } from "../../../builder/hooks/useEntityClick";
 import { SimulationEntityState } from "../../types";
 
 // Extend Pixi.js components for @pixi/react

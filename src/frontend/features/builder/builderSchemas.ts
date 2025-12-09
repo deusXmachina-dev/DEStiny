@@ -5,7 +5,7 @@
  * For now, this is a simple manual schema for the Person entity.
  */
 
-import { BuilderEntitySchema } from "./types";
+import { BuilderEntitySchema } from "../simulation/types";
 
 /**
  * Simple Person entity schema.
