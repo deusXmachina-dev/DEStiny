@@ -71,3 +71,12 @@ jobs:
           path: /reports_dir/*.xml
           reporter: java-junit
           fail-on-error: true
+
+      - name: Deploy to Cloud Run
+        # Only deploy on pushes to main (not PRs) and if previous steps succeeded
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && success()
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_BASE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.BACKEND_IMAGE_NAME }}
