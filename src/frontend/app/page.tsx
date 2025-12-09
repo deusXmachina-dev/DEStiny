@@ -18,29 +18,22 @@ import {
 } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
-import { useRef } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  type AppMode,
-  AppStateProvider,
-  useAppState,
-} from "@/context/AppStateContext";
+import { useState } from "react";
+
+type AppMode = "simulation" | "builder";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode, setMode } = useAppState();
-
-  const handleTabChange = (value: string) => {
-    setMode(value as AppMode);
-  };
+  const [mode, setMode] = useState<("simulation" | "builder")>("simulation");
 
   return (
     <div className="flex flex-col w-full h-screen">
       {/* Main Content: Fixed Split Panels */}
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Visualization (70%) */}
-        <div className="w-[70%] h-full">
+        <div className="w-[70%] h-full relative">
           <VisualizationProvider interactive={mode === "builder"}>
             <SceneVisualization>
               {mode === "simulation" && <SimulationEntityUpdater />}
@@ -57,7 +50,7 @@ function HomeContent() {
         <div className="w-[30%] h-full border-l flex flex-col">
           <Tabs
             value={mode}
-            onValueChange={handleTabChange}
+            onValueChange={(value) => setMode(value as AppMode)}
             className="flex flex-col h-full gap-0"
           >
             <div className="border-l border-b border-border p-4 flex justify-center">
@@ -96,12 +89,10 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <AppStateProvider>
-      <BuilderProvider>
-        <PlaybackProvider>
-          <HomeContent />
-        </PlaybackProvider>
-      </BuilderProvider>
-    </AppStateProvider>
+    <BuilderProvider>
+      <PlaybackProvider>
+        <HomeContent />
+      </PlaybackProvider>
+    </BuilderProvider>
   );
 }

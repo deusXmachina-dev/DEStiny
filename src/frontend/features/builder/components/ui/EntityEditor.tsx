@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppState } from "@/context/AppStateContext";
 
 import { AVAILABLE_SCHEMAS } from "../../builderSchemas";
 import type { ParameterValue } from "../../types";
@@ -119,7 +118,6 @@ const EntityForm = ({
 };
 
 export const EntityEditor = () => {
-  const { mode } = useAppState();
   const {
     blueprint,
     selectedEntityId,
@@ -136,11 +134,6 @@ export const EntityEditor = () => {
     }
     return null;
   }, [isEditorOpen, selectedEntityId, blueprint]);
-
-  // Only show in builder mode
-  if (mode !== "builder") {
-    return null;
-  }
 
   if (!entity) {
     return null;
