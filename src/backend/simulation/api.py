@@ -4,21 +4,31 @@ from destiny_sim.builder.runner import get_registered_entities, run_blueprint
 
 api = NinjaAPI(title="DEStiny Simulation API", version="0.1.0")
 
+
+class BuilderEntitySchema(Schema):
+    """Schema for a builder entity definition."""
+    entityType: str
+    icon: str
+    parameters: Dict[str, str]  # Maps parameter name to type ("string", "number", "boolean")
+
+
 class Blueprint(Schema):
     simParams: Dict[str, Any] = {}
     entities: List[Dict[str, Any]] = []
 
-@api.get("/schema", response=Dict[str, Dict[str, str]])
+
+@api.get("/schema", response=List[BuilderEntitySchema])
 def get_schema(request):
     """
     Returns the entity schema for the frontend builder.
     """
     entities = get_registered_entities()
-    schema = {}
+    schemas = []
     for name, cls in entities.items():
-        # Schema is name -> {param -> type}
-        schema[name] = cls.get_parameters_schema()
-    return schema
+        schema_dict = cls.get_parameters_schema()
+        # Convert dict to BuilderEntitySchema instance
+        schemas.append(BuilderEntitySchema(**schema_dict))
+    return schemas
 
 @api.post("/simulate")
 def run_simulation(request, blueprint: Blueprint):

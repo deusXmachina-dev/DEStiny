@@ -13,6 +13,7 @@ class Human(BuilderEntity):
     """
     
     entity_type = "human"
+    icon = "/assets/human.png"
 
     def __init__(
         self, 

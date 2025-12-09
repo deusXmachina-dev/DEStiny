@@ -3,7 +3,7 @@ Base classes for builder entities.
 """
 
 import inspect
-from typing import Dict
+from typing import Dict, Any
 
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.simulation_entity import SimulationEntity
@@ -16,6 +16,8 @@ class BuilderEntity(SimulationEntity):
 
     # The unique type identifier matching the frontend entityType
     entity_type: str = ""
+    # The icon path for the frontend builder
+    icon: str = ""
 
     def __init__(self, env: RecordingEnvironment, **kwargs):
         super().__init__()
@@ -31,10 +33,15 @@ class BuilderEntity(SimulationEntity):
         pass
 
     @classmethod
-    def get_parameters_schema(cls) -> Dict[str, str]:
+    def get_parameters_schema(cls) -> Dict[str, Any]:
         """
         Extract parameter schema from __init__ arguments.
-        Returns a dictionary of param_name -> type_name.
+        Returns a dictionary representing the entity schema for the frontend:
+        {
+            "entityType": str,
+            "icon": str,
+            "parameters": { param_name: type_name }
+        }
         """
         sig = inspect.signature(cls.__init__)
         params = {}
@@ -53,4 +60,8 @@ class BuilderEntity(SimulationEntity):
 
             params[name] = type_name
 
-        return params
+        return {
+            "entityType": cls.entity_type,
+            "icon": cls.icon,
+            "parameters": params
+        }
