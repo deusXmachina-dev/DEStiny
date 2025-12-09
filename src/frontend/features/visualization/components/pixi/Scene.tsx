@@ -16,7 +16,7 @@ extend({
 export const Scene = () => {
   const { isLoaded } = useAssets();
   const { entities, hooks } = useVisualization();
-  
+
   // Call scene-level hook if provided (e.g., useDndManager in builder mode)
   if (hooks.useScene) {
     hooks.useScene();
@@ -29,12 +29,8 @@ export const Scene = () => {
   return (
     <pixiContainer>
       {entities.map((entity) => (
-        <Entity
-          key={entity.entityId}
-          {...entity}
-        />
+        <Entity key={entity.entityId} {...entity} />
       ))}
     </pixiContainer>
   );
 };
-

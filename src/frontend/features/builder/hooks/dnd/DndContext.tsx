@@ -27,13 +27,13 @@ interface DndProviderProps {
 
 /**
  * DndProvider - Manages drag state for entity drag and drop.
- * 
+ *
  * Uses refs to store drag state (no re-renders needed since drag
  * operations are handled imperatively via PixiJS event handlers).
- * 
+ *
  * This is a pure "drag and drop" mechanism - it only tracks visual drag state.
  * Blueprint mutations are handled by BuilderContext, not here.
- * 
+ *
  * Must be used within a Pixi Application context.
  */
 export const DndProvider = ({ children }: DndProviderProps) => {

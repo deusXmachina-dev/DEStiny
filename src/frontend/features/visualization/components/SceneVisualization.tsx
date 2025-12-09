@@ -17,14 +17,14 @@ interface SceneVisualizationProps {
 
 /**
  * SceneVisualization - Core visualization component that renders the PixiJS application.
- * 
+ *
  * This component handles:
  * - Pixi Application setup with resize handling
  * - Background rendering
  * - Scene rendering (entities come from VisualizationContext)
  * - Optional drag-and-drop handlers for builder mode
  * - Children can be used to inject logic components (e.g., SimulationEntityUpdater)
- * 
+ *
  * Must be used within a VisualizationProvider.
  */
 export const SceneVisualization = ({

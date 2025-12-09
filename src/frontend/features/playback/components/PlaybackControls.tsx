@@ -1,21 +1,34 @@
 "use client";
 
 import { formatTime } from "@lib/utils";
-import { FastForward, Hammer, Monitor,Pause, Play, Rewind, RotateCcw } from "lucide-react";
+import { FastForward, Pause, Play, Rewind } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
-  const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();
+  const {
+    isPlaying,
+    speed,
+    togglePlay,
+    setSpeed,
+    seek,
+    currentTime,
+    duration,
+  } = usePlayback();
 
   return (
     <div className="flex flex-col gap-2 w-full">
-            
       <div className="flex items-center gap-4 w-full">
         {/* Left: Control Buttons */}
         <div className="flex items-center gap-2">

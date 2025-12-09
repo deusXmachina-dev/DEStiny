@@ -38,8 +38,13 @@ interface EntityFormProps {
   onCancel: () => void;
 }
 
-const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormProps) => {
-
+const EntityForm = ({
+  entity,
+  schema,
+  onSave,
+  onDelete,
+  onCancel,
+}: EntityFormProps) => {
   const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
     () => ({ ...entity.parameters })
   );
@@ -47,7 +52,7 @@ const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormPr
   const handleParameterChange = (key: string, value: string) => {
     const paramType = schema.parameters[key];
     let parsedValue: ParameterValue;
-    
+
     if (paramType === "number") {
       parsedValue = value === "" ? 0 : Number(value);
       if (isNaN(parsedValue as number)) {
@@ -99,11 +104,7 @@ const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormPr
         ))}
       </div>
       <DialogFooter className="flex-row justify-between">
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={onDelete}
-        >
+        <Button type="button" variant="destructive" onClick={onDelete}>
           Delete Entity
         </Button>
         <div className="flex gap-2">
@@ -119,8 +120,15 @@ const EntityForm = ({ entity, schema, onSave, onDelete, onCancel }: EntityFormPr
 
 export const EntityEditor = () => {
   const { mode } = useAppState();
-  const { blueprint, selectedEntityId, isEditorOpen, closeEditor, updateEntity, removeEntity } = useBuilder();
-  
+  const {
+    blueprint,
+    selectedEntityId,
+    isEditorOpen,
+    closeEditor,
+    updateEntity,
+    removeEntity,
+  } = useBuilder();
+
   // Load entity data when dialog opens
   const entity = useMemo(() => {
     if (isEditorOpen && selectedEntityId && blueprint) {

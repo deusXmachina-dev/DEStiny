@@ -1,4 +1,3 @@
-
 /**
  * Schema definitions for the drag-and-drop scenario builder.
  */

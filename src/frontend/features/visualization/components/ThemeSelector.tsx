@@ -11,18 +11,19 @@ import {
 import { SimulationTheme, THEME_CONFIGS } from "../constants";
 import { useVisualization } from "../hooks/VisualizationContext";
 
-const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 
-    Object.keys(THEME_CONFIGS).map((key) => ({
-      value: key as SimulationTheme,
-      label: key.charAt(0).toUpperCase() + key.slice(1),
-    }));
+const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = Object.keys(
+  THEME_CONFIGS
+).map((key) => ({
+  value: key as SimulationTheme,
+  label: key.charAt(0).toUpperCase() + key.slice(1),
+}));
 
 export function ThemeSelector() {
   const { theme, setTheme } = useVisualization();
 
   return (
-    <Select 
-      value={theme} 
+    <Select
+      value={theme}
       onValueChange={(value) => setTheme(value as SimulationTheme)}
     >
       <SelectTrigger className="w-[150px]">
@@ -38,4 +39,3 @@ export function ThemeSelector() {
     </Select>
   );
 }
-

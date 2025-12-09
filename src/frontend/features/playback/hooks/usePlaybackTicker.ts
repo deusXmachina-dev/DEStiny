@@ -6,16 +6,23 @@ import { usePlayback } from "./PlaybackContext";
 
 /**
  * usePlaybackTicker - Headless time advancement hook.
- * 
+ *
  * Uses requestAnimationFrame to advance currentTime based on speed when playing.
  * This hook works WITHOUT PixiJS and can be used in any context that needs
  * time-synchronized updates (metrics graphs, data tables, etc.).
- * 
+ *
  * Must be used within a PlaybackProvider.
  */
 export const usePlaybackTicker = () => {
-  const { isPlaying, speed, duration, seekTarget, setCurrentTime, clearSeekTarget } = usePlayback();
-    
+  const {
+    isPlaying,
+    speed,
+    duration,
+    seekTarget,
+    setCurrentTime,
+    clearSeekTarget,
+  } = usePlayback();
+
   const accumulatedTimeRef = useRef<number>(0);
   const lastTimestampRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -76,4 +83,3 @@ export const usePlaybackTicker = () => {
     setCurrentTime(0);
   }, [duration, setCurrentTime]);
 };
-

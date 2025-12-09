@@ -9,7 +9,9 @@ interface AppStateContextValue {
   setMode: (mode: AppMode) => void;
 }
 
-const AppStateContext = createContext<AppStateContextValue | undefined>(undefined);
+const AppStateContext = createContext<AppStateContextValue | undefined>(
+  undefined
+);
 
 interface AppStateProviderProps {
   children: ReactNode;
@@ -17,7 +19,7 @@ interface AppStateProviderProps {
 
 /**
  * AppStateProvider - Manages high-level application state (mode, UI state, etc.).
- * 
+ *
  * This provider should be placed at the root level to allow layout components
  * to conditionally render based on the current application state.
  */

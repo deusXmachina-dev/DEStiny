@@ -9,4 +9,3 @@ export const SPEED_OPTIONS = [
   { value: "10", label: "10x" },
   { value: "20", label: "20x" },
 ];
-

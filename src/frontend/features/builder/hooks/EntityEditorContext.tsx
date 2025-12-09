@@ -10,7 +10,9 @@ interface EntityEditorContextValue {
   isJustClosed: () => boolean;
 }
 
-const EntityEditorContext = createContext<EntityEditorContextValue | undefined>(undefined);
+const EntityEditorContext = createContext<EntityEditorContextValue | undefined>(
+  undefined
+);
 
 interface EntityEditorProviderProps {
   children: ReactNode;
@@ -18,10 +20,12 @@ interface EntityEditorProviderProps {
 
 /**
  * EntityEditorProvider - Manages state for the entity editor dialog.
- * 
+ *
  * Handles opening/closing the editor and prevents reopening immediately after closing.
  */
-export const EntityEditorProvider = ({ children }: EntityEditorProviderProps) => {
+export const EntityEditorProvider = ({
+  children,
+}: EntityEditorProviderProps) => {
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const justClosedRef = useRef(false);
@@ -70,7 +74,9 @@ export const EntityEditorProvider = ({ children }: EntityEditorProviderProps) =>
 export const useEntityEditor = (): EntityEditorContextValue => {
   const context = useContext(EntityEditorContext);
   if (!context) {
-    throw new Error("useEntityEditor must be used within an EntityEditorProvider");
+    throw new Error(
+      "useEntityEditor must be used within an EntityEditorProvider"
+    );
   }
   return context;
 };

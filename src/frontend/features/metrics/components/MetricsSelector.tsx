@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowDown, ArrowUp, Eye, EyeOff, Settings2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -8,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
-import { Settings2, ArrowUp, ArrowDown, Eye, EyeOff } from "lucide-react";
 
 interface MetricsSelectorProps {
   visibleMetrics: Set<string>;
@@ -31,8 +32,8 @@ export function MetricsSelector({
         <Settings2 className="h-4 w-4" />
         <SelectValue placeholder="Configure" />
       </SelectTrigger>
-      <SelectContent 
-        className="w-80" 
+      <SelectContent
+        className="w-80"
         align="end"
         onCloseAutoFocus={(e) => e.preventDefault()}
       >

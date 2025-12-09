@@ -7,17 +7,19 @@ import { useAppState } from "@/context/AppStateContext";
 
 /**
  * Hook to handle dropping new entities onto the canvas.
- * 
+ *
  * Provides handlers for HTML5 drag and drop API to add new entities
  * to the simulation blueprint when dropped from external sources
  * (e.g., entity palette, sidebar).
- * 
+ *
  * Only active in "builder" mode.
- * 
+ *
  * @param containerRef - Ref to the container element that receives drops
  * @returns Object with onDragOver and onDrop handlers
  */
-export const useCanvasDrop = (containerRef: RefObject<HTMLDivElement | null>) => {
+export const useCanvasDrop = (
+  containerRef: RefObject<HTMLDivElement | null>
+) => {
   const { mode } = useAppState();
   const { addEntity } = useBuilder();
 

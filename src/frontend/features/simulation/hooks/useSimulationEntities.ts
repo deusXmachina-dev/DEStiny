@@ -13,16 +13,18 @@ interface UseSimulationEntitiesOptions {
 
 /**
  * Hook to manage the SimulationEngine and derive entities based on playback time.
- * 
+ *
  * Must be used within:
  * - A Pixi Application context (because of useTick)
  * - A PlaybackProvider (for playback state)
- * 
+ *
  * This hook encapsulates all the complexity of the simulation engine lifecycle,
  * recording management, and time-based entity derivation. It only processes
  * updates when enabled is true.
  */
-export const useSimulationEntities = ({ enabled }: UseSimulationEntitiesOptions): SimulationEntityState[] => {
+export const useSimulationEntities = ({
+  enabled,
+}: UseSimulationEntitiesOptions): SimulationEntityState[] => {
   const { recording, currentTime } = usePlayback();
   const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
@@ -68,7 +70,10 @@ export const useSimulationEntities = ({ enabled }: UseSimulationEntitiesOptions)
 
     // Skip if time hasn't changed (optimization for paused state)
     // But force update if we just switched modes (enabled) or recording
-    if (currentTime === lastRenderedTimeRef.current && !shouldForceUpdateRef.current) {
+    if (
+      currentTime === lastRenderedTimeRef.current &&
+      !shouldForceUpdateRef.current
+    ) {
       return;
     }
     lastRenderedTimeRef.current = currentTime;

@@ -19,10 +19,10 @@ export const useAssets = () => {
         // Use 'skip' strategy to continue loading even if some assets fail
         // This prevents the entire load from failing if one asset is missing
         await Assets.load(uniqueUrls, {
-          strategy: 'skip',
+          strategy: "skip",
           onError: (error, asset) => {
             console.warn(`Failed to load asset: ${asset}`, error);
-          }
+          },
         });
 
         setIsLoaded(true);
@@ -37,7 +37,9 @@ export const useAssets = () => {
   // Helper to get texture by entity type
   const getTexture = (type: string): Texture => {
     const url = ASSET_MAP[type];
-    if (!url) {return Texture.EMPTY;}
+    if (!url) {
+      return Texture.EMPTY;
+    }
 
     // Assets.get() retrieves from the built-in cache
     return Assets.get(url) || Texture.EMPTY;
@@ -45,4 +47,3 @@ export const useAssets = () => {
 
   return { getTexture, isLoaded };
 };
-

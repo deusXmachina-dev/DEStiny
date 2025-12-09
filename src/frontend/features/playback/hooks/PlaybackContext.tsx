@@ -1,35 +1,44 @@
 "use client";
 
-import { createContext, ReactNode,useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
+
+import { setDefaultWithDevOverride } from "@/lib/utils";
 
 import { PlaybackClock } from "../components/PlaybackClock";
 import { SimulationRecording } from "../types";
-import { setDefaultWithDevOverride } from "@/lib/utils";
 
 interface PlaybackContextValue {
-    // State
-    recording: SimulationRecording | null;
-    hasRecording: boolean;
-    simulationName: string;
-    isPlaying: boolean;
-    speed: number;
-    currentTime: number;
-    duration: number;
-    seekTarget: number | null;
-    
-    // Actions
-    play: () => void;
-    pause: () => void;
-    togglePlay: () => void;
-    setSpeed: (speed: number) => void;
-    setRecording: (recording: SimulationRecording | null) => void;
-    setSimulationName: (name: string) => void;
-    seek: (time: number) => void;
-    setCurrentTime: (time: number) => void;
-    clearSeekTarget: () => void;
+  // State
+  recording: SimulationRecording | null;
+  hasRecording: boolean;
+  simulationName: string;
+  isPlaying: boolean;
+  speed: number;
+  currentTime: number;
+  duration: number;
+  seekTarget: number | null;
+
+  // Actions
+  play: () => void;
+  pause: () => void;
+  togglePlay: () => void;
+  setSpeed: (speed: number) => void;
+  setRecording: (recording: SimulationRecording | null) => void;
+  setSimulationName: (name: string) => void;
+  seek: (time: number) => void;
+  setCurrentTime: (time: number) => void;
+  clearSeekTarget: () => void;
 }
 
-const PlaybackContext = createContext<PlaybackContextValue | undefined>(undefined);
+const PlaybackContext = createContext<PlaybackContextValue | undefined>(
+  undefined
+);
 
 /**
  * Get initial recording from dummy data if in development mode.
@@ -37,9 +46,9 @@ const PlaybackContext = createContext<PlaybackContextValue | undefined>(undefine
  * Controlled by NEXT_PUBLIC_DEV_RECORDING env variable.
  */
 function getInitialRecording(): {
-    recording: SimulationRecording | null;
-    name: string;
-    } {
+  recording: SimulationRecording | null;
+  name: string;
+  } {
   if (process.env.NODE_ENV !== "development") {
     return { recording: null, name: "Upload Simulation" };
   }
@@ -52,9 +61,12 @@ function getInitialRecording(): {
   // Only import dummy data in development to keep it out of production bundle
   try {
     // Dynamic import for development-only data
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const recordingData = require(`@/${devRecording}`);
-    return { recording: recordingData as SimulationRecording, name: "Dummy Recording" };
+    return {
+      recording: recordingData as SimulationRecording,
+      name: "Dummy Recording",
+    };
   } catch (error) {
     // Fallback if dummy data is not available
     console.warn(`Failed to load dev recording: ${devRecording}`, error);
@@ -64,15 +76,19 @@ function getInitialRecording(): {
 
 /**
  * PlaybackProvider - Core simulation playback state and controls.
- * 
+ *
  * This provider contains only playback-related state (recording, play/pause, speed, time)
  * with NO visualization dependencies. It can be consumed by any view (visualization, metrics, etc.).
  */
-export const PlaybackProvider = ({ children, }: { children: ReactNode }) => {
+export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(setDefaultWithDevOverride(1, 20));
-  const [simulationName, setSimulationName] = useState(() => getInitialRecording().name);
-  const [recording, setRecording] = useState<SimulationRecording | null>(() => getInitialRecording().recording);
+  const [simulationName, setSimulationName] = useState(
+    () => getInitialRecording().name
+  );
+  const [recording, setRecording] = useState<SimulationRecording | null>(
+    () => getInitialRecording().recording
+  );
   const [currentTime, setCurrentTime] = useState(0);
   const [seekTarget, setSeekTarget] = useState<number | null>(null);
 
@@ -83,7 +99,7 @@ export const PlaybackProvider = ({ children, }: { children: ReactNode }) => {
   // Actions
   const play = useCallback(() => setIsPlaying(true), []);
   const pause = useCallback(() => setIsPlaying(false), []);
-  const togglePlay = useCallback(() => setIsPlaying(prev => !prev), []);
+  const togglePlay = useCallback(() => setIsPlaying((prev) => !prev), []);
   const seek = useCallback((time: number) => {
     setSeekTarget(time);
     setCurrentTime(time);
@@ -135,4 +151,3 @@ export const usePlayback = (): PlaybackContextValue => {
 
 // Export types for external use
 export type { PlaybackContextValue };
-

@@ -1,18 +1,26 @@
 "use client";
 
-import { SidePanel } from "@/components/common/SidePanel";
+import Image from "next/image";
+
 import { ClientOnly } from "@/components/common/ClientOnly";
+import { SidePanel } from "@/components/common/SidePanel";
 
 import { AVAILABLE_SCHEMAS } from "../builderSchemas";
 import { ExportBlueprintButton } from "./ui/ExportBlueprintButton";
 
 function BuilderPanelContent() {
-  const handleDragStart = (e: React.DragEvent, schema: typeof AVAILABLE_SCHEMAS[0]) => {
+  const handleDragStart = (
+    e: React.DragEvent,
+    schema: (typeof AVAILABLE_SCHEMAS)[0]
+  ) => {
     e.dataTransfer.effectAllowed = "copy";
-    e.dataTransfer.setData("application/json", JSON.stringify({
-      entityType: schema.entityType,
-      parameters: schema.parameters,
-    }));
+    e.dataTransfer.setData(
+      "application/json",
+      JSON.stringify({
+        entityType: schema.entityType,
+        parameters: schema.parameters,
+      })
+    );
   };
 
   return (
@@ -25,9 +33,11 @@ function BuilderPanelContent() {
             onDragStart={(e) => handleDragStart(e, schema)}
             className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-grab active:cursor-grabbing"
           >
-            <img
+            <Image
               src={schema.icon}
               alt={schema.entityType}
+              width={48}
+              height={48}
               className="w-12 h-12 object-contain pointer-events-none"
             />
             <div className="flex-1">

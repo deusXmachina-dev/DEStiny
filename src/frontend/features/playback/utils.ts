@@ -18,4 +18,3 @@ export const parseRecording = (content: string): SimulationRecording | null => {
     return null;
   }
 };
-

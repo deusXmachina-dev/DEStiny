@@ -1,11 +1,7 @@
 import { ReactNode } from "react";
+
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ChartLayoutProps {
   title: string;
@@ -18,7 +14,12 @@ interface ChartLayoutProps {
  * Shared layout component for metric charts.
  * Provides consistent card structure, header with optional badge, and empty state handling.
  */
-export function ChartLayout({ title, badge, isEmpty, children }: ChartLayoutProps) {
+export function ChartLayout({
+  title,
+  badge,
+  isEmpty,
+  children,
+}: ChartLayoutProps) {
   if (isEmpty) {
     return (
       <Card>
@@ -40,17 +41,11 @@ export function ChartLayout({ title, badge, isEmpty, children }: ChartLayoutProp
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
           {badge !== null && badge !== undefined && (
-            <Badge
-              className="text-lg tabular-nums"
-            >
-              {badge}
-            </Badge>
+            <Badge className="text-lg tabular-nums">{badge}</Badge>
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        {children}
-      </CardContent>
+      <CardContent>{children}</CardContent>
     </Card>
   );
 }

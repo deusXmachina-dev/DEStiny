@@ -14,7 +14,14 @@ extend({
   Sprite: PixiSprite,
 });
 
-export const Entity = ({ entityType, x, y, angle, children, entityId }: SimulationEntityState) => {
+export const Entity = ({
+  entityType,
+  x,
+  y,
+  angle,
+  children,
+  entityId,
+}: SimulationEntityState) => {
   const { getTexture } = useAssets();
   const { hooks } = useVisualization();
   const texture = getTexture(entityType);
@@ -26,26 +33,11 @@ export const Entity = ({ entityType, x, y, angle, children, entityId }: Simulati
   }
 
   return (
-    <pixiContainer
-      ref={containerRef}
-      x={x}
-      y={y}
-      rotation={angle}
-    >
-      <pixiSprite
-        texture={texture}
-        anchor={0.5}
-        x={0}
-        y={0}
-        rotation={0}
-      />
+    <pixiContainer ref={containerRef} x={x} y={y} rotation={angle}>
+      <pixiSprite texture={texture} anchor={0.5} x={0} y={0} rotation={0} />
       {children?.map((child) => (
-        <Entity
-          key={child.entityId}
-          {...child}
-        />
+        <Entity key={child.entityId} {...child} />
       ))}
     </pixiContainer>
   );
 };
-

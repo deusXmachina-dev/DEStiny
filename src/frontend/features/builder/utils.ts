@@ -1,6 +1,10 @@
 import type { SimulationEntityState } from "@features/visualization";
 
-import type { BlueprintEntity, ParameterValue, SimulationBlueprint } from "./types";
+import type {
+  BlueprintEntity,
+  ParameterValue,
+  SimulationBlueprint,
+} from "./types";
 
 /**
  * Convert blueprint entities to simulation entity states for rendering.
@@ -12,12 +16,13 @@ export const blueprintToEntityStates = (
   if (!blueprint) {
     return [];
   }
-  
+
   return blueprint.entities.map((entity: BlueprintEntity) => {
     const x = typeof entity.parameters.x === "number" ? entity.parameters.x : 0;
     const y = typeof entity.parameters.y === "number" ? entity.parameters.y : 0;
-    const angle = typeof entity.parameters.angle === "number" ? entity.parameters.angle : 0;
-  
+    const angle =
+      typeof entity.parameters.angle === "number" ? entity.parameters.angle : 0;
+
     return {
       entityId: entity.uuid,
       entityType: entity.entityType as SimulationEntityState["entityType"],
@@ -28,10 +33,10 @@ export const blueprintToEntityStates = (
     };
   });
 };
-  
+
 /**
-   * Create a new blueprint entity from a schema and position.
-   */
+ * Create a new blueprint entity from a schema and position.
+ */
 export const createBlueprintEntity = (
   entityType: string,
   parameters: Record<string, "string" | "number">,
@@ -40,13 +45,13 @@ export const createBlueprintEntity = (
 ): BlueprintEntity => {
   // Generate UUID
   const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
   // Create parameters object with default values based on schema
   const entityParameters: Record<string, ParameterValue> = {
     x,
     y,
   };
-  
+
   // Add default values for other parameters based on their types
   for (const [key, type] of Object.entries(parameters)) {
     if (key !== "x" && key !== "y") {
@@ -57,17 +62,17 @@ export const createBlueprintEntity = (
       }
     }
   }
-  
+
   return {
     entityType,
     uuid,
     parameters: entityParameters,
   };
 };
-  
+
 /**
-   * Update the position of an entity in the blueprint.
-   */
+ * Update the position of an entity in the blueprint.
+ */
 export const updateBlueprintEntityPosition = (
   blueprint: SimulationBlueprint,
   entityId: string,
@@ -88,10 +93,10 @@ export const updateBlueprintEntityPosition = (
       : entity
   ),
 });
-  
+
 /**
-   * Remove an entity from the blueprint by its UUID.
-   */
+ * Remove an entity from the blueprint by its UUID.
+ */
 export const removeBlueprintEntity = (
   blueprint: SimulationBlueprint,
   entityId: string
@@ -99,10 +104,10 @@ export const removeBlueprintEntity = (
   ...blueprint,
   entities: blueprint.entities.filter((entity) => entity.uuid !== entityId),
 });
-  
+
 /**
-   * Update parameters of an entity in the blueprint.
-   */
+ * Update parameters of an entity in the blueprint.
+ */
 export const updateBlueprintEntityParameters = (
   blueprint: SimulationBlueprint,
   entityId: string,
@@ -121,10 +126,10 @@ export const updateBlueprintEntityParameters = (
       : entity
   ),
 });
-  
+
 /**
-   * Find a blueprint entity by its UUID.
-   */
+ * Find a blueprint entity by its UUID.
+ */
 export const findBlueprintEntity = (
   blueprint: SimulationBlueprint | null,
   entityId: string
@@ -134,5 +139,3 @@ export const findBlueprintEntity = (
   }
   return blueprint.entities.find((entity) => entity.uuid === entityId);
 };
-  
-  

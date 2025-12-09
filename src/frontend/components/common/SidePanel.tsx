@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
 import { cn } from "@lib/utils";
+import { ReactNode } from "react";
 
 interface SidePanelProps {
   children: ReactNode;
@@ -23,12 +23,7 @@ interface SidePanelFooterProps {
 
 function SidePanelHeader({ children, className }: SidePanelHeaderProps) {
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between",
-        className
-      )}
-    >
+    <div className={cn("flex items-center justify-between", className)}>
       {children}
     </div>
   );

@@ -34,6 +34,8 @@ export default [
         ...globals.browser,
         ...globals.node,
         ...globals.es2021,
+        // React is globally available with automatic JSX runtime (React 19)
+        React: "readonly",
       },
     },
     plugins: {
@@ -46,6 +48,11 @@ export default [
     settings: {
       react: {
         version: "detect",
+        // Tell ESLint we're using React 19's automatic JSX runtime
+        // This means React doesn't need to be in scope for JSX
+        jsx: {
+          runtime: "automatic",
+        },
       },
     },
     rules: {
@@ -57,14 +64,22 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       "react/prop-types": "off", // Using TypeScript for prop validation
+      "react/react-in-jsx-scope": "off", // Not needed with React 19 automatic JSX runtime
 
       // TypeScript rules
+      "no-unused-vars": "off", // Turn off base rule as it conflicts with @typescript-eslint version
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          // Don't check unused parameters in type definitions (interfaces, type aliases)
+          // Parameter names in function types are just documentation
+          ignoreRestSiblings: true,
+        },
       ],
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "react/react-in-jsx-scope": "off",
 
       // Import sorting
       "simple-import-sort/imports": "error",
@@ -111,6 +126,23 @@ export default [
       ],
       "react/jsx-fragments": ["error", "syntax"],
       "@next/next/no-img-element": "warn",
+      // Allow PixiJS properties like 'draw', 'rotation', 'texture', 'anchor'
+      "react/no-unknown-property": [
+        "error",
+        {
+          ignore: [
+            "draw",
+            "rotation",
+            "texture",
+            "anchor",
+            "tint",
+            "scale",
+            "alpha",
+            "visible",
+            "position",
+          ],
+        },
+      ],
     },
   },
 ];

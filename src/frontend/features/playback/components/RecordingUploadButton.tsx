@@ -10,7 +10,10 @@ import { useRecordingUpload } from "../hooks/useRecordingUpload";
 
 type RecordingUploadButtonProps = ComponentProps<typeof Button>;
 
-export function RecordingUploadButton({ className, ...props }: RecordingUploadButtonProps) {
+export function RecordingUploadButton({
+  className,
+  ...props
+}: RecordingUploadButtonProps) {
   const { triggerUpload } = useRecordingUpload();
 
   return (
@@ -24,4 +27,3 @@ export function RecordingUploadButton({ className, ...props }: RecordingUploadBu
     </Button>
   );
 }
-

@@ -2,6 +2,7 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import { ThemeProvider } from "@/hooks/ThemeProvider";
 
 const geistSans = Geist({
@@ -16,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DEStiny - Simulation Platform",
-  description: "DEStiny is a simulation platform for running your discrete event simulations.",
+  description:
+    "DEStiny is a simulation platform for running your discrete event simulations.",
 };
 
 export default function RootLayout({
@@ -29,9 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

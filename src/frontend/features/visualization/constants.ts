@@ -18,10 +18,10 @@ export const ASSET_MAP: Record<string, string> = {
 export type SimulationTheme = "factory" | "warehouse" | "office" | "hospital";
 
 export interface ThemeConfig {
-    tile: number;
-    tileAlt: number;
-    grid: number;
-    tileSize: number;
+  tile: number;
+  tileAlt: number;
+  grid: number;
+  tileSize: number;
 }
 
 export const THEME_CONFIGS: Record<SimulationTheme, ThemeConfig> = {
@@ -54,4 +54,3 @@ export const THEME_CONFIGS: Record<SimulationTheme, ThemeConfig> = {
     tileSize: 20,
   },
 };
-

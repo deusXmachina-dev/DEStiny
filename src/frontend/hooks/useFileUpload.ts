@@ -3,23 +3,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface FileUploadState {
-    file: File | null;
-    fileName: string | null;
-    fileContent: string | null;
+  file: File | null;
+  fileName: string | null;
+  fileContent: string | null;
 }
 
 interface UseFileUploadOptions {
-    acceptFileTypes?: string;
-    onSuccess?: (file: File, content: string) => void;
+  acceptFileTypes?: string;
+  onSuccess?: (file: File, content: string) => void;
 }
 
 interface UseFileUploadReturn extends FileUploadState {
-    triggerFileUpload: () => void;
-    reset: () => void;
+  triggerFileUpload: () => void;
+  reset: () => void;
 }
 
-export const useFileUpload = ({ 
-  acceptFileTypes = '.json,.txt',
+export const useFileUpload = ({
+  acceptFileTypes = ".json,.txt",
   onSuccess,
 }: UseFileUploadOptions = {}): UseFileUploadReturn => {
   const [state, setState] = useState<FileUploadState>({
@@ -27,7 +27,7 @@ export const useFileUpload = ({
     fileName: null,
     fileContent: null,
   });
-    
+
   // Use ref to avoid stale closure issues with onSuccess callback
   const onSuccessRef = useRef(onSuccess);
   useEffect(() => {
@@ -35,8 +35,8 @@ export const useFileUpload = ({
   }, [onSuccess]);
 
   const triggerFileUpload = useCallback(() => {
-    const input = document.createElement('input');
-    input.type = 'file';
+    const input = document.createElement("input");
+    input.type = "file";
     input.accept = acceptFileTypes;
 
     input.onchange = async (e: Event) => {

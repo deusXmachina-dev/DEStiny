@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo } from "react";
-import { useLocalStorage } from "@uidotdev/usehooks";
 import { usePlayback } from "@features/playback";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 import { Metric } from "../types";
 
@@ -27,11 +27,10 @@ interface MetricsProviderProps {
   children: React.ReactNode;
 }
 
-export function MetricsProvider({
-  children,
-}: MetricsProviderProps) {
+export function MetricsProvider({ children }: MetricsProviderProps) {
   const { recording, simulationName } = usePlayback();
-  const metrics = recording?.metrics || [];
+  // Memoize metrics to prevent dependency issues in useEffect and useMemo
+  const metrics = useMemo(() => recording?.metrics || [], [recording?.metrics]);
   const [config, setConfig] = useLocalStorage<MetricsConfig>(
     `destiny-metrics-config-${simulationName}`,
     {
@@ -43,7 +42,9 @@ export function MetricsProvider({
   // Initialize config when metrics change
   useEffect(() => {
     const metricNames = metrics.map((m) => m.name);
-    if (metricNames.length === 0) return;
+    if (metricNames.length === 0) {
+      return;
+    }
 
     // Initialize if config is empty or metrics changed
     const hasAllMetrics = metricNames.every((name) =>
@@ -77,7 +78,9 @@ export function MetricsProvider({
   const handleMoveUp = (metricName: string) => {
     setConfig((prev) => {
       const index = prev.metricOrder.indexOf(metricName);
-      if (index <= 0) return prev;
+      if (index <= 0) {
+        return prev;
+      }
 
       const newOrder = [...prev.metricOrder];
       [newOrder[index - 1], newOrder[index]] = [
@@ -92,7 +95,9 @@ export function MetricsProvider({
   const handleMoveDown = (metricName: string) => {
     setConfig((prev) => {
       const index = prev.metricOrder.indexOf(metricName);
-      if (index < 0 || index >= prev.metricOrder.length - 1) return prev;
+      if (index < 0 || index >= prev.metricOrder.length - 1) {
+        return prev;
+      }
 
       const newOrder = [...prev.metricOrder];
       [newOrder[index], newOrder[index + 1]] = [
@@ -104,12 +109,14 @@ export function MetricsProvider({
   };
 
   // Filter and sort metrics based on visibility and order
-  const displayedMetrics = useMemo(() => {
-    return config.metricOrder
-      .filter((metricName) => visibleMetrics.has(metricName))
-      .map((metricName) => metrics.find((m) => m.name === metricName))
-      .filter((metric): metric is Metric => metric !== undefined);
-  }, [config.metricOrder, visibleMetrics, metrics]);
+  const displayedMetrics = useMemo(
+    () =>
+      config.metricOrder
+        .filter((metricName) => visibleMetrics.has(metricName))
+        .map((metricName) => metrics.find((m) => m.name === metricName))
+        .filter((metric): metric is Metric => metric !== undefined),
+    [config.metricOrder, visibleMetrics, metrics]
+  );
 
   const value: MetricsContextValue = {
     metrics,
@@ -122,18 +129,14 @@ export function MetricsProvider({
   };
 
   return (
-    <MetricsContext.Provider value={value}>
-      {children}
-    </MetricsContext.Provider>
+    <MetricsContext.Provider value={value}>{children}</MetricsContext.Provider>
   );
 }
 
 export function useMetrics(): MetricsContextValue {
   const context = useContext(MetricsContext);
   if (!context) {
-    throw new Error(
-      "useMetrics must be used within MetricsProvider"
-    );
+    throw new Error("useMetrics must be used within MetricsProvider");
   }
   return context;
 }

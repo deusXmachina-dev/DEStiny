@@ -1,6 +1,6 @@
 /**
  * Manual builder entity schemas.
- * 
+ *
  * TODO: These should eventually come from the engine/backend.
  * For now, this is a simple manual schema for the Person entity.
  */
@@ -9,7 +9,7 @@ import { BuilderEntitySchema } from "./types";
 
 /**
  * Simple Person entity schema.
- * 
+ *
  * A Person can be placed at an initial position and given a target position to walk to.
  * For the initial simple implementation, we support a single target.
  */
@@ -30,13 +30,11 @@ export const PERSON_SCHEMA: BuilderEntitySchema = {
  * Registry of all available builder schemas.
  * Used by the builder UI to populate the toolbox.
  */
-export const AVAILABLE_SCHEMAS: BuilderEntitySchema[] = [
-  PERSON_SCHEMA,
-];
+export const AVAILABLE_SCHEMAS: BuilderEntitySchema[] = [PERSON_SCHEMA];
 
 /**
  * Example blueprint for a simple Person walk scenario.
- * 
+ *
  * This demonstrates what a blueprint would look like for a Person
  * starting at (100, 100) and walking to (500, 300).
  */

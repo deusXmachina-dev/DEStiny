@@ -17,9 +17,17 @@ interface BuilderContextValue {
   isEditorOpen: boolean;
 
   // Blueprint actions
-  addEntity: (entityType: string, parameters: Record<string, "string" | "number">, x: number, y: number) => void;
+  addEntity: (
+    entityType: string,
+    parameters: Record<string, "string" | "number">,
+    x: number,
+    y: number
+  ) => void;
   removeEntity: (entityId: string) => void;
-  updateEntity: (entityId: string, parameters: Record<string, ParameterValue>) => void;
+  updateEntity: (
+    entityId: string,
+    parameters: Record<string, ParameterValue>
+  ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
 
   // Selection actions
@@ -32,7 +40,9 @@ interface BuilderContextValue {
   isJustClosed: () => boolean;
 }
 
-const BuilderContext = createContext<BuilderContextValue | undefined>(undefined);
+const BuilderContext = createContext<BuilderContextValue | undefined>(
+  undefined
+);
 
 interface BuilderProviderProps {
   children: ReactNode;
@@ -40,12 +50,12 @@ interface BuilderProviderProps {
 
 /**
  * BuilderProvider - Manages the "editing session" state for the builder.
- * 
+ *
  * This provider holds:
  * - The blueprint (source of truth for entities)
  * - Selected entity state
  * - Editor open/close state
- * 
+ *
  * All blueprint mutations go through this context to ensure consistency.
  */
 export const BuilderProvider = ({ children }: BuilderProviderProps) => {
@@ -84,11 +94,16 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     }
   };
 
-  const updateEntity = (entityId: string, parameters: Record<string, ParameterValue>) => {
+  const updateEntity = (
+    entityId: string,
+    parameters: Record<string, ParameterValue>
+  ) => {
     if (!blueprint) {
       return;
     }
-    setBlueprint(updateBlueprintEntityParameters(blueprint, entityId, parameters));
+    setBlueprint(
+      updateBlueprintEntityParameters(blueprint, entityId, parameters)
+    );
   };
 
   const moveEntity = (entityId: string, x: number, y: number) => {
@@ -144,9 +159,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   };
 
   return (
-    <BuilderContext.Provider value={value}>
-      {children}
-    </BuilderContext.Provider>
+    <BuilderContext.Provider value={value}>{children}</BuilderContext.Provider>
   );
 };
 

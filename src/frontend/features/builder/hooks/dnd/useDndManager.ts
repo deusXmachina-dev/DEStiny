@@ -11,18 +11,18 @@ import { useDnd } from "./DndContext";
 
 /**
  * Hook to handle stage-level drag operations (move and end).
- * 
+ *
  * Sets up global event handlers on the PixiJS stage for:
  * - pointermove: Updates entity position during drag
  * - pointerup/pointerupoutside: Finalizes drag and updates blueprint
- * 
+ *
  * This hook should be used ONCE at the Scene/Application level.
  * It works in conjunction with useDraggable, which handles drag initiation.
- * 
+ *
  * The drag flow:
  * 1. useDraggable handles pointerdown (drag start) on individual entities
  * 2. This hook handles pointermove (drag move) and pointerup (drag end) on the stage
- * 
+ *
  * Must be used within:
  * - A Pixi Application context (for app.stage)
  * - A DndProvider (for drag state)

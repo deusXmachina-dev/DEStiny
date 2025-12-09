@@ -1,9 +1,9 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
-import { SidePanel } from "@/components/common/SidePanel";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
+import { SidePanel } from "@/components/common/SidePanel";
 
 import { MetricsProvider, useMetrics } from "../hooks";
 import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
@@ -45,7 +45,7 @@ function MetricsPanelContent() {
             No metrics available in this recording
           </div>
         ) : (
-          displayedMetrics.map((metric, index) => (
+          displayedMetrics.map((metric, index) =>
             metric.type === "sample" ? (
               <HistogramChart
                 key={`${metric.name}-${index}`}
@@ -61,7 +61,7 @@ function MetricsPanelContent() {
                 maxDuration={duration}
               />
             )
-          ))
+          )
         )}
       </SidePanel.Content>
     </SidePanel>
@@ -70,7 +70,7 @@ function MetricsPanelContent() {
 
 export function MetricsPanel() {
   return (
-    <ClientOnly>      
+    <ClientOnly>
       <MetricsProvider>
         <MetricsPanelContent />
       </MetricsProvider>

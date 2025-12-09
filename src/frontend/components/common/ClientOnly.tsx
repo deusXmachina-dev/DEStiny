@@ -3,8 +3,8 @@
  * Hack to work around next.js hydration
  * @see https://github.com/uidotdev/usehooks/issues/218
  */
-import React from 'react';
-import { useIsClient } from "@uidotdev/usehooks"
+import { useIsClient } from "@uidotdev/usehooks";
+import React from "react";
 
 type ClientOnlyProps = {
   children: React.ReactNode;

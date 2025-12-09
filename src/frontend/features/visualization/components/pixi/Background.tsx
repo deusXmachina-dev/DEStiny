@@ -4,18 +4,16 @@ import { extend } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
 
-import { SimulationTheme,THEME_CONFIGS } from "../../constants";
+import { SimulationTheme, THEME_CONFIGS } from "../../constants";
 import { useVisualization } from "../../hooks/VisualizationContext";
 
 extend({ Graphics });
 
 interface BackgroundProps {
-    theme?: SimulationTheme;
+  theme?: SimulationTheme;
 }
 
-export const Background = ({
-  theme = "factory",
-}: BackgroundProps) => {
+export const Background = ({ theme = "factory" }: BackgroundProps) => {
   const { screenSize } = useVisualization();
   const config = THEME_CONFIGS[theme];
 
@@ -25,7 +23,7 @@ export const Background = ({
 
       // eslint-disable-next-line no-console
       console.log("app.screen changed", screenSize);
-            
+
       const { width, height } = screenSize;
 
       const tilesX = Math.ceil(width / config.tileSize) + 1;
@@ -34,7 +32,12 @@ export const Background = ({
       // Draw checkerboard tiles
       for (let y = 0; y < tilesY; y++) {
         for (let x = 0; x < tilesX; x++) {
-          g.rect(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
+          g.rect(
+            x * config.tileSize,
+            y * config.tileSize,
+            config.tileSize,
+            config.tileSize
+          );
           g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
         }
       }

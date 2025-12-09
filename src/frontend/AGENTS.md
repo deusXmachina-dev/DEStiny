@@ -41,6 +41,7 @@ frontend/
 Use a **hybrid approach** for imports:
 
 ### Use `@` aliases for:
+
 - **UI components**: `@/components/ui/button`
 - **Shared utilities**: `@lib/utils`
 - **Cross-feature imports**: `@features/simulation`
@@ -48,12 +49,14 @@ Use a **hybrid approach** for imports:
 - **Shared hooks**: `@/hooks/useFileUpload`
 
 ### Use relative imports for:
+
 - **Within the same feature** (e.g., inside `features/simulation/`):
   - Same directory: `./Component`
   - Parent directory: `../types`
   - Feature root: `../../utils`
 
 ### Example (from `features/simulation/components/ui/PlaybackControls.tsx`):
+
 ```typescript
 // External UI components - use @ aliases
 import { Button } from "@/components/ui/button";

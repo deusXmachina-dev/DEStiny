@@ -12,10 +12,10 @@ import { SimulationControls } from "./SimulationControls";
 
 /**
  * SimulationEntityUpdater - Component that runs inside Pixi Application context.
- * 
+ *
  * This component calls useSimulationEntities (which requires useTick) and
  * updates the VisualizationContext with the current entities.
- * 
+ *
  * Must be used inside a Pixi Application context.
  */
 function SimulationEntityUpdater() {
@@ -31,13 +31,13 @@ function SimulationEntityUpdater() {
 
 /**
  * SimulationViewport - Main viewport component for simulation mode.
- * 
+ *
  * This component:
  * - Provides empty entities initially to VisualizationContext
  * - Renders SceneVisualization with SimulationEntityUpdater as child
  * - SimulationEntityUpdater updates entities from simulation engine
  * - Renders SimulationControls overlay
- * 
+ *
  * Must be used within PlaybackProvider.
  */
 export const SimulationViewport = () => {

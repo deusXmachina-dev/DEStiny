@@ -10,14 +10,14 @@ import { useDnd } from "./dnd/DndContext";
 
 /**
  * Hook to handle clicks on entities (opens editor).
- * 
+ *
  * Distinguishes between clicks and drags:
  * - Uses pointertap event which fires on click without drag
  * - Checks drag state to ensure we don't trigger clicks during/after drags
  * - Prevents clicks when editor dialog is open
- * 
+ *
  * Only active when mode is "builder".
- * 
+ *
  * @param containerRef - Ref to the PixiJS Container for this entity
  * @param entityId - Unique identifier for the entity
  */
@@ -57,7 +57,7 @@ export const useEntityClick = (
       // Check if pointer has moved significantly (indicating a drag)
       const distance = Math.sqrt(
         Math.pow(event.global.x - dragStartPos.x, 2) +
-        Math.pow(event.global.y - dragStartPos.y, 2)
+          Math.pow(event.global.y - dragStartPos.y, 2)
       );
 
       if (distance > CLICK_THRESHOLD) {
@@ -85,7 +85,11 @@ export const useEntityClick = (
       const { originalEvent } = event;
       if (originalEvent?.target) {
         const target = originalEvent.target as unknown as Element;
-        if (target.closest('[data-slot="dialog-overlay"], [data-slot="dialog-content"]')) {
+        if (
+          target.closest(
+            '[data-slot="dialog-overlay"], [data-slot="dialog-content"]'
+          )
+        ) {
           return;
         }
       }
@@ -108,5 +112,13 @@ export const useEntityClick = (
       container.off("pointerup", onPointerUp);
       container.off("pointertap", onPointerTap);
     };
-  }, [isBuilderMode, entityId, openEditor, isEditorOpen, isJustClosed, getDndState, containerRef]);
+  }, [
+    isBuilderMode,
+    entityId,
+    openEditor,
+    isEditorOpen,
+    isJustClosed,
+    getDndState,
+    containerRef,
+  ]);
 };
