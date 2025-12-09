@@ -18,12 +18,14 @@ def api_client():
 class TestSchemaEndpoint:
     """Tests for GET /api/schema endpoint."""
 
-    def test_get_schema_returns_dict(self, api_client):
-        """Schema endpoint should return a dictionary."""
+    def test_get_schema_returns_list(self, api_client):
+        """Schema endpoint should return a list of entity schemas."""
         response = api_client.get("/api/schema")
         
         assert response.status_code == 200
-        assert isinstance(response.json(), dict)
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) > 0
 
     def test_get_schema_contains_entity_types(self, api_client):
         """Schema should contain registered entity types."""
@@ -31,8 +33,8 @@ class TestSchemaEndpoint:
         data = response.json()
         
         # Should have at least the 'human' entity type
-        assert "human" in data
-        assert isinstance(data["human"], dict)
+        entity_types = [item["entityType"] for item in data]
+        assert "human" in entity_types
 
     def test_get_schema_entity_schema_structure(self, api_client):
         """Each entity schema should be a dictionary mapping parameters to types."""
@@ -40,12 +42,16 @@ class TestSchemaEndpoint:
         data = response.json()
         
         # Check structure of human entity schema
-        if "human" in data:
-            human_schema = data["human"]
+        human_schema = next((item for item in data if item["entityType"] == "human"), None)
+        if human_schema:
             assert isinstance(human_schema, dict)
+            assert "entityType" in human_schema
+            assert "icon" in human_schema
+            assert "parameters" in human_schema
+            assert isinstance(human_schema["parameters"], dict)
             # Human should have parameters like x, y, targetX, targetY
             # The exact parameters depend on the Human entity definition
-            assert len(human_schema) > 0
+            assert len(human_schema["parameters"]) > 0
 
 
 class TestSimulateEndpoint:

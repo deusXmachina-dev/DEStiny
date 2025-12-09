@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { useBuilderSchemas } from "../../hooks/useBuilderSchemas";
-import type { ParameterValue } from "../../types";
+import type { BuilderEntitySchema, ParameterValue } from "../../types";
 import { findBlueprintEntity } from "../../utils";
 
 /**
@@ -25,7 +25,7 @@ import { findBlueprintEntity } from "../../utils";
  */
 interface EntityFormProps {
   entity: NonNullable<ReturnType<typeof findBlueprintEntity>>;
-  schema: NonNullable<ReturnType<typeof findSchemaByEntityType>>;
+  schema: BuilderEntitySchema;
   onSave: (formValues: Record<string, ParameterValue>) => void;
   onDelete: () => void;
   onCancel: () => void;
@@ -51,6 +51,8 @@ const EntityForm = ({
       if (isNaN(parsedValue as number)) {
         return; // Don't update if invalid number
       }
+    } else if (paramType === "boolean") {
+      parsedValue = value === "true" || value === "1";
     } else {
       parsedValue = value;
     }
@@ -83,7 +85,7 @@ const EntityForm = ({
             <Input
               id={key}
               type={paramType === "number" ? "number" : "text"}
-              value={formValues[key] ?? ""}
+              value={String(formValues[key] ?? "")}
               onChange={(e) => handleParameterChange(key, e.target.value)}
               className="col-span-3"
               onKeyDown={(e) => {
