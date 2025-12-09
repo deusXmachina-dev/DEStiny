@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
-
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
 import { AVAILABLE_SCHEMAS } from "../builderSchemas";
+import { DraggableEntityItem } from "./ui/DraggableEntityItem";
 import { ExportBlueprintButton } from "./ui/ExportBlueprintButton";
 
 function BuilderPanelContent() {
@@ -27,25 +26,11 @@ function BuilderPanelContent() {
     <SidePanel>
       <SidePanel.Content className="space-y-2">
         {AVAILABLE_SCHEMAS.map((schema) => (
-          <div
+          <DraggableEntityItem
             key={schema.entityType}
-            draggable
-            onDragStart={(e) => handleDragStart(e, schema)}
-            className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-grab active:cursor-grabbing"
-          >
-            <Image
-              src={schema.icon}
-              alt={schema.entityType}
-              width={48}
-              height={48}
-              className="w-12 h-12 object-contain pointer-events-none"
-            />
-            <div className="flex-1">
-              <p className="font-medium text-foreground capitalize pointer-events-none">
-                {schema.entityType}
-              </p>
-            </div>
-          </div>
+            schema={schema}
+            onDragStart={handleDragStart}
+          />
         ))}
       </SidePanel.Content>
 
