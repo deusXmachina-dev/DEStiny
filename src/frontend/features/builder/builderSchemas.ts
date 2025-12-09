@@ -13,9 +13,89 @@ import { BuilderEntitySchema } from "./types";
  * A Person can be placed at an initial position and given a target position to walk to.
  * For the initial simple implementation, we support a single target.
  */
-export const PERSON_SCHEMA: BuilderEntitySchema = {
+export const PERSON: BuilderEntitySchema = {
   entityType: "human",
   icon: "/assets/human.png",
+  parameters: {
+    // Initial position
+    x: "number",
+    y: "number",
+    // Target position to walk to
+    targetX: "number",
+    targetY: "number",
+  },
+};
+
+/**
+ * AGV entity schema.
+ */
+export const AGV: BuilderEntitySchema = {
+  entityType: "agv",
+  icon: "/assets/agv.png",
+  parameters: {
+    // Initial position
+    x: "number",
+    y: "number",
+    // Target position to walk to
+    targetX: "number",
+    targetY: "number",
+  },
+};
+
+/**
+ * Robot entity schema.
+ */
+export const ROBOT: BuilderEntitySchema = {
+  entityType: "robot",
+  icon: "/assets/robot.png",
+  parameters: {
+    // Initial position
+    x: "number",
+    y: "number",
+    // Target position to walk to
+    targetX: "number",
+    targetY: "number",
+  },
+};
+
+/**
+ * Box entity schema.
+ */
+export const BOX: BuilderEntitySchema = {
+  entityType: "box",
+  icon: "/assets/box.png",
+  parameters: {
+    // Initial position
+    x: "number",
+    y: "number",
+    // Target position to walk to
+    targetX: "number",
+    targetY: "number",
+  },
+};
+
+/**
+ * Palette entity schema.
+ */
+export const PALETTE: BuilderEntitySchema = {
+  entityType: "palette",
+  icon: "/assets/palette.png",
+  parameters: {
+    // Initial position
+    x: "number",
+    y: "number",
+    // Target position to walk to
+    targetX: "number",
+    targetY: "number",
+  },
+};
+
+/**
+ * Counter entity schema.
+ */
+export const COUNTER: BuilderEntitySchema = {
+  entityType: "counter",
+  icon: "/assets/counter.png",
   parameters: {
     // Initial position
     x: "number",
@@ -30,7 +110,14 @@ export const PERSON_SCHEMA: BuilderEntitySchema = {
  * Registry of all available builder schemas.
  * Used by the builder UI to populate the toolbox.
  */
-export const AVAILABLE_SCHEMAS: BuilderEntitySchema[] = [PERSON_SCHEMA];
+export const AVAILABLE_SCHEMAS: BuilderEntitySchema[] = [
+  PERSON,
+  AGV,
+  ROBOT,
+  BOX,
+  PALETTE,
+  COUNTER,
+];
 
 /**
  * Example blueprint for a simple Person walk scenario.

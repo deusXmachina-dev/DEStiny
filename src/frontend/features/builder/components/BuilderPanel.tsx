@@ -24,10 +24,10 @@ function BuilderPanelContent() {
 
   return (
     <SidePanel>
-      <SidePanel.Content className="space-y-2">
-        {AVAILABLE_SCHEMAS.map((schema) => (
+      <SidePanel.Content className="grid grid-cols-2 auto-rows-min gap-2">
+        {AVAILABLE_SCHEMAS.map((schema, index) => (
           <DraggableEntityItem
-            key={schema.entityType}
+            key={`${schema.entityType}-${index}`}
             schema={schema}
             onDragStart={handleDragStart}
           />
