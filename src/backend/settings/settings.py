@@ -46,6 +46,7 @@ CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 if not CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGINS == [""]:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
+        "https://destiny.deusxmachina.dev",
     ]
 
 CORS_ALLOW_HEADERS = (
