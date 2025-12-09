@@ -18,8 +18,8 @@ on:
 
 env:
   SERVICE_BASE_NAME: destiny-backend
-  REGION: europe-central2
-  BACKEND_IMAGE_NAME: europe-central2-docker.pkg.dev/dxm-dev-1/dxm-container-repo/destiny-backend:${{ github.sha }}
+  REGION: us-east1
+  BACKEND_IMAGE_NAME: us-east1-docker.pkg.dev/dxm-dev-1/dxm-container-repo/destiny-backend:${{ github.sha }}
 
 jobs:
   build-test-deploy:
