@@ -1,11 +1,11 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
+import type { SimulationEntityState } from "@features/visualization";
 import { useTick } from "@pixi/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SimulationEngine } from "../logic/SimulationEngine";
-import type { SimulationEntityState } from "../types";
 
 interface UseSimulationEntitiesOptions {
   enabled: boolean;
