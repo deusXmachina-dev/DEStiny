@@ -1,7 +1,7 @@
 import { useApplication } from "@pixi/react";
 import { useEffect } from "react";
 
-import { useVisualization } from "../../visualization/hooks/VisualizationContext";
+import { useVisualization } from "../hooks/VisualizationContext";
 
 
 export const ResizeListener = () => {

@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { SimulationTheme, THEME_CONFIGS } from "../../visualization/constants";
-import { useVisualization } from "../../visualization/hooks/VisualizationContext";
+import { SimulationTheme, THEME_CONFIGS } from "../constants";
+import { useVisualization } from "../hooks/VisualizationContext";
 
 const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 
     Object.keys(THEME_CONFIGS).map((key) => ({

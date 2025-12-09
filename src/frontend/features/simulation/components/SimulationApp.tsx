@@ -6,10 +6,10 @@ import { useRef } from "react";
 
 import { Background } from "../../visualization/components/pixi/Background";
 import { Scene } from "../../visualization/components/pixi/Scene";
+import { ResizeListener } from "../../visualization/components/ResizeListener";
 import { useVisualization,VisualizationProvider } from "../../visualization/hooks/VisualizationContext";
 import { DndProvider } from "../hooks/dnd/DndContext";
 import { useCanvasDrop } from "../hooks/dnd/useCanvasDrop";
-import { ResizeListener } from "./ResizeListener";
 import { SimulationControls } from "./SimulationControls";
 import { EntityEditor } from "./ui/EntityEditor";
 

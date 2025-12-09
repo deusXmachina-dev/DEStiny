@@ -1,9 +1,9 @@
 "use client";
 
-import { BuilderProvider } from "@features/builder";
+import { BuilderPanel, BuilderProvider } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { BuilderPanel, SimulationApp } from "@features/simulation";
+import { SimulationApp } from "@features/simulation";
 
 import { AppStateProvider, useAppState } from "@/context/AppStateContext";
 
