@@ -1,11 +1,15 @@
 "use client";
 
+import { BuilderPanel, BuilderProvider, BuilderViewport } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, PlaybackProvider, usePlayback } from "@features/playback";
-import { SimulationApp } from "@features/simulation";
+import { SimulationViewport } from "@features/simulation";
+
+import { AppStateProvider, useAppState } from "@/context/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
+  const { mode } = useAppState();
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -13,12 +17,12 @@ function HomeContent() {
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Simulation (70%) */}
         <div className="w-[70%] h-full">
-          <SimulationApp />
+          {mode === "simulation" ? <SimulationViewport /> : <BuilderViewport />}
         </div>
           
-        {/* Right Panel: Metrics (30%) */}
+        {/* Right Panel: Metrics or Builder (30%) */}
         <div className="w-[30%] h-full border-l border-border">
-          <MetricsPanel />
+          {mode === "simulation" ? <MetricsPanel /> : <BuilderPanel />}
         </div>
       </div>
       
@@ -34,8 +38,12 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <PlaybackProvider>
-      <HomeContent />
-    </PlaybackProvider>
+    <AppStateProvider>
+      <BuilderProvider>
+        <PlaybackProvider>
+          <HomeContent />
+        </PlaybackProvider>
+      </BuilderProvider>
+    </AppStateProvider>
   );
 }

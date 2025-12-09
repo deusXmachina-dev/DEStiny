@@ -1,17 +1,19 @@
 "use client";
 
 import { formatTime } from "@lib/utils";
-import { FastForward, Pause, Play, Rewind, RotateCcw } from "lucide-react";
+import { FastForward, Hammer, Monitor,Pause, Play, Rewind, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { useAppState } from "@/context/AppStateContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
 
 export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
   const { isPlaying, speed, togglePlay, setSpeed, seek, currentTime, duration } = usePlayback();
+  const { mode, setMode } = useAppState();
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -19,6 +21,18 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
       <div className="flex items-center gap-4 w-full">
         {/* Left: Control Buttons */}
         <div className="flex items-center gap-2">
+          <Button
+            onClick={() => setMode(mode === "simulation" ? "builder" : "simulation")}
+            size="icon"
+            className="size-9"
+            title={mode === "simulation" ? "Switch to Builder" : "Switch to Simulation"}
+          >
+            {mode === "simulation" ? (
+              <Hammer className="size-4" />
+            ) : (
+              <Monitor className="size-4" />
+            )}
+          </Button>
           <Button
             disabled={disabled}
             onClick={() => seek(0)}
@@ -96,4 +110,3 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
     </div>
   );
 }
-

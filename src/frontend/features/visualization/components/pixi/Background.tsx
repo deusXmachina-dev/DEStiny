@@ -1,11 +1,11 @@
 "use client";
 
-import { extend, useApplication } from "@pixi/react";
+import { extend } from "@pixi/react";
 import { Graphics } from "pixi.js";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 import { SimulationTheme,THEME_CONFIGS } from "../../constants";
-import { useSimulation } from "../../hooks/SimulationContext";
+import { useVisualization } from "../../hooks/VisualizationContext";
 
 extend({ Graphics });
 
@@ -16,13 +16,14 @@ interface BackgroundProps {
 export const Background = ({
   theme = "factory",
 }: BackgroundProps) => {
-  const { screenSize } = useSimulation();
+  const { screenSize } = useVisualization();
   const config = THEME_CONFIGS[theme];
 
   const draw = useCallback(
     (g: Graphics) => {
       g.clear();
 
+      // eslint-disable-next-line no-console
       console.log("app.screen changed", screenSize);
             
       const { width, height } = screenSize;
@@ -57,4 +58,3 @@ export const Background = ({
 };
 
 export default Background;
-
