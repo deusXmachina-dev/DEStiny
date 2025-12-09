@@ -19,7 +19,7 @@ import { SimulationControls } from "./SimulationControls";
  * Must be used inside a Pixi Application context.
  */
 function SimulationEntityUpdater() {
-  const entities = useSimulationEntities({ enabled: true });
+  const entities = useSimulationEntities();
   const { setEntities } = useVisualization();
 
   useEffect(() => {
