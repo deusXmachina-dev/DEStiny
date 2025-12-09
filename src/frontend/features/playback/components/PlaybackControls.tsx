@@ -68,7 +68,7 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
 
         {/* Center: Timeline */}
         <div className="flex items-center gap-3 flex-1">
-          <span className="text-sm min-w-[45px]">
+          <span className="text-sm min-w-[45px] font-mono">
             {formatTime(currentTime)}
           </span>
           <Slider
@@ -81,20 +81,20 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
             onValueChange={(vals) => seek(vals[0])}
             className="flex-1"
           />
-          <span className="text-sm min-w-[45px]">
+          <span className="text-sm min-w-[45px] font-mono">
             {formatTime(duration)}
           </span>
         </div>
 
         {/* Right: Speed Select */}
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Speed:</span>
+          <span className="text-sm font-medium font-mono">Speed:</span>
           <Select
             disabled={disabled}
             value={speed.toString()}
             onValueChange={(val) => setSpeed(parseFloat(val))}
           >
-            <SelectTrigger className="w-[90px]">
+            <SelectTrigger className="w-[90px] font-mono">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

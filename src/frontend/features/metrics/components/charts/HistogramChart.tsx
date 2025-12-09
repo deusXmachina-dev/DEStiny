@@ -16,7 +16,7 @@ import { ChartLayout } from "./ChartLayout"
 const chartConfig = {
   count: {
     label: "Count",
-    color: "var(--primary)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 

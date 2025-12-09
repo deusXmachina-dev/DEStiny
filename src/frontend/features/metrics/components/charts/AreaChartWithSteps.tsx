@@ -18,7 +18,7 @@ import { useMemo } from "react"
 const chartConfig = {
   value: {
     label: "Value",
-    color: "var(--primary)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 

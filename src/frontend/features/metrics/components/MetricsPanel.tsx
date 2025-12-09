@@ -1,6 +1,7 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
+import { SidePanel } from "@/components/common/SidePanel";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 
@@ -21,10 +22,8 @@ function MetricsPanelContent() {
   } = useMetrics();
 
   return (
-    <div className="w-full h-full flex flex-col bg-background border-l border-border">
-      {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Metrics</h2>
+    <SidePanel>
+      <SidePanel.Header className="justify-end p-3">
         {hasRecording && metricOrder.length > 0 && (
           <MetricsSelector
             visibleMetrics={visibleMetrics}
@@ -34,10 +33,9 @@ function MetricsPanelContent() {
             onMoveDown={handleMoveDown}
           />
         )}
-      </div>
-            
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      </SidePanel.Header>
+
+      <SidePanel.Content className="space-y-4 py-0">
         {!hasRecording ? (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             No recording loaded
@@ -65,8 +63,8 @@ function MetricsPanelContent() {
             )
           ))
         )}
-      </div>
-    </div>
+      </SidePanel.Content>
+    </SidePanel>
   );
 }
 
