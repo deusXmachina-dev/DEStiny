@@ -4,11 +4,11 @@ import { usePlayback } from "@features/playback";
 import { Application } from "@pixi/react";
 import { useRef } from "react";
 
-import { DndProvider } from "../hooks/dnd/DndContext";
-import { useCanvasDrop } from "../hooks/dnd/useCanvasDrop";
-import { SimulationProvider, useSimulation } from "../hooks/SimulationContext";
 import { Background } from "../../visualization/components/pixi/Background";
 import { Scene } from "../../visualization/components/pixi/Scene";
+import { useVisualization,VisualizationProvider } from "../../visualization/hooks/VisualizationContext";
+import { DndProvider } from "../hooks/dnd/DndContext";
+import { useCanvasDrop } from "../hooks/dnd/useCanvasDrop";
 import { ResizeListener } from "./ResizeListener";
 import { SimulationControls } from "./SimulationControls";
 import { EntityEditor } from "./ui/EntityEditor";
@@ -16,7 +16,7 @@ import { EntityEditor } from "./ui/EntityEditor";
 function SimulationAppContent() {
   const parentRef = useRef<HTMLDivElement>(null);
   const { hasRecording } = usePlayback();
-  const { theme } = useSimulation();
+  const { theme } = useVisualization();
   const { onDragOver, onDrop } = useCanvasDrop(parentRef);
 
   return (
@@ -42,10 +42,10 @@ function SimulationAppContent() {
 
 export default function SimulationApp() {
   return (
-    <SimulationProvider>
+    <VisualizationProvider>
       <DndProvider>
         <SimulationAppContent />
       </DndProvider>
-    </SimulationProvider>
+    </VisualizationProvider>
   );
 }

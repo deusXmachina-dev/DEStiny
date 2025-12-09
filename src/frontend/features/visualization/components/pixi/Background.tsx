@@ -4,8 +4,8 @@ import { extend } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback } from "react";
 
-import { useSimulation } from "../../../simulation/hooks/SimulationContext";
 import { SimulationTheme,THEME_CONFIGS } from "../../constants";
+import { useVisualization } from "../../hooks/VisualizationContext";
 
 extend({ Graphics });
 
@@ -16,7 +16,7 @@ interface BackgroundProps {
 export const Background = ({
   theme = "factory",
 }: BackgroundProps) => {
-  const { screenSize } = useSimulation();
+  const { screenSize } = useVisualization();
   const config = THEME_CONFIGS[theme];
 
   const draw = useCallback(

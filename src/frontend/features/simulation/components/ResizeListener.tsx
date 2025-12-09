@@ -1,12 +1,12 @@
 import { useApplication } from "@pixi/react";
 import { useEffect } from "react";
 
-import { useSimulation } from "../hooks/SimulationContext";
+import { useVisualization } from "../../visualization/hooks/VisualizationContext";
 
 
 export const ResizeListener = () => {
   const { app } = useApplication();
-  const { setScreenSize } = useSimulation();
+  const { setScreenSize } = useVisualization();
 
   // Initialize screen size and then listen to resize events
   useEffect(() => {

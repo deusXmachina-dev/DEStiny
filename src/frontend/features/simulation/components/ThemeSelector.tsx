@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/select";
 
 import { SimulationTheme, THEME_CONFIGS } from "../../visualization/constants";
-import { useSimulation } from "../hooks/SimulationContext";
+import { useVisualization } from "../../visualization/hooks/VisualizationContext";
 
 const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = 
     Object.keys(THEME_CONFIGS).map((key) => ({
@@ -18,7 +18,7 @@ const THEME_OPTIONS: { value: SimulationTheme; label: string }[] =
     }));
 
 export function ThemeSelector() {
-  const { theme, setTheme } = useSimulation();
+  const { theme, setTheme } = useVisualization();
 
   return (
     <Select 
