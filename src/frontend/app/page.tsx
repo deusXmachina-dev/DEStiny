@@ -30,7 +30,6 @@ import {
 function HomeContent() {
   const { hasRecording } = usePlayback();
   const { mode, setMode } = useAppState();
-  const parentRef = useRef<HTMLDivElement>(null);
 
   const handleTabChange = (value: string) => {
     setMode(value as AppMode);
@@ -43,7 +42,7 @@ function HomeContent() {
         {/* Left Panel: Visualization (70%) */}
         <div className="w-[70%] h-full">
           <VisualizationProvider interactive={mode === "builder"}>
-            <SceneVisualization parentRef={parentRef}>
+            <SceneVisualization>
               {mode === "simulation" && <SimulationEntityUpdater />}
               {mode === "builder" && <BuilderInteractionHandler />}
             </SceneVisualization>
@@ -85,9 +84,10 @@ function HomeContent() {
       </div>
 
       {/* Bottom Navigation Bar */}
+      {/* TODO: Only show playback controls if in simulation mode - needs some better resize handling */}
       <div className="border-t border-border shadow-lg">
         <div className="p-4 max-w-7xl mx-auto">
-          <PlaybackControls disabled={!hasRecording} />
+          <PlaybackControls disabled={!hasRecording || mode !== "simulation"} />
         </div>
       </div>
     </div>

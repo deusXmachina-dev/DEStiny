@@ -1,7 +1,7 @@
 "use client";
 
 import { Application } from "@pixi/react";
-import { ReactNode, RefObject } from "react";
+import { ReactNode, RefObject, useRef } from "react";
 
 import { useVisualization } from "../hooks/VisualizationContext";
 import { Background } from "./pixi/Background";
@@ -9,7 +9,6 @@ import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
 
 interface SceneVisualizationProps {
-  parentRef: RefObject<HTMLDivElement | null>;
   children?: ReactNode;
 }
 
@@ -26,11 +25,11 @@ interface SceneVisualizationProps {
  * Must be used within a VisualizationProvider.
  */
 export const SceneVisualization = ({
-  parentRef,
   children,
 }: SceneVisualizationProps) => {
   const { theme, getInteractionCallbacks } = useVisualization();
-
+  const parentRef = useRef<HTMLDivElement>(null);
+  
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
