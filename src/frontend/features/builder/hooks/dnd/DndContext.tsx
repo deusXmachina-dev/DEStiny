@@ -23,6 +23,7 @@ const DndContext = createContext<DndContextValue | undefined>(undefined);
 
 interface DndProviderProps {
   children: ReactNode;
+  enabled?: boolean;
 }
 
 /**
@@ -35,8 +36,14 @@ interface DndProviderProps {
  * Blueprint mutations are handled by BuilderContext, not here.
  *
  * Must be used within a Pixi Application context.
+ *
+ * @param enabled - When false, renders children without providing DndContext (defaults to true)
  */
-export const DndProvider = ({ children }: DndProviderProps) => {
+export const DndProvider = ({ children, enabled = true }: DndProviderProps) => {
+  // If disabled, just render children without providing context
+  if (!enabled) {
+    return <>{children}</>;
+  }
   const dndStateRef = useRef<DndState>({
     target: null,
     offset: { x: 0, y: 0 },
