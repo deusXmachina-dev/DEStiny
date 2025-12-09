@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:backend": "cd ../backend && DEBUG=True uv run python manage.py runserver",
+    "dev:all": "concurrently -n \"NEXT,DJANGO\" -c \"cyan,magenta\" \"bun:dev\" \"bun:dev:backend\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -46,6 +48,7 @@
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
     "baseline-browser-mapping": "^2.9.3",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.5",
     "eslint-config-prettier": "^10.1.8",
