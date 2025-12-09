@@ -10,8 +10,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'petr**'
-      - 'filip**'
   pull_request:
     branches:
       - 'main'
