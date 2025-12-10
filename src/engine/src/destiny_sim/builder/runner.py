@@ -58,7 +58,7 @@ def run_blueprint(
         "entities": [
             {
                 "entityType": "human",
-                "uuid": "person-1",  # Optional, for tracking
+                "uuid": "person-1",  # Required: unique identifier for tracking
                 "parameters": {
                     "x": 100.0,
                     "y": 100.0,
@@ -82,8 +82,12 @@ def run_blueprint(
     """
     # Extract simulation parameters
     sim_params = blueprint.get("simParams", {})
-    initial_time = sim_params.get("initialTime", 0.0)
-    duration = sim_params.get("duration", None)
+    # Handle None values explicitly - when schema validation includes None,
+    # we want to use defaults instead
+    initial_time = sim_params.get("initialTime")
+    if initial_time is None:
+        initial_time = 0.0
+    duration = sim_params.get("duration")
     
     # Create environment
     env = RecordingEnvironment(initial_time=initial_time)

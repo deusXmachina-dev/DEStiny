@@ -4,7 +4,7 @@ import { usePlayback } from "@features/playback";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { createContext, useContext, useEffect, useMemo } from "react";
 
-import { Metric } from "../types";
+import type { Metric } from "../index";
 
 interface MetricsConfig {
   visibleMetrics: string[];

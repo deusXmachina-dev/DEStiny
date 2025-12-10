@@ -1,15 +1,12 @@
+import type { components } from "@/types/api";
+
 /**
  * Type definitions for simulation entities and playback.
  */
 
+// Use backend-provided enum for entity types; keep only FE-specific state here.
 export type SimulationEntityType =
-  | "agv"
-  | "robot"
-  | "box"
-  | "palette"
-  | "human"
-  | "counter"
-  | "grid_node";
+  components["schemas"]["SimulationEntityType"];
 
 export interface SimulationEntityState {
   entityId: string;

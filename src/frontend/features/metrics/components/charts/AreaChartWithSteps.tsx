@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/chart";
 
 import { useMetricData } from "../../hooks";
-import { Metric } from "../../types";
+import type { Metric } from "../../index";
 import { ChartLayout } from "./ChartLayout";
 
 const chartConfig = {
