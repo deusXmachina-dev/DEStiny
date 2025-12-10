@@ -18,26 +18,20 @@ import {
 } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
-import { useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-type AppMode = "simulation" | "builder";
+import { AppModeProvider, useAppMode } from "@/hooks/AppModeContext";
 
 function HomeContent() {
-  const { hasRecording, pause, seek } = usePlayback();
-  const [mode, setMode] = useState<AppMode>("simulation");
+  const { hasRecording } = usePlayback();
+  const { mode, setMode } = useAppMode();
 
   const handleModeChange = (value: string): void => {
     if (value !== "simulation" && value !== "builder") {
       return;
     }
 
-    setMode(value);
-    if (value === "builder") {
-      pause();
-      seek(0);
-    }
+    setMode(value as "simulation" | "builder");
   };
 
   return (
@@ -101,10 +95,12 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <BuilderProvider>
-      <PlaybackProvider>
-        <HomeContent />
-      </PlaybackProvider>
-    </BuilderProvider>
+    <PlaybackProvider>
+      <AppModeProvider>
+        <BuilderProvider>
+          <HomeContent />
+        </BuilderProvider>
+      </AppModeProvider>
+    </PlaybackProvider>
   );
 }
