@@ -14,24 +14,33 @@ interface BackgroundProps {
 }
 
 export const Background = ({ theme = "factory" }: BackgroundProps) => {
-  const { screenSize } = useVisualization();
+  const { screenSize, zoom, scrollOffset } = useVisualization();
   const config = THEME_CONFIGS[theme];
 
   const draw = useCallback(
     (g: Graphics) => {
       g.clear();
 
-      // eslint-disable-next-line no-console
-      console.log("app.screen changed", screenSize);
-
       const { width, height } = screenSize;
 
-      const tilesX = Math.ceil(width / config.tileSize) + 1;
-      const tilesY = Math.ceil(height / config.tileSize) + 1;
+      // Calculate visible area in world coordinates
+      // The transformed container applies scrollOffset and zoom, so:
+      // worldX = (screenX - scrollOffset.x) / zoom
+      const worldLeft = -scrollOffset.x / zoom;
+      const worldTop = -scrollOffset.y / zoom;
+      const worldRight = worldLeft + width / zoom;
+      const worldBottom = worldTop + height / zoom;
 
-      // Draw checkerboard tiles
-      for (let y = 0; y < tilesY; y++) {
-        for (let x = 0; x < tilesX; x++) {
+      // Add padding to ensure we cover the edges when zooming/panning
+      const padding = config.tileSize * 2;
+      const startX = Math.floor((worldLeft - padding) / config.tileSize);
+      const endX = Math.ceil((worldRight + padding) / config.tileSize);
+      const startY = Math.floor((worldTop - padding) / config.tileSize);
+      const endY = Math.ceil((worldBottom + padding) / config.tileSize);
+
+      // Draw checkerboard tiles covering the visible area
+      for (let y = startY; y < endY; y++) {
+        for (let x = startX; x < endX; x++) {
           g.rect(
             x * config.tileSize,
             y * config.tileSize,
@@ -44,17 +53,17 @@ export const Background = ({ theme = "factory" }: BackgroundProps) => {
 
       // Draw grid lines
       g.setStrokeStyle({ width: 2, color: config.grid });
-      for (let x = 0; x <= tilesX; x++) {
-        g.moveTo(x * config.tileSize, 0);
-        g.lineTo(x * config.tileSize, height);
+      for (let x = startX; x <= endX; x++) {
+        g.moveTo(x * config.tileSize, startY * config.tileSize);
+        g.lineTo(x * config.tileSize, endY * config.tileSize);
       }
-      for (let y = 0; y <= tilesY; y++) {
-        g.moveTo(0, y * config.tileSize);
-        g.lineTo(width, y * config.tileSize);
+      for (let y = startY; y <= endY; y++) {
+        g.moveTo(startX * config.tileSize, y * config.tileSize);
+        g.lineTo(endX * config.tileSize, y * config.tileSize);
       }
       g.stroke();
     },
-    [config, screenSize]
+    [config, screenSize, zoom, scrollOffset]
   );
 
   return <pixiGraphics draw={draw} />;
