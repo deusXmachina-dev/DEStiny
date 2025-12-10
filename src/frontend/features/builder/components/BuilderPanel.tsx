@@ -6,7 +6,6 @@ import { SidePanel } from "@/components/common/SidePanel";
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import type { BuilderEntitySchema } from "../types";
 import { DraggableEntityItem } from "./ui/DraggableEntityItem";
-import { RunSimulationButton } from "./ui/RunSimulationButton";
 
 function BuilderPanelContent() {
   const { schemas, isLoading, error } = useBuilderSchemas();
@@ -43,10 +42,6 @@ function BuilderPanelContent() {
             />
           ))}
       </SidePanel.Content>
-
-      <SidePanel.Footer>
-        <RunSimulationButton />
-      </SidePanel.Footer>
     </SidePanel>
   );
 }

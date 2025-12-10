@@ -1,21 +1,24 @@
 "use client";
 
 import { useBuilder } from "@features/builder";
-import { usePlayback } from "@features/playback";
-import { Play } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { useAppMode } from "@/hooks/AppModeContext";
 import { client } from "@/lib/api-client";
 
-export function RunSimulationButton() {
+import { usePlayback } from "./PlaybackContext";
+
+/**
+ * Hook for running simulations from the builder.
+ * Handles the API call, state management, and mode switching.
+ */
+export function useRunSimulation() {
   const { blueprint } = useBuilder();
   const { setRecording, setSimulationName, seek, play, pause } = usePlayback();
   const { switchToSimulation } = useAppMode();
   const [isRunning, setIsRunning] = useState(false);
 
-  const handleRunSimulation = async () => {
+  const runSimulation = async () => {
     if (!blueprint || isRunning) {
       return;
     }
@@ -54,14 +57,5 @@ export function RunSimulationButton() {
     }
   };
 
-  return (
-    <Button
-      onClick={handleRunSimulation}
-      disabled={!blueprint || isRunning}
-      className="w-full"
-    >
-      <Play className="mr-2 h-4 w-4" />
-      {isRunning ? "Running Simulation..." : "Run Simulation"}
-    </Button>
-  );
+  return { runSimulation, isRunning };
 }

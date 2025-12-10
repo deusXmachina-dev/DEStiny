@@ -54,31 +54,8 @@ function HomeContent() {
 
         {/* Right Panel: Metrics/Builder (30%) */}
         <div className="w-[30%] h-full border-l flex flex-col">
-          <Tabs
-            value={mode}
-            onValueChange={handleModeChange}
-            className="flex flex-col h-full gap-0"
-          >
-            <div className="border-l border-b border-border p-4 flex justify-center">
-              <TabsList className="h-10 p-[6px]">
-                <TabsTrigger
-                  value="simulation"
-                  className="text-md p-4 font-mono"
-                >
-                  Simulation
-                </TabsTrigger>
-                <TabsTrigger value="builder" className="text-md p-4 font-mono">
-                  Builder
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
-              <MetricsPanel />
-            </TabsContent>
-            <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
-              <BuilderPanel />
-            </TabsContent>
-          </Tabs>
+          {mode === "simulation" && <MetricsPanel />}
+          {mode === "builder" && <BuilderPanel />}
         </div>
       </div>
 
@@ -86,7 +63,7 @@ function HomeContent() {
       {/* TODO: Only show playback controls if in simulation mode - needs some better resize handling */}
       <div className="border-t border-border shadow-lg">
         <div className="p-4 max-w-7xl mx-auto">
-          <PlaybackControls disabled={!hasRecording || mode !== "simulation"} />
+          <PlaybackControls />
         </div>
       </div>
     </div>

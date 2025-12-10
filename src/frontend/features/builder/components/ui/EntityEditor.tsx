@@ -28,7 +28,6 @@ interface EntityFormProps {
   schema: BuilderEntitySchema;
   onSave: (formValues: Record<string, ParameterValue>) => void;
   onDelete: () => void;
-  onCancel: () => void;
 }
 
 const EntityForm = ({
@@ -36,7 +35,6 @@ const EntityForm = ({
   schema,
   onSave,
   onDelete,
-  onCancel,
 }: EntityFormProps) => {
   const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
     () => ({ ...entity.parameters })
@@ -102,12 +100,7 @@ const EntityForm = ({
         <Button type="button" variant="destructive" onClick={onDelete}>
           Delete Entity
         </Button>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit">Save Changes</Button>
-        </div>
+        <Button type="submit">Save Changes</Button>
       </DialogFooter>
     </form>
   );
@@ -134,7 +127,9 @@ export const EntityEditor = () => {
 
   // Find schema for the current entity
   const schema = useMemo(() => {
-    if (!entity) return null;
+    if (!entity) {
+      return null;
+    }
     return schemas.find((s) => s.entityType === entity.entityType) ?? null;
   }, [entity, schemas]);
 
@@ -170,7 +165,6 @@ export const EntityEditor = () => {
           schema={schema}
           onSave={handleSave}
           onDelete={handleDelete}
-          onCancel={closeEditor}
         />
       </DialogContent>
     </Dialog>

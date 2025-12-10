@@ -1,7 +1,7 @@
 "use client";
 
 import { formatTime } from "@lib/utils";
-import { FastForward, Pause, Play, Rewind } from "lucide-react";
+import { FastForward, Pause, Play, Rewind, Square } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,11 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { useAppMode } from "@/hooks/AppModeContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
+import { useRunSimulation } from "../hooks/useRunSimulation";
 
-export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
+export function PlaybackControls() {
   const {
     isPlaying,
     speed,
@@ -25,13 +27,42 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
     seek,
     currentTime,
     duration,
+    hasRecording,
+    pause,
   } = usePlayback();
+  const { mode, switchToBuilder } = useAppMode();
+  const { runSimulation, isRunning } = useRunSimulation();
+
+  const disabled = !hasRecording || mode !== "simulation";
+
+  const handlePlayClick = () => {
+    if (mode === "simulation") {
+      togglePlay();
+    } else if (mode === "builder") {
+      runSimulation();
+    }
+  };
+
+  const handleStopClick = () => {
+    pause();
+    seek(0);
+    switchToBuilder();
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex items-center gap-4 w-full">
         {/* Left: Control Buttons */}
         <div className="flex items-center gap-2">
+          <Button
+            disabled={mode !== "simulation"}
+            onClick={handleStopClick}
+            size="icon"
+            className="size-9"
+            title="Stop"
+          >
+            <Square className="size-4" />
+          </Button>
           <Button
             disabled={disabled}
             onClick={() => seek(0)}
@@ -42,13 +73,13 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
             <Rewind className="size-4" />
           </Button>
           <Button
-            disabled={disabled}
-            onClick={togglePlay}
+            onClick={handlePlayClick}
             size="icon"
             className="size-9"
-            title={isPlaying ? "Pause" : "Play"}
+            title={mode === "simulation" ? (isPlaying ? "Pause" : "Play") : "Run Simulation"}
+            disabled={isRunning}
           >
-            {isPlaying ? (
+            {mode === "simulation" && isPlaying ? (
               <Pause className="size-4" />
             ) : (
               <Play className="size-4" />
@@ -80,9 +111,11 @@ export function PlaybackControls({ disabled = false }: { disabled?: boolean }) {
             onValueChange={(vals) => seek(vals[0])}
             className="flex-1"
           />
-          <span className="text-sm min-w-[45px] font-mono">
-            {formatTime(duration)}
-          </span>
+          {mode === "simulation" && (
+            <span className="text-sm min-w-[45px] font-mono">
+              {formatTime(duration)}
+            </span>
+          )}
         </div>
 
         {/* Right: Speed Select */}
