@@ -4,10 +4,8 @@ import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
-import type { BuilderEntitySchema } from "../types";
-import { EntityPalette } from "./ui/EntityPalette";
-import { ExportBlueprintButton } from "./ui/ExportBlueprintButton";
 import { ChatInterface } from "./ui/ChatInterface";
+import { EntityPalette } from "./ui/EntityPalette";
 
 function BuilderPanelContent() {
   const { schemas, isLoading, error } = useBuilderSchemas();

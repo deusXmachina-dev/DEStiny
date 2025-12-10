@@ -23,7 +23,12 @@ interface SidePanelFooterProps {
 
 function SidePanelHeader({ children, className }: SidePanelHeaderProps) {
   return (
-    <div className={cn("p-4 border-b flex items-center justify-between", className)}>
+    <div
+      className={cn(
+        "p-4 border-b flex items-center justify-between",
+        className
+      )}
+    >
       {children}
     </div>
   );

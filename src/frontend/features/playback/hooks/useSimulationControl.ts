@@ -16,7 +16,8 @@ export function useSimulationControl() {
   const { blueprint } = useBuilder();
   const { setRecording, setSimulationName, seek, play, pause } = usePlayback();
   const { switchToSimulation, switchToBuilder } = useAppState();
-  const [isFetchingSimulationResult, setIsFetchingSimulationResult] = useState(false);
+  const [isFetchingSimulationResult, setIsFetchingSimulationResult] =
+    useState(false);
 
   const executeSimulation = async (autoPlay: boolean) => {
     if (!blueprint || isFetchingSimulationResult) {

@@ -7,7 +7,8 @@ import type { components } from "@/types/api";
 import { SimulationTheme } from "../constants";
 import type { SimulationEntityState } from "../types";
 
-type CanvasDropEntityType = components["schemas"]["BlueprintEntity"]["entityType"];
+type CanvasDropEntityType =
+  components["schemas"]["BlueprintEntity"]["entityType"];
 type CanvasDropParameterType = components["schemas"]["ParameterType"];
 
 interface ScreenSize {
@@ -89,7 +90,10 @@ export const VisualizationProvider = ({
 
   // Zoom and scroll state
   const [zoom, setZoom] = useState<number>(1.0);
-  const [scrollOffset, setScrollOffset] = useState<ScrollOffset>({ x: 0, y: 0 });
+  const [scrollOffset, setScrollOffset] = useState<ScrollOffset>({
+    x: 0,
+    y: 0,
+  });
 
   // Interaction callbacks - stored in ref to avoid re-renders
   const interactionCallbacksRef = useRef<InteractionCallbacks>({});

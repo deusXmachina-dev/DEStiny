@@ -2,7 +2,8 @@
  * Backend API configuration
  */
 
-const PRODUCTION_BACKEND_URL = "https://destiny-backend-947027913956.us-east1.run.app";
+const PRODUCTION_BACKEND_URL =
+  "https://destiny-backend-947027913956.us-east1.run.app";
 const DEVELOPMENT_BACKEND_URL = "http://localhost:8000";
 
 export const BACKEND_URL =

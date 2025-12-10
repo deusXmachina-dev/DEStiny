@@ -30,12 +30,7 @@ interface EntityFormProps {
   onDelete: () => void;
 }
 
-const EntityForm = ({
-  entity,
-  schema,
-  onSave,
-  onDelete,
-}: EntityFormProps) => {
+const EntityForm = ({ entity, schema, onSave, onDelete }: EntityFormProps) => {
   const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
     () => ({ ...entity.parameters })
   );
@@ -49,7 +44,7 @@ const EntityForm = ({
 
   const handleParameterChange = (key: string, value: string) => {
     const paramType = schema.parameters[key];
-    
+
     // Always update the input value to allow typing
     setInputValues((prev) => ({ ...prev, [key]: value }));
 
@@ -63,7 +58,10 @@ const EntityForm = ({
         setFormValues((prev) => ({ ...prev, [key]: parsed }));
       }
     } else if (paramType === "boolean") {
-      setFormValues((prev) => ({ ...prev, [key]: value === "true" || value === "1" }));
+      setFormValues((prev) => ({
+        ...prev,
+        [key]: value === "true" || value === "1",
+      }));
     } else {
       setFormValues((prev) => ({ ...prev, [key]: value }));
     }
@@ -73,9 +71,10 @@ const EntityForm = ({
     const paramType = schema.parameters[key];
     const value = inputValues[key] ?? "";
     if (paramType === "number") {
-      const parsed = value === "" || value === "-" || value === "." || value === "-."
-        ? 0
-        : Number(value);
+      const parsed =
+        value === "" || value === "-" || value === "." || value === "-."
+          ? 0
+          : Number(value);
       const finalValue = isNaN(parsed) ? 0 : parsed;
       setFormValues((prev) => ({ ...prev, [key]: finalValue }));
       setInputValues((prev) => ({ ...prev, [key]: String(finalValue) }));
@@ -89,9 +88,10 @@ const EntityForm = ({
     Object.entries(schema.parameters).forEach(([key, paramType]) => {
       if (paramType === "number") {
         const value = inputValues[key] ?? "";
-        const parsed = value === "" || value === "-" || value === "." || value === "-."
-          ? 0
-          : Number(value);
+        const parsed =
+          value === "" || value === "-" || value === "." || value === "-."
+            ? 0
+            : Number(value);
         finalized[key] = isNaN(parsed) ? 0 : parsed;
       }
     });

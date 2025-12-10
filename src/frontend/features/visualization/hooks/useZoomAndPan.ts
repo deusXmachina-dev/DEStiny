@@ -1,7 +1,7 @@
 "use client";
 
 import { useApplication } from "@pixi/react";
-import { FederatedPointerEvent,FederatedWheelEvent } from "pixi.js";
+import { FederatedPointerEvent, FederatedWheelEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
 import { getDndState } from "./useEntityInteractions";
@@ -82,8 +82,7 @@ export const useZoomAndPan = () => {
     const getDistance = (
       p1: { x: number; y: number },
       p2: { x: number; y: number }
-    ): number =>
-      Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+    ): number => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
     const onWheel = (event: FederatedWheelEvent) => {
       event.preventDefault();
@@ -156,15 +155,15 @@ export const useZoomAndPan = () => {
         if (pinchState.pointerPositions.size === 2 && !pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers;
-          
+
           pinchState.isPinching = true;
           pinchState.startZoom = zoomRef.current;
           pinchState.startDistance = getDistance(p1, p2);
-          
+
           // Calculate center point in screen coordinates
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
-          
+
           // Convert to world coordinates
           const currentZoom = zoomRef.current;
           const currentScrollOffset = scrollOffsetRef.current;
@@ -219,15 +218,15 @@ export const useZoomAndPan = () => {
         if (pinchState.pointerPositions.size === 2 && !pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers;
-          
+
           pinchState.isPinching = true;
           pinchState.startZoom = zoomRef.current;
           pinchState.startDistance = getDistance(p1, p2);
-          
+
           // Calculate center point in screen coordinates
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
-          
+
           // Convert to world coordinates
           const currentZoom = zoomRef.current;
           const currentScrollOffset = scrollOffsetRef.current;
@@ -242,35 +241,35 @@ export const useZoomAndPan = () => {
         if (pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers.slice(0, 2);
-          
+
           const currentDistance = getDistance(p1, p2);
-          
+
           // Skip if start distance not initialized
           if (pinchState.startDistance === 0 || !pinchState.centerWorld) {
             return;
           }
-          
+
           // Calculate zoom based on distance change
           const scale = currentDistance / pinchState.startDistance;
           const newZoom = Math.max(
             MIN_ZOOM,
             Math.min(MAX_ZOOM, pinchState.startZoom * scale)
           );
-          
+
           // Calculate current center position
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
-          
+
           // Update zoom
           setZoom(newZoom);
-          
+
           // Adjust scrollOffset to keep center point fixed
           setScrollOffset({
             x: centerScreenX - pinchState.centerWorld.x * newZoom,
             y: centerScreenY - pinchState.centerWorld.y * newZoom,
           });
         }
-        
+
         return;
       }
 

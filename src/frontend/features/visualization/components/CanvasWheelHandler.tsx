@@ -11,7 +11,7 @@ export const CanvasWheelHandler = () => {
   const { app } = useApplication();
 
   useEffect(() => {
-    const canvas = app.canvas;
+    const { canvas } = app;
     if (!canvas) {
       return;
     }
@@ -22,7 +22,10 @@ export const CanvasWheelHandler = () => {
     };
 
     // Use capture phase to catch event before it bubbles
-    canvas.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    canvas.addEventListener("wheel", handleWheel, {
+      passive: false,
+      capture: true,
+    });
 
     return () => {
       canvas.removeEventListener("wheel", handleWheel, { capture: true });

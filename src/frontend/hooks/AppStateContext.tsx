@@ -19,7 +19,7 @@ interface AppStateContextValue {
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
-  undefined,
+  undefined
 );
 
 interface AppStateProviderProps {
@@ -48,18 +48,15 @@ export function AppStateProvider({ children }: AppStateProviderProps) {
         seek(0);
       }
     },
-    [pause, seek],
+    [pause, seek]
   );
 
   const switchToSimulation = useCallback(
     () => setMode("simulation"),
-    [setMode],
+    [setMode]
   );
 
-  const switchToBuilder = useCallback(
-    () => setMode("builder"),
-    [setMode],
-  );
+  const switchToBuilder = useCallback(() => setMode("builder"), [setMode]);
 
   const value: AppStateContextValue = {
     mode,
@@ -69,7 +66,9 @@ export function AppStateProvider({ children }: AppStateProviderProps) {
   };
 
   return (
-    <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>
+    <AppStateContext.Provider value={value}>
+      {children}
+    </AppStateContext.Provider>
   );
 }
 

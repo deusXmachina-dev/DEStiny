@@ -12,7 +12,6 @@ export type BlueprintEntity = components["schemas"]["BlueprintEntity"];
 export type SimulationBlueprint = components["schemas"]["Blueprint"];
 
 // Derive parameter unions directly from generated schema shapes.
-export type ParameterType =
-  components["schemas"]["ParameterType"];
+export type ParameterType = components["schemas"]["ParameterType"];
 export type ParameterValue =
   components["schemas"]["BlueprintEntity"]["parameters"][string];

@@ -26,7 +26,7 @@ export function DraggableEntityItem({
       e.dataTransfer.setDragImage(
         dragImageRef.current,
         dimensions.width / 2,
-        dimensions.height / 2,
+        dimensions.height / 2
       );
     }
     onDragStart(e, schema);

@@ -1,8 +1,9 @@
 "use client";
 
+import { cn } from "@/lib/utils";
+
 import type { BuilderEntitySchema } from "../../types";
 import { DraggableEntityItem } from "./DraggableEntityItem";
-import { cn } from "@/lib/utils";
 
 interface EntityPaletteProps {
   schemas: BuilderEntitySchema[];

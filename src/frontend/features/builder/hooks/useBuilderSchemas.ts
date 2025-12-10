@@ -29,9 +29,7 @@ export const useBuilderSchemas = () => {
         const { data, error: fetchError } = await client.GET("/api/schema");
 
         if (fetchError) {
-          throw new Error(
-            `Failed to fetch schemas: ${String(fetchError)}`
-          );
+          throw new Error(`Failed to fetch schemas: ${String(fetchError)}`);
         }
 
         if (!data) {

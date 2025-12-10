@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface Message {
-    id: string;
-    text: string;
-    sender: "user" | "assistant";
-    timestamp: Date;
+  id: string;
+  text: string;
+  sender: "user" | "assistant";
+  timestamp: Date;
 }
 
 interface ChatInterfaceProps {
@@ -20,7 +20,7 @@ interface ChatInterfaceProps {
 
 function ChatMessage({ message }: { message: Message }) {
   const isUser = message.sender === "user";
-  
+
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -53,14 +53,19 @@ export function ChatInterface({ className }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = () => {
-    if (!inputValue.trim()) return;
-    
-    setMessages([...messages, {
-      id: String(messages.length + 1),
-      text: inputValue,
-      sender: "user",
-      timestamp: new Date(),
-    }]);
+    if (!inputValue.trim()) {
+      return;
+    }
+
+    setMessages([
+      ...messages,
+      {
+        id: String(messages.length + 1),
+        text: inputValue,
+        sender: "user",
+        timestamp: new Date(),
+      },
+    ]);
     setInputValue("");
   };
 
