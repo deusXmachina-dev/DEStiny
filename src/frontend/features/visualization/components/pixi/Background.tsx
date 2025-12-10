@@ -45,7 +45,7 @@ export const Background = ({ theme = "factory" }: BackgroundProps) => {
             x * config.tileSize,
             y * config.tileSize,
             config.tileSize,
-            config.tileSize
+            config.tileSize,
           );
           g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
         }
@@ -63,7 +63,7 @@ export const Background = ({ theme = "factory" }: BackgroundProps) => {
       }
       g.stroke();
     },
-    [config, screenSize, zoom, scrollOffset]
+    [config, screenSize, zoom, scrollOffset],
   );
 
   return <pixiGraphics draw={draw} />;

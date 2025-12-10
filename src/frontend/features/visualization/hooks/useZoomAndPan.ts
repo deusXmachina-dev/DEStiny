@@ -81,7 +81,7 @@ export const useZoomAndPan = () => {
     // Helper function to calculate distance between two points
     const getDistance = (
       p1: { x: number; y: number },
-      p2: { x: number; y: number }
+      p2: { x: number; y: number },
     ): number => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
     const onWheel = (event: FederatedWheelEvent) => {
@@ -101,7 +101,7 @@ export const useZoomAndPan = () => {
       const zoomDelta = -event.deltaY * ZOOM_SENSITIVITY;
       const newZoom = Math.max(
         MIN_ZOOM,
-        Math.min(MAX_ZOOM, currentZoom + zoomDelta)
+        Math.min(MAX_ZOOM, currentZoom + zoomDelta),
       );
 
       if (newZoom === currentZoom) {
@@ -253,7 +253,7 @@ export const useZoomAndPan = () => {
           const scale = currentDistance / pinchState.startDistance;
           const newZoom = Math.max(
             MIN_ZOOM,
-            Math.min(MAX_ZOOM, pinchState.startZoom * scale)
+            Math.min(MAX_ZOOM, pinchState.startZoom * scale),
           );
 
           // Calculate current center position

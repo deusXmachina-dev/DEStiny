@@ -6,6 +6,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import globals from "globals";
+import prettierConfig from "eslint-config-prettier";
 
 export default [
   {
@@ -21,6 +22,7 @@ export default [
     ],
   },
   js.configs.recommended,
+  prettierConfig,
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
@@ -93,8 +95,7 @@ export default [
       "curly": ["error", "all"],
       "object-curly-spacing": ["error", "always"],
 
-      // Indentation
-      "indent": ["error", 2, { SwitchCase: 1 }],
+      // Note: Indentation is handled by Prettier (eslint-config-prettier disables the indent rule)
       "prefer-template": "error",
       "no-else-return": ["error", { allowElseIf: false }],
       "prefer-arrow-callback": "error",

@@ -26,7 +26,7 @@ function ChatMessage({ message }: { message: Message }) {
       <div
         className={cn(
           "max-w-[80%] rounded-lg px-4 py-2",
-          isUser ? "bg-primary text-primary-foreground" : "bg-muted"
+          isUser ? "bg-primary text-primary-foreground" : "bg-muted",
         )}
       >
         <p className="text-sm">{message.text}</p>

@@ -36,7 +36,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
     {
       visibleMetrics: [],
       metricOrder: [],
-    }
+    },
   );
 
   // Initialize config when metrics change
@@ -48,7 +48,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
 
     // Initialize if config is empty or metrics changed
     const hasAllMetrics = metricNames.every((name) =>
-      config.metricOrder.includes(name)
+      config.metricOrder.includes(name),
     );
     if (config.metricOrder.length === 0 || !hasAllMetrics) {
       setConfig({
@@ -61,7 +61,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
   // Derive Set from config for fast lookups
   const visibleMetrics = useMemo(
     () => new Set(config.visibleMetrics),
-    [config.visibleMetrics]
+    [config.visibleMetrics],
   );
 
   // Handler to toggle visibility of a metric
@@ -115,7 +115,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
         .filter((metricName) => visibleMetrics.has(metricName))
         .map((metricName) => metrics.find((m) => m.name === metricName))
         .filter((metric): metric is Metric => metric !== undefined),
-    [config.metricOrder, visibleMetrics, metrics]
+    [config.metricOrder, visibleMetrics, metrics],
   );
 
   const value: MetricsContextValue = {

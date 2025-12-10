@@ -26,7 +26,7 @@ function SidePanelHeader({ children, className }: SidePanelHeaderProps) {
     <div
       className={cn(
         "p-4 border-b flex items-center justify-between",
-        className
+        className,
       )}
     >
       {children}
@@ -47,7 +47,7 @@ function SidePanelFooter({ children, className }: SidePanelFooterProps) {
     <div
       className={cn(
         "p-4 border-t flex items-center justify-between",
-        className
+        className,
       )}
     >
       {children}
@@ -60,7 +60,7 @@ function SidePanel({ children, className }: SidePanelProps) {
     <div
       className={cn(
         "w-full h-full flex flex-col bg-background border-l",
-        className
+        className,
       )}
     >
       {children}

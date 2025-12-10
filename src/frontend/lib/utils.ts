@@ -19,7 +19,7 @@ export const formatTime = (seconds: number): string => {
  */
 export const setDefaultWithDevOverride = (
   productionValue: any,
-  developmentValue: any
+  developmentValue: any,
 ): any => {
   if (process.env.NODE_ENV === "development") {
     return developmentValue;

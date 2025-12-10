@@ -63,7 +63,7 @@ export function HistogramChart({
     // Calculate number of bins (using Sturges' formula or default to 15)
     const binCount = Math.min(
       Math.max(Math.ceil(Math.log2(values.length) + 1), 10),
-      20
+      20,
     );
 
     // Calculate bin width
@@ -114,7 +114,7 @@ export function HistogramChart({
   // Calculate total count for badge
   const totalCount = useMemo(
     () => histogramData.reduce((sum, bin) => sum + bin.count, 0),
-    [histogramData]
+    [histogramData],
   );
 
   return (

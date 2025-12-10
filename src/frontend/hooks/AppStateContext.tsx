@@ -19,7 +19,7 @@ interface AppStateContextValue {
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 interface AppStateProviderProps {
@@ -48,12 +48,12 @@ export function AppStateProvider({ children }: AppStateProviderProps) {
         seek(0);
       }
     },
-    [pause, seek]
+    [pause, seek],
   );
 
   const switchToSimulation = useCallback(
     () => setMode("simulation"),
-    [setMode]
+    [setMode],
   );
 
   const switchToBuilder = useCallback(() => setMode("builder"), [setMode]);

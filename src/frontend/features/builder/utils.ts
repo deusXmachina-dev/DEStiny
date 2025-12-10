@@ -12,7 +12,7 @@ import type {
  * Extracts x, y, and angle from entity parameters.
  */
 export const blueprintToEntityStates = (
-  blueprint: SimulationBlueprint | null
+  blueprint: SimulationBlueprint | null,
 ): SimulationEntityState[] => {
   if (!blueprint) {
     return [];
@@ -42,7 +42,7 @@ export const createBlueprintEntity = (
   entityType: BlueprintEntity["entityType"],
   parameters: Record<string, ParameterType>,
   x: number,
-  y: number
+  y: number,
 ): BlueprintEntity => {
   // Generate UUID
   const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -78,20 +78,20 @@ export const updateBlueprintEntityPosition = (
   blueprint: SimulationBlueprint,
   entityId: string,
   x: number,
-  y: number
+  y: number,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
     entity.uuid === entityId
       ? {
-        ...entity,
-        parameters: {
-          ...entity.parameters,
-          x,
-          y,
-        },
-      }
-      : entity
+          ...entity,
+          parameters: {
+            ...entity.parameters,
+            x,
+            y,
+          },
+        }
+      : entity,
   ),
 });
 
@@ -100,7 +100,7 @@ export const updateBlueprintEntityPosition = (
  */
 export const removeBlueprintEntity = (
   blueprint: SimulationBlueprint,
-  entityId: string
+  entityId: string,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.filter((entity) => entity.uuid !== entityId),
@@ -112,19 +112,19 @@ export const removeBlueprintEntity = (
 export const updateBlueprintEntityParameters = (
   blueprint: SimulationBlueprint,
   entityId: string,
-  parameters: Record<string, ParameterValue>
+  parameters: Record<string, ParameterValue>,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
     entity.uuid === entityId
       ? {
-        ...entity,
-        parameters: {
-          ...entity.parameters,
-          ...parameters,
-        },
-      }
-      : entity
+          ...entity,
+          parameters: {
+            ...entity.parameters,
+            ...parameters,
+          },
+        }
+      : entity,
   ),
 });
 
@@ -133,7 +133,7 @@ export const updateBlueprintEntityParameters = (
  */
 export const findBlueprintEntity = (
   blueprint: SimulationBlueprint | null,
-  entityId: string
+  entityId: string,
 ): BlueprintEntity | undefined => {
   if (!blueprint) {
     return undefined;

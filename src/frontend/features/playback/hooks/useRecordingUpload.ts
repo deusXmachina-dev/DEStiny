@@ -20,7 +20,7 @@ export function useRecordingUpload() {
         pause();
       }
     },
-    [setRecording, pause, setSimulationName]
+    [setRecording, pause, setSimulationName],
   );
 
   const { triggerFileUpload } = useFileUpload({

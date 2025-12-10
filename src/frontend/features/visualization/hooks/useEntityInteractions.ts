@@ -39,7 +39,7 @@ const dndStateRef: { current: DndState } = {
  */
 export const useEntityInteractions = (
   containerRef: RefObject<Container | null>,
-  entityId: string | undefined
+  entityId: string | undefined,
 ) => {
   const { getInteractionCallbacks, interactive } = useVisualization();
   const wasDraggingRef = useRef(false);
@@ -102,7 +102,7 @@ export const useEntityInteractions = (
       // Check if pointer has moved significantly (indicating a drag)
       const distance = Math.sqrt(
         Math.pow(event.global.x - dragStartPosRef.current.x, 2) +
-          Math.pow(event.global.y - dragStartPosRef.current.y, 2)
+          Math.pow(event.global.y - dragStartPosRef.current.y, 2),
       );
 
       if (distance > CLICK_THRESHOLD) {

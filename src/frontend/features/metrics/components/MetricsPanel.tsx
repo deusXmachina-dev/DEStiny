@@ -60,7 +60,7 @@ function MetricsPanelContent() {
                 currentTime={currentTime}
                 maxDuration={duration}
               />
-            )
+            ),
           )
         )}
       </SidePanel.Content>

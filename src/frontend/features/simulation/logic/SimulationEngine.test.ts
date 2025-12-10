@@ -7,7 +7,7 @@ import { SimulationEngine } from "./SimulationEngine";
 // Helper to create a motion segment with defaults
 const createSegment = (
   overrides: Partial<SimulationMotionSegment> &
-    Pick<SimulationMotionSegment, "entityId" | "entityType">
+    Pick<SimulationMotionSegment, "entityId" | "entityType">,
 ): SimulationMotionSegment => ({
   startTime: 0,
   endTime: 10,

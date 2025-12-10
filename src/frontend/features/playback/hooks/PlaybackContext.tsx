@@ -37,7 +37,7 @@ interface PlaybackContextValue {
 }
 
 const PlaybackContext = createContext<PlaybackContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 /**
@@ -48,7 +48,7 @@ const PlaybackContext = createContext<PlaybackContextValue | undefined>(
 function getInitialRecording(): {
   recording: SimulationRecording | null;
   name: string;
-  } {
+} {
   if (process.env.NODE_ENV !== "development") {
     return { recording: null, name: "Upload Simulation" };
   }
@@ -84,10 +84,10 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(setDefaultWithDevOverride(1, 20));
   const [simulationName, setSimulationName] = useState(
-    () => getInitialRecording().name
+    () => getInitialRecording().name,
   );
   const [recording, setRecording] = useState<SimulationRecording | null>(
-    () => getInitialRecording().recording
+    () => getInitialRecording().recording,
   );
   const [currentTime, setCurrentTime] = useState(0);
   const [seekTarget, setSeekTarget] = useState<number | null>(null);

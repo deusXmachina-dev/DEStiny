@@ -96,7 +96,7 @@ export class SimulationEngine {
             parentId: segment.parentId,
           });
         }
-      }
+      },
     );
 
     // Reconstruct hierarchy
@@ -110,7 +110,7 @@ export class SimulationEngine {
     activeEntities: Map<
       string,
       SimulationEntityState & { parentId: string | null }
-    >
+    >,
   ): SimulationEntityState[] {
     const rootEntities: SimulationEntityState[] = [];
 

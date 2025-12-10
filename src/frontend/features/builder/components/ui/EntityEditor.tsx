@@ -32,7 +32,7 @@ interface EntityFormProps {
 
 const EntityForm = ({ entity, schema, onSave, onDelete }: EntityFormProps) => {
   const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
-    () => ({ ...entity.parameters })
+    () => ({ ...entity.parameters }),
   );
   const [inputValues, setInputValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};

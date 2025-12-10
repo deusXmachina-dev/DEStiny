@@ -26,12 +26,12 @@ interface BuilderContextValue {
     entityType: BlueprintEntity["entityType"],
     parameters: Record<string, ParameterType>,
     x: number,
-    y: number
+    y: number,
   ) => void;
   removeEntity: (entityId: string) => void;
   updateEntity: (
     entityId: string,
-    parameters: Record<string, ParameterValue>
+    parameters: Record<string, ParameterValue>,
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
 
@@ -46,7 +46,7 @@ interface BuilderContextValue {
 }
 
 const BuilderContext = createContext<BuilderContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 interface BuilderProviderProps {
@@ -73,7 +73,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     entityType: BlueprintEntity["entityType"],
     parameters: Record<string, ParameterType>,
     x: number,
-    y: number
+    y: number,
   ) => {
     const newEntity = createBlueprintEntity(entityType, parameters, x, y);
     const currentBlueprint = blueprint || {
@@ -101,13 +101,13 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const updateEntity = (
     entityId: string,
-    parameters: Record<string, ParameterValue>
+    parameters: Record<string, ParameterValue>,
   ) => {
     if (!blueprint) {
       return;
     }
     setBlueprint(
-      updateBlueprintEntityParameters(blueprint, entityId, parameters)
+      updateBlueprintEntityParameters(blueprint, entityId, parameters),
     );
   };
 

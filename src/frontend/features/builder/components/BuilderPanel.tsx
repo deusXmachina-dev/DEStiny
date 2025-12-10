@@ -8,18 +8,18 @@ import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
 
 function BuilderPanelContent() {
-  const { schemas, isLoading, error } = useBuilderSchemas();
+  const { schemas, isLoading } = useBuilderSchemas();
 
   return (
     <SidePanel>
       <SidePanel.Content className="flex flex-col p-0">
-        {!isLoading && !error && (
-          <>
-            <EntityPalette schemas={schemas} className="h-[30%] p-4" />
-            <div className="border-t border-border" />
-            <ChatInterface className="h-[70%] p-4" />
-          </>
-        )}
+        <EntityPalette
+          schemas={schemas}
+          isLoading={isLoading}
+          className="h-[30%] p-4 overflow-y-auto"
+        />
+        <div className="border-t border-border" />
+        <ChatInterface className="h-[70%] p-4" />
       </SidePanel.Content>
     </SidePanel>
   );

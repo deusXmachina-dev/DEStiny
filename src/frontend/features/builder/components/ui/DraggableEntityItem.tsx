@@ -26,7 +26,7 @@ export function DraggableEntityItem({
       e.dataTransfer.setDragImage(
         dragImageRef.current,
         dimensions.width / 2,
-        dimensions.height / 2
+        dimensions.height / 2,
       );
     }
     onDragStart(e, schema);
@@ -51,7 +51,7 @@ export function DraggableEntityItem({
       <div
         draggable
         onDragStart={handleDragStart}
-        className="inline-flex items-center gap-2 px-2 py-2 rounded border border-border hover:bg-accent/50 transition-colors cursor-grab active:cursor-grabbing"
+        className="inline-flex items-center py-2 rounded border border-border hover:bg-accent/50 transition-colors cursor-grab active:cursor-grabbing"
       >
         <Image
           src={schema.icon}

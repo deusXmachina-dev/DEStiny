@@ -48,7 +48,7 @@ export function SimulationControls({
         className={cn(
           "absolute z-10 shadow-2xl transition-all min-w-[320px]",
           "animate-in fade-in zoom-in-95 duration-300",
-          POSITION_STYLES[position]
+          POSITION_STYLES[position],
         )}
       >
         <CardHeader className="text-center">
@@ -76,7 +76,7 @@ export function SimulationControls({
         className={cn(
           "absolute z-10 rounded-full shadow-lg",
           "animate-in fade-in zoom-in-50 duration-200",
-          POSITION_STYLES[position]
+          POSITION_STYLES[position],
         )}
         title="Expand controls"
       >
@@ -91,7 +91,7 @@ export function SimulationControls({
       className={cn(
         "absolute z-10 bg-background rounded-full shadow-lg border transition-all",
         "animate-in fade-in slide-in-from-top-2 duration-200",
-        POSITION_STYLES[position]
+        POSITION_STYLES[position],
       )}
     >
       <div className="flex flex-row items-center gap-3 pl-4 pr-1 py-1">

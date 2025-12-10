@@ -57,7 +57,7 @@ export const useStageInteractions = () => {
       // Apply the offset so the sprite moves naturally
       dndState.target.position.set(
         pointerPos.x + dndState.offset.x,
-        pointerPos.y + dndState.offset.y
+        pointerPos.y + dndState.offset.y,
       );
     };
 
@@ -72,7 +72,7 @@ export const useStageInteractions = () => {
       callbacks.onEntityDragEnd?.(
         dndState.entityId,
         dndState.target.x,
-        dndState.target.y
+        dndState.target.y,
       );
 
       // Reset drag state

@@ -28,7 +28,7 @@ export interface InteractionCallbacks {
     entityType: CanvasDropEntityType,
     parameters: Record<string, CanvasDropParameterType>,
     x: number,
-    y: number
+    y: number,
   ) => void;
 }
 
@@ -135,7 +135,7 @@ export const useVisualization = (): VisualizationContextValue => {
   const context = useContext(VisualizationContext);
   if (!context) {
     throw new Error(
-      "useVisualization must be used within a VisualizationProvider"
+      "useVisualization must be used within a VisualizationProvider",
     );
   }
   return context;
