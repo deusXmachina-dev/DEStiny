@@ -6,6 +6,7 @@ import { ReactNode, RefObject, useRef } from "react";
 import { useVisualization } from "../hooks/VisualizationContext";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
+import { ZoomPanControls } from "./ZoomPanControls";
 
 interface SceneVisualizationProps {
   children?: ReactNode;
@@ -24,7 +25,7 @@ interface SceneVisualizationProps {
  * Must be used within a VisualizationProvider.
  */
 export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
-  const { theme, getInteractionCallbacks, zoom, scrollOffset } = useVisualization();
+  const { getInteractionCallbacks, zoom, scrollOffset } = useVisualization();
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -75,6 +76,7 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
         <Scene />
         {children}
       </Application>
+      <ZoomPanControls />
     </div>
   );
 };
