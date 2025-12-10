@@ -4,6 +4,7 @@ import { Application } from "@pixi/react";
 import { ReactNode, RefObject, useRef } from "react";
 
 import { useVisualization } from "../hooks/VisualizationContext";
+import { CanvasWheelHandler } from "./CanvasWheelHandler";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
 import { ZoomPanControls } from "./ZoomPanControls";
@@ -67,12 +68,13 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
   return (
     <div
       ref={parentRef}
-      className="w-full h-full relative"
+      className="visualization-container w-full h-full relative"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       <Application resizeTo={parentRef as RefObject<HTMLDivElement>}>
         <ResizeListener />
+        <CanvasWheelHandler />
         <Scene />
         {children}
       </Application>

@@ -205,3 +205,16 @@
     letter-spacing: var(--tracking-normal);
   }
 }
+
+/* Prevent browser scroll/zoom on PixiJS canvas */
+.visualization-container canvas {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent scroll chaining on visualization container */
+.visualization-container {
+  overscroll-behavior: none;
+}
