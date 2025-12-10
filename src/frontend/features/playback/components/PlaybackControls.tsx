@@ -1,5 +1,6 @@
 "use client";
 
+import { useBuilder } from "@features/builder";
 import { formatTime } from "@lib/utils";
 import { FastForward, Pause, Play, Rewind, Square } from "lucide-react";
 
@@ -16,7 +17,7 @@ import { useAppMode } from "@/hooks/AppModeContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
-import { useRunSimulation } from "../hooks/useRunSimulation";
+import { useSimulationControl } from "../hooks/useSimulationControl";
 
 export function PlaybackControls() {
   const {
@@ -28,12 +29,16 @@ export function PlaybackControls() {
     currentTime,
     duration,
     hasRecording,
-    pause,
   } = usePlayback();
-  const { mode, switchToBuilder } = useAppMode();
-  const { runSimulation, isRunning } = useRunSimulation();
+  const { mode } = useAppMode();
+  const { blueprint } = useBuilder();
+  const { runSimulation, stopAndSwitchToBuilder, isRunning } =
+    useSimulationControl();
 
   const disabled = !hasRecording || mode !== "simulation";
+  const isBlueprintEmpty = !blueprint || blueprint.entities.length === 0;
+  const isPlayButtonDisabled =
+    isRunning || (mode === "builder" && isBlueprintEmpty);
 
   const handlePlayClick = () => {
     if (mode === "simulation") {
@@ -44,9 +49,7 @@ export function PlaybackControls() {
   };
 
   const handleStopClick = () => {
-    pause();
-    seek(0);
-    switchToBuilder();
+    stopAndSwitchToBuilder();
   };
 
   return (
@@ -76,8 +79,16 @@ export function PlaybackControls() {
             onClick={handlePlayClick}
             size="icon"
             className="size-9"
-            title={mode === "simulation" ? (isPlaying ? "Pause" : "Play") : "Run Simulation"}
-            disabled={isRunning}
+            title={
+              mode === "simulation"
+                ? isPlaying
+                  ? "Pause"
+                  : "Play"
+                : isBlueprintEmpty
+                  ? "Add entities to run simulation"
+                  : "Run Simulation"
+            }
+            disabled={isPlayButtonDisabled}
           >
             {mode === "simulation" && isPlaying ? (
               <Pause className="size-4" />

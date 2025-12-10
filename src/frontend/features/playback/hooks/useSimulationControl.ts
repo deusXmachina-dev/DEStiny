@@ -9,16 +9,16 @@ import { client } from "@/lib/api-client";
 import { usePlayback } from "./PlaybackContext";
 
 /**
- * Hook for running simulations from the builder.
- * Handles the API call, state management, and mode switching.
+ * Hook for controlling simulations and playback.
+ * Handles running simulations, stopping playback, and resetting playback state.
  */
-export function useRunSimulation() {
+export function useSimulationControl() {
   const { blueprint } = useBuilder();
   const { setRecording, setSimulationName, seek, play, pause } = usePlayback();
-  const { switchToSimulation } = useAppMode();
+  const { switchToSimulation, switchToBuilder } = useAppMode();
   const [isRunning, setIsRunning] = useState(false);
 
-  const runSimulation = async () => {
+  const executeSimulation = async (autoPlay: boolean) => {
     if (!blueprint || isRunning) {
       return;
     }
@@ -46,7 +46,10 @@ export function useRunSimulation() {
       setRecording(data);
       setSimulationName("Builder Simulation");
       seek(0);
-      play();
+
+      if (autoPlay) {
+        play();
+      }
 
       // Switch the app into simulation mode via shared context
       switchToSimulation();
@@ -57,5 +60,20 @@ export function useRunSimulation() {
     }
   };
 
-  return { runSimulation, isRunning };
+  const runSimulation = async () => executeSimulation(true);
+
+  const loadSimulation = async () => executeSimulation(false);
+
+  const stopAndSwitchToBuilder = () => {
+    pause();
+    seek(0);
+    switchToBuilder();
+  };
+
+  return {
+    runSimulation,
+    loadSimulation,
+    stopAndSwitchToBuilder,
+    isRunning,
+  };
 }

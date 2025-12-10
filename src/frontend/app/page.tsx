@@ -12,6 +12,7 @@ import {
   PlaybackProvider,
   usePlayback,
 } from "@features/playback";
+import { useSimulationControl } from "@features/playback/hooks/useSimulationControl";
 import {
   SimulationControls,
   SimulationEntityUpdater,
@@ -24,14 +25,18 @@ import { AppModeProvider, useAppMode } from "@/hooks/AppModeContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode, setMode } = useAppMode();
+  const { mode } = useAppMode();
+  const { stopAndSwitchToBuilder, loadSimulation } = useSimulationControl();
 
   const handleModeChange = (value: string): void => {
     if (value !== "simulation" && value !== "builder") {
       return;
     }
-
-    setMode(value as "simulation" | "builder");
+    if (value === "simulation") {
+      stopAndSwitchToBuilder();
+    } else {
+      loadSimulation();
+    }
   };
 
   return (
@@ -54,8 +59,31 @@ function HomeContent() {
 
         {/* Right Panel: Metrics/Builder (30%) */}
         <div className="w-[30%] h-full border-l flex flex-col">
-          {mode === "simulation" && <MetricsPanel />}
-          {mode === "builder" && <BuilderPanel />}
+          <Tabs
+            value={mode}
+            onValueChange={handleModeChange}
+            className="flex flex-col h-full gap-0"
+          >
+            <div className="border-l border-b border-border p-4 flex justify-center">
+              <TabsList className="h-10 p-[6px]">
+                <TabsTrigger
+                  value="simulation"
+                  className="text-md p-4 font-mono"
+                >
+                  Simulation
+                </TabsTrigger>
+                <TabsTrigger value="builder" className="text-md p-4 font-mono">
+                  Builder
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
+              <MetricsPanel />
+            </TabsContent>
+            <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
+              <BuilderPanel />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
