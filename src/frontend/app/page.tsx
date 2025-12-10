@@ -33,9 +33,9 @@ function HomeContent() {
       return;
     }
     if (value === "simulation") {
-      stopAndSwitchToBuilder();
-    } else {
       loadSimulation();
+    } else {
+      stopAndSwitchToBuilder();
     }
   };
 
