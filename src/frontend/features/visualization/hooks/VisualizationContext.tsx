@@ -15,6 +15,11 @@ interface ScreenSize {
   height: number;
 }
 
+interface ScrollOffset {
+  x: number;
+  y: number;
+}
+
 export interface InteractionCallbacks {
   onEntityDragEnd?: (entityId: string, x: number, y: number) => void;
   onEntityClick?: (entityId: string) => void;
@@ -32,11 +37,15 @@ interface VisualizationContextValue {
   screenSize: ScreenSize;
   entities: SimulationEntityState[];
   interactive: boolean;
+  zoom: number;
+  scrollOffset: ScrollOffset;
 
   // Actions
   setTheme: (theme: SimulationTheme) => void;
   setScreenSize: (screenSize: ScreenSize) => void;
   setEntities: (entities: SimulationEntityState[]) => void;
+  setZoom: (zoom: number) => void;
+  setScrollOffset: (scrollOffset: ScrollOffset) => void;
 
   // Interaction callbacks
   registerInteractionCallbacks: (callbacks: InteractionCallbacks) => void;
@@ -78,6 +87,10 @@ export const VisualizationProvider = ({
   // Entity state - updated by children (SimulationEntityUpdater or BuilderInteractionHandler)
   const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
+  // Zoom and scroll state
+  const [zoom, setZoom] = useState<number>(1.0);
+  const [scrollOffset, setScrollOffset] = useState<ScrollOffset>({ x: 0, y: 0 });
+
   // Interaction callbacks - stored in ref to avoid re-renders
   const interactionCallbacksRef = useRef<InteractionCallbacks>({});
 
@@ -92,9 +105,13 @@ export const VisualizationProvider = ({
     screenSize,
     entities,
     interactive,
+    zoom,
+    scrollOffset,
     setTheme,
     setScreenSize,
     setEntities,
+    setZoom,
+    setScrollOffset,
     registerInteractionCallbacks,
     getInteractionCallbacks,
   };
@@ -121,4 +138,4 @@ export const useVisualization = (): VisualizationContextValue => {
 };
 
 // Export types for external use
-export type { ScreenSize, VisualizationContextValue };
+export type { ScreenSize, ScrollOffset, VisualizationContextValue };

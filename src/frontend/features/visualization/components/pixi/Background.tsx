@@ -26,6 +26,8 @@ export const Background = ({ theme = "factory" }: BackgroundProps) => {
 
       const { width, height } = screenSize;
 
+      // Since Background is now inside the transformed container,
+      // we draw based on screenSize and the container's transform handles scaling/panning
       const tilesX = Math.ceil(width / config.tileSize) + 1;
       const tilesY = Math.ceil(height / config.tileSize) + 1;
 

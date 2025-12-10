@@ -4,7 +4,6 @@ import { Application } from "@pixi/react";
 import { ReactNode, RefObject, useRef } from "react";
 
 import { useVisualization } from "../hooks/VisualizationContext";
-import { Background } from "./pixi/Background";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
 
@@ -25,7 +24,7 @@ interface SceneVisualizationProps {
  * Must be used within a VisualizationProvider.
  */
 export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
-  const { theme, getInteractionCallbacks } = useVisualization();
+  const { theme, getInteractionCallbacks, zoom, scrollOffset } = useVisualization();
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -46,12 +45,19 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
         return;
       }
 
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      // Convert screen coordinates to world coordinates
+      // Screen coordinates are relative to the canvas container
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
 
-      // Invoke registered callback
+      // Transform to world coordinates accounting for zoom and scrollOffset
+      // world = (screen - scrollOffset) / zoom
+      const worldX = (screenX - scrollOffset.x) / zoom;
+      const worldY = (screenY - scrollOffset.y) / zoom;
+
+      // Invoke registered callback with world coordinates
       const callbacks = getInteractionCallbacks();
-      callbacks.onCanvasDrop?.(entityType, parameters || {}, x, y);
+      callbacks.onCanvasDrop?.(entityType, parameters || {}, worldX, worldY);
     } catch (error) {
       console.error("Error handling drop:", error);
     }
@@ -66,7 +72,6 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
     >
       <Application resizeTo={parentRef as RefObject<HTMLDivElement>}>
         <ResizeListener />
-        <Background theme={theme} />
         <Scene />
         {children}
       </Application>
