@@ -17,6 +17,7 @@
     "generate-api-types": "npx openapi-typescript http://localhost:8000/api/openapi.json -o ./types/api.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.80.6",
     "@pixi/react": "^8.0.0-beta.25",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.8",
@@ -32,13 +33,14 @@
     "lucide-react": "^0.555.0",
     "next": "16.0.5",
     "next-themes": "^0.4.6",
+    "openapi-fetch": "^0.14.0",
+    "openapi-react-query": "^0.5.1",
     "pixi.js": "^8.2.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "2.15.4",
-    "tailwind-merge": "^3.4.0",
-    "openapi-fetch": "^0.9.4"
+    "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

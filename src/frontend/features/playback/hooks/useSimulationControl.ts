@@ -4,10 +4,9 @@ import { useBuilder } from "@features/builder";
 import { useState } from "react";
 
 import { useAppState } from "@/hooks/AppStateContext";
-import { client } from "@/lib/api-client";
+import { $api } from "@/lib/api-client";
 
 import { usePlayback } from "./PlaybackContext";
-import type { SimulationBlueprint } from "@features/builder/types";
 
 /**
  * Hook for controlling simulations and playback.
@@ -19,6 +18,8 @@ export function useSimulationControl() {
   const { switchToSimulation, switchToBuilder } = useAppState();
   const [isFetchingSimulationResult, setIsFetchingSimulationResult] =
     useState(false);
+
+  const mutation = $api.useMutation("post", "/api/simulate");
 
   const executeSimulation = async (autoPlay: boolean) => {
     if (!blueprint) {
@@ -34,14 +35,9 @@ export function useSimulationControl() {
       pause();
       seek(0);
 
-      const { data, error } = await client.POST("/api/simulate", {
-        body: blueprint as SimulationBlueprint,
+      const data = await mutation.mutateAsync({
+        body: blueprint,
       });
-
-      if (error) {
-        console.error("Failed to run simulation", error);
-        return;
-      }
 
       if (!data) {
         console.error("Simulation API did not return a recording");

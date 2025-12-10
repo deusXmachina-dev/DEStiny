@@ -6,6 +6,25 @@ React + PixiJS simulation visualization. React handles UI/state; PixiJS renders.
 
 Next.js (App Router), React 19, PixiJS 8.x + `@pixi/react`, shadcn/ui, Tailwind CSS, TypeScript
 
+## Data Fetching
+
+The project uses an **OpenAPI-powered TypeScript API client integrated with React Query** for all backend data fetching and mutation. For this, see [`src/frontend/lib/api-client.ts`](lib/api-client.ts).
+
+**Example usage:**
+
+```typescript
+import { $api } from "@lib/api-client";
+
+// GET request (React Query useQuery hook)
+const { data, error, isLoading } = $api.useQuery("get", "/users/{user_id}", {
+    params: {
+      path: { user_id: 5 },
+    },
+  });
+```
+
+**Do not use fetch/axios directly for API calls**—always use `$api`, as it provides type safety, React Query integration, and handles credentials.
+
 ## Project Structure
 
 ```

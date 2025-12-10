@@ -3,15 +3,10 @@
 import {
   BuilderInteractionHandler,
   BuilderPanel,
-  BuilderProvider,
   EntityEditor,
 } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
-import {
-  PlaybackControls,
-  PlaybackProvider,
-  usePlayback,
-} from "@features/playback";
+import { PlaybackControls, usePlayback } from "@features/playback";
 import { useSimulationControl } from "@features/playback/hooks/useSimulationControl";
 import {
   SimulationControls,
@@ -21,7 +16,7 @@ import { SceneVisualization } from "@features/visualization/components/SceneVisu
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppStateProvider, useAppState } from "@/hooks/AppStateContext";
+import { useAppState } from "@/hooks/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
@@ -99,13 +94,5 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return (
-    <PlaybackProvider>
-      <AppStateProvider>
-        <BuilderProvider>
-          <HomeContent />
-        </BuilderProvider>
-      </AppStateProvider>
-    </PlaybackProvider>
-  );
+  return <HomeContent />;
 }

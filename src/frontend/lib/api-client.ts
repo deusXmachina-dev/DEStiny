@@ -1,15 +1,13 @@
-import createClient from "openapi-fetch";
-
-import { BACKEND_URL } from "@/config/api";
+import createFetchClient from "openapi-fetch";
+import createClient from "openapi-react-query";
 import type { paths } from "@/types/api";
+import { BACKEND_URL } from "@/config/api";
 
-/**
- * Typed API client using openapi-fetch.
- * All API calls are type-safe based on the generated OpenAPI schema.
- */
-const client = createClient<paths>({
+const client = createFetchClient<paths>({
   baseUrl: BACKEND_URL,
   credentials: "include",
 });
 
-export { client };
+const $api = createClient(client);
+
+export { client, $api };

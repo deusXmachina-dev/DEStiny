@@ -3,9 +3,9 @@
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
-import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
+import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();
@@ -14,7 +14,7 @@ function BuilderPanelContent() {
     <SidePanel>
       <SidePanel.Content className="flex flex-col p-0">
         <EntityPalette
-          schemas={schemas}
+          schemas={schemas ?? []}
           isLoading={isLoading}
           className="h-[30%] p-4 overflow-y-auto"
         />
