@@ -23,7 +23,7 @@ function MetricsPanelContent() {
 
   return (
     <SidePanel>
-      <SidePanel.Header className="justify-end p-3">
+      <SidePanel.Header className="justify-end p-3 border-b-0">
         {hasRecording && metricOrder.length > 0 && (
           <MetricsSelector
             visibleMetrics={visibleMetrics}
