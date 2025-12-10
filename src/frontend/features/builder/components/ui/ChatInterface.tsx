@@ -45,7 +45,7 @@ export function ChatInterface({ className }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm here to help you build your simulation. What would you like to create?",
+      text: "Hello! This is currently a placeholder for the chat interface. The killer app feature is coming soon!",
       sender: "assistant",
       timestamp: new Date(),
     },
