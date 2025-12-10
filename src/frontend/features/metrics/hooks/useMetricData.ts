@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Metric } from "../types";
+import type { Metric } from "../index";
 import { transformMetricData } from "../utils";
 
 interface UseMetricDataProps {

@@ -1,0 +1,9 @@
+{
+    "folders": [
+      { "path": "src/backend" },
+      { "path": "src/engine" },
+      { "path": "src/frontend" }
+    ],
+    "settings": {}
+  }
+  

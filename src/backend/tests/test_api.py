@@ -242,8 +242,8 @@ class TestSimulateEndpoint:
             content_type="application/json",
         )
         
-        # Django Ninja returns 500 for unhandled exceptions from run_blueprint
-        assert response.status_code == 500
+        # Django Ninja returns 422 for schema validation errors when required fields are missing
+        assert response.status_code == 422
 
     def test_simulate_unknown_entity_type(self, api_client):
         """Simulate endpoint should return error for unknown entityType."""

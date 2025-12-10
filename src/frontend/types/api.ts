@@ -53,31 +53,141 @@ export interface components {
          * @description Schema for a builder entity definition.
          */
         BuilderEntitySchema: {
-            /** Entitytype */
-            entityType: string;
+            entityType: components["schemas"]["SimulationEntityType"];
             /** Icon */
             icon: string;
             /** Parameters */
             parameters: {
-                [key: string]: string;
+                [key: string]: components["schemas"]["ParameterType"];
             };
         };
-        /** Blueprint */
+        /**
+         * ParameterType
+         * @description Allowed primitive parameter types for builder entities.
+         * @enum {string}
+         */
+        ParameterType: "string" | "number" | "boolean";
+        /**
+         * SimulationEntityType
+         * @description Simulation entity types for rendering entities in the frontend.
+         * @enum {string}
+         */
+        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "human" | "counter" | "grid_node" | "";
+        /**
+         * MetricDataSchema
+         * @description Schema for metric data with timestamp and value arrays.
+         */
+        MetricDataSchema: {
+            /** Timestamp */
+            timestamp: number[];
+            /** Value */
+            value: number[];
+        };
+        /**
+         * MetricSchema
+         * @description Serialized metric definition compatible with destiny_sim.core.metrics.Metric.
+         */
+        MetricSchema: {
+            /** Name */
+            name: string;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "gauge" | "counter" | "sample";
+            /** Labels */
+            labels: {
+                [key: string]: string;
+            };
+            data: components["schemas"]["MetricDataSchema"];
+        };
+        /**
+         * MotionSegmentSchema
+         * @description Serialized motion segment compatible with destiny_sim.core.timeline.MotionSegment.
+         */
+        MotionSegmentSchema: {
+            /** Entityid */
+            entityId: string;
+            entityType: components["schemas"]["SimulationEntityType"];
+            /** Parentid */
+            parentId: string | null;
+            /** Starttime */
+            startTime: number;
+            /** Endtime */
+            endTime: number | null;
+            /** Startx */
+            startX: number;
+            /** Starty */
+            startY: number;
+            /** Endx */
+            endX: number;
+            /** Endy */
+            endY: number;
+            /** Startangle */
+            startAngle: number;
+            /** Endangle */
+            endAngle: number;
+        };
+        /**
+         * SimulationRecordingSchema
+         * @description Complete simulation recording returned to the frontend.
+         */
+        SimulationRecordingSchema: {
+            /** Duration */
+            duration: number;
+            /** Segments By Entity */
+            segments_by_entity: {
+                [key: string]: components["schemas"]["MotionSegmentSchema"][];
+            };
+            /**
+             * Metrics
+             * @default []
+             */
+            metrics: components["schemas"]["MetricSchema"][];
+        };
+        /**
+         * Blueprint
+         * @description Simulation blueprint used by the engine.
+         *
+         *     This mirrors the structure expected by destiny_sim.builder.runner.run_blueprint
+         *     and by the frontend builder feature.
+         */
         Blueprint: {
             /**
-             * Simparams
-             * @default {}
+             * @default {
+             *       "initialTime": null,
+             *       "duration": null
+             *     }
              */
-            simParams: {
-                [key: string]: unknown;
-            };
+            simParams: components["schemas"]["SimParams"];
             /**
              * Entities
              * @default []
              */
-            entities: {
-                [key: string]: unknown;
-            }[];
+            entities: components["schemas"]["BlueprintEntity"][];
+        };
+        /**
+         * BlueprintEntity
+         * @description Single entity instance in a simulation blueprint.
+         */
+        BlueprintEntity: {
+            entityType: components["schemas"]["SimulationEntityType"];
+            /** Uuid */
+            uuid: string;
+            /** Parameters */
+            parameters: {
+                [key: string]: string | number | boolean;
+            };
+        };
+        /**
+         * SimParams
+         * @description Simulation-level parameters shared between frontend and engine.
+         */
+        SimParams: {
+            /** Initialtime */
+            initialTime?: number | null;
+            /** Duration */
+            duration?: number | null;
         };
     };
     responses: never;
@@ -126,7 +236,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["SimulationRecordingSchema"];
+                };
             };
         };
     };
