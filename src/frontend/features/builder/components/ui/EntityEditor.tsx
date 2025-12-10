@@ -39,31 +39,63 @@ const EntityForm = ({
   const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
     () => ({ ...entity.parameters })
   );
+  const [inputValues, setInputValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    Object.entries(entity.parameters).forEach(([key, value]) => {
+      initial[key] = String(value);
+    });
+    return initial;
+  });
 
   const handleParameterChange = (key: string, value: string) => {
     const paramType = schema.parameters[key];
-    let parsedValue: ParameterValue;
+    
+    // Always update the input value to allow typing
+    setInputValues((prev) => ({ ...prev, [key]: value }));
 
     if (paramType === "number") {
-      parsedValue = value === "" ? 0 : Number(value);
-      if (isNaN(parsedValue as number)) {
-        return; // Don't update if invalid number
+      // Allow intermediate states, but try to parse valid numbers
+      if (value === "" || value === "-" || value === "." || value === "-.") {
+        return; // Keep current form value while typing
+      }
+      const parsed = Number(value);
+      if (!isNaN(parsed)) {
+        setFormValues((prev) => ({ ...prev, [key]: parsed }));
       }
     } else if (paramType === "boolean") {
-      parsedValue = value === "true" || value === "1";
+      setFormValues((prev) => ({ ...prev, [key]: value === "true" || value === "1" }));
     } else {
-      parsedValue = value;
+      setFormValues((prev) => ({ ...prev, [key]: value }));
     }
+  };
 
-    setFormValues((prev) => ({
-      ...prev,
-      [key]: parsedValue,
-    }));
+  const handleBlur = (key: string) => {
+    const paramType = schema.parameters[key];
+    const value = inputValues[key] ?? "";
+    if (paramType === "number") {
+      const parsed = value === "" || value === "-" || value === "." || value === "-."
+        ? 0
+        : Number(value);
+      const finalValue = isNaN(parsed) ? 0 : parsed;
+      setFormValues((prev) => ({ ...prev, [key]: finalValue }));
+      setInputValues((prev) => ({ ...prev, [key]: String(finalValue) }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formValues);
+    // Finalize all number values before submit
+    const finalized = { ...formValues };
+    Object.entries(schema.parameters).forEach(([key, paramType]) => {
+      if (paramType === "number") {
+        const value = inputValues[key] ?? "";
+        const parsed = value === "" || value === "-" || value === "." || value === "-."
+          ? 0
+          : Number(value);
+        finalized[key] = isNaN(parsed) ? 0 : parsed;
+      }
+    });
+    onSave(finalized);
   };
 
   return (
@@ -82,9 +114,12 @@ const EntityForm = ({
             </Label>
             <Input
               id={key}
-              type={paramType === "number" ? "number" : "text"}
-              value={String(formValues[key] ?? "")}
+              type="text"
+              inputMode={paramType === "number" ? "decimal" : "text"}
+              value={inputValues[key] ?? ""}
               onChange={(e) => handleParameterChange(key, e.target.value)}
+              onFocus={(e) => e.target.select()}
+              onBlur={() => handleBlur(key)}
               className="col-span-3"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
