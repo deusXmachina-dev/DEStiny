@@ -32,13 +32,13 @@ export function PlaybackControls() {
   } = usePlayback();
   const { mode } = useAppState();
   const { blueprint } = useBuilder();
-  const { runSimulation, stopAndSwitchToBuilder, isRunning } =
+  const { runSimulation, stopAndSwitchToBuilder, isFetchingSimulationResult } =
     useSimulationControl();
 
   const disabled = !hasRecording || mode !== "simulation";
   const isBlueprintEmpty = !blueprint || blueprint.entities.length === 0;
   const isPlayButtonDisabled =
-    isRunning || (mode === "builder" && isBlueprintEmpty);
+    isFetchingSimulationResult || (mode === "builder" && isBlueprintEmpty);
 
   const handlePlayClick = () => {
     if (mode === "simulation") {

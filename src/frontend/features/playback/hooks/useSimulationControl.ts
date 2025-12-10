@@ -16,15 +16,15 @@ export function useSimulationControl() {
   const { blueprint } = useBuilder();
   const { setRecording, setSimulationName, seek, play, pause } = usePlayback();
   const { switchToSimulation, switchToBuilder } = useAppState();
-  const [isRunning, setIsRunning] = useState(false);
+  const [isFetchingSimulationResult, setIsFetchingSimulationResult] = useState(false);
 
   const executeSimulation = async (autoPlay: boolean) => {
-    if (!blueprint || isRunning) {
+    if (!blueprint || isFetchingSimulationResult) {
       return;
     }
 
     try {
-      setIsRunning(true);
+      setIsFetchingSimulationResult(true);
       // Ensure playback is reset before starting a new run
       pause();
       seek(0);
@@ -56,7 +56,7 @@ export function useSimulationControl() {
     } catch (err) {
       console.error("Unexpected error while running simulation", err);
     } finally {
-      setIsRunning(false);
+      setIsFetchingSimulationResult(false);
     }
   };
 
@@ -74,6 +74,6 @@ export function useSimulationControl() {
     runSimulation,
     loadSimulation,
     stopAndSwitchToBuilder,
-    isRunning,
+    isFetchingSimulationResult,
   };
 }
