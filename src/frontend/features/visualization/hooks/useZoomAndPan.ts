@@ -12,7 +12,7 @@ import { useVisualization } from "./VisualizationContext";
  *
  * Features:
  * - Wheel events for zooming (zoom to cursor position)
- * - Middle mouse button or space+drag for panning
+ * - Regular drag on empty space for panning
  * - Prevents panning when entity dragging is active
  *
  * Must be used within:
@@ -36,45 +36,10 @@ export const useZoomAndPan = () => {
     panStartOffset: null,
   });
 
-  // Track space key state
-  const spaceKeyPressedRef = useRef(false);
-
   // Update stage ref when app changes
   useEffect(() => {
     stageRef.current = app.stage;
   }, [app]);
-
-  // Set up keyboard listener for space key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === " " || e.code === "Space") {
-        e.preventDefault();
-        spaceKeyPressedRef.current = true;
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === " " || e.code === "Space") {
-        spaceKeyPressedRef.current = false;
-        // End pan if space is released
-        if (panStateRef.current.isPanning) {
-          panStateRef.current = {
-            isPanning: false,
-            panStartPos: null,
-            panStartOffset: null,
-          };
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
 
   // Set up zoom and pan handlers
   useEffect(() => {
@@ -129,24 +94,20 @@ export const useZoomAndPan = () => {
     };
 
     const onPanStart = (event: FederatedPointerEvent) => {
-      // Check if pan should start:
-      // - Middle mouse button (button === 1)
-      // - OR space key is pressed
-      const isMiddleMouse = event.button === 1;
-      const isSpacePressed = spaceKeyPressedRef.current;
-
-      if (!isMiddleMouse && !isSpacePressed) {
+      // Only start panning on left mouse button (button === 0 or undefined)
+      // Skip if middle or right mouse button
+      if (event.button !== 0 && event.button !== undefined) {
         return;
       }
 
-      // Don't start pan if entity is being dragged
+      // Don't start pan if entity is already being dragged
       const dndState = getDndState();
       if (dndState.isDragging) {
         return;
       }
 
-      event.preventDefault();
-
+      // Start panning - we'll cancel it on pointermove if an entity drag starts
+      // This allows entity dragging to take priority
       panStateRef.current = {
         isPanning: true,
         panStartPos: { x: event.global.x, y: event.global.y },
@@ -155,11 +116,21 @@ export const useZoomAndPan = () => {
     };
 
     const onPanMove = (event: FederatedPointerEvent) => {
-      if (!panStateRef.current.isPanning || !panStateRef.current.panStartPos) {
+      // Check if entity drag started - if so, cancel panning
+      const dndState = getDndState();
+      if (dndState.isDragging) {
+        // Entity is being dragged, cancel pan
+        panStateRef.current = {
+          isPanning: false,
+          panStartPos: null,
+          panStartOffset: null,
+        };
         return;
       }
 
-      event.preventDefault();
+      if (!panStateRef.current.isPanning || !panStateRef.current.panStartPos) {
+        return;
+      }
 
       // Calculate pan delta
       const deltaX = event.global.x - panStateRef.current.panStartPos.x;
