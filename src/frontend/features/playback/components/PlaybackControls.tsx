@@ -32,8 +32,7 @@ export function PlaybackControls() {
   } = usePlayback();
   const { mode } = useAppState();
   const { blueprint } = useBuilder();
-  const { runSimulation, stopAndSwitchToBuilder, isFetchingSimulationResult } =
-    useSimulationControl();
+  const { runSimulation, isFetchingSimulationResult } = useSimulationControl();
 
   const disabled = !hasRecording || mode !== "simulation";
   const isBlueprintEmpty = !blueprint || blueprint.entities.length === 0;
@@ -48,24 +47,11 @@ export function PlaybackControls() {
     }
   };
 
-  const handleStopClick = () => {
-    stopAndSwitchToBuilder();
-  };
-
   return (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex items-center gap-4 w-full">
         {/* Left: Control Buttons */}
         <div className="flex items-center gap-2">
-          <Button
-            disabled={mode !== "simulation"}
-            onClick={handleStopClick}
-            size="icon"
-            className="size-9"
-            title="Stop"
-          >
-            <Square className="size-4" />
-          </Button>
           <Button
             disabled={disabled}
             onClick={() => seek(0)}
@@ -79,15 +65,7 @@ export function PlaybackControls() {
             onClick={handlePlayClick}
             size="icon"
             className="size-9"
-            title={
-              mode === "simulation"
-                ? isPlaying
-                  ? "Pause"
-                  : "Play"
-                : isBlueprintEmpty
-                  ? "Add entities to run simulation"
-                  : "Run Simulation"
-            }
+            title="Play/Pause"
             disabled={isPlayButtonDisabled}
           >
             {mode === "simulation" && isPlaying ? (

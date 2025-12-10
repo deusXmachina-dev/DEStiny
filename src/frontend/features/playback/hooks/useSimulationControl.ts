@@ -7,6 +7,7 @@ import { useAppState } from "@/hooks/AppStateContext";
 import { client } from "@/lib/api-client";
 
 import { usePlayback } from "./PlaybackContext";
+import type { SimulationBlueprint } from "@features/builder/types";
 
 /**
  * Hook for controlling simulations and playback.
@@ -20,7 +21,10 @@ export function useSimulationControl() {
     useState(false);
 
   const executeSimulation = async (autoPlay: boolean) => {
-    if (!blueprint || isFetchingSimulationResult) {
+    if (!blueprint) {
+      switchToSimulation();
+      return;
+    } else if (isFetchingSimulationResult) {
       return;
     }
 
@@ -31,7 +35,7 @@ export function useSimulationControl() {
       seek(0);
 
       const { data, error } = await client.POST("/api/simulate", {
-        body: blueprint,
+        body: blueprint as SimulationBlueprint,
       });
 
       if (error) {
