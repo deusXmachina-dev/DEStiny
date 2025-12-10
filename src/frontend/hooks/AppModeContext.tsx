@@ -35,7 +35,7 @@ interface AppModeProviderProps {
  */
 export function AppModeProvider({ children }: AppModeProviderProps) {
   const { pause, seek } = usePlayback();
-  const [mode, setModeState] = useState<AppMode>("simulation");
+  const [mode, setModeState] = useState<AppMode>("builder");
 
   const setMode = useCallback(
     (nextMode: AppMode) => {
