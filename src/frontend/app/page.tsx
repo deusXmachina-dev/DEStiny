@@ -21,11 +21,11 @@ import { SceneVisualization } from "@features/visualization/components/SceneVisu
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppModeProvider, useAppMode } from "@/hooks/AppModeContext";
+import { AppStateProvider, useAppState } from "@/hooks/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { stopAndSwitchToBuilder, loadSimulation } = useSimulationControl();
 
   const handleModeChange = (value: string): void => {
@@ -101,11 +101,11 @@ function HomeContent() {
 export default function Home() {
   return (
     <PlaybackProvider>
-      <AppModeProvider>
+      <AppStateProvider>
         <BuilderProvider>
           <HomeContent />
         </BuilderProvider>
-      </AppModeProvider>
+      </AppStateProvider>
     </PlaybackProvider>
   );
 }

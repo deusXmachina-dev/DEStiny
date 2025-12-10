@@ -3,7 +3,7 @@
 import { useBuilder } from "@features/builder";
 import { useState } from "react";
 
-import { useAppMode } from "@/hooks/AppModeContext";
+import { useAppState } from "@/hooks/AppStateContext";
 import { client } from "@/lib/api-client";
 
 import { usePlayback } from "./PlaybackContext";
@@ -15,7 +15,7 @@ import { usePlayback } from "./PlaybackContext";
 export function useSimulationControl() {
   const { blueprint } = useBuilder();
   const { setRecording, setSimulationName, seek, play, pause } = usePlayback();
-  const { switchToSimulation, switchToBuilder } = useAppMode();
+  const { switchToSimulation, switchToBuilder } = useAppState();
   const [isRunning, setIsRunning] = useState(false);
 
   const executeSimulation = async (autoPlay: boolean) => {

@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useAppMode } from "@/hooks/AppModeContext";
+import { useAppState } from "@/hooks/AppStateContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
@@ -30,7 +30,7 @@ export function PlaybackControls() {
     duration,
     hasRecording,
   } = usePlayback();
-  const { mode } = useAppMode();
+  const { mode } = useAppState();
   const { blueprint } = useBuilder();
   const { runSimulation, stopAndSwitchToBuilder, isRunning } =
     useSimulationControl();

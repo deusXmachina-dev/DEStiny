@@ -11,29 +11,30 @@ import {
 
 export type AppMode = "simulation" | "builder";
 
-interface AppModeContextValue {
+interface AppStateContextValue {
   mode: AppMode;
   setMode: (mode: AppMode) => void;
   switchToSimulation: () => void;
   switchToBuilder: () => void;
 }
 
-const AppModeContext = createContext<AppModeContextValue | undefined>(
+const AppStateContext = createContext<AppStateContextValue | undefined>(
   undefined,
 );
 
-interface AppModeProviderProps {
+interface AppStateProviderProps {
   children: ReactNode;
 }
 
 /**
- * AppModeProvider - global app mode (builder vs simulation).
+ * AppStateProvider - top-level application state context.
  *
- * Centralizes mode state and side-effects (like pausing/resetting playback
- * when switching back to the builder) so individual components don't need
- * to coordinate this logic via prop drilling.
+ * Manages global app state including mode (builder vs simulation) and
+ * side-effects (like pausing/resetting playback when switching back to
+ * the builder). This context can be extended to include other top-level
+ * state like user information, theme preferences, etc.
  */
-export function AppModeProvider({ children }: AppModeProviderProps) {
+export function AppStateProvider({ children }: AppStateProviderProps) {
   const { pause, seek } = usePlayback();
   const [mode, setModeState] = useState<AppMode>("builder");
 
@@ -60,7 +61,7 @@ export function AppModeProvider({ children }: AppModeProviderProps) {
     [setMode],
   );
 
-  const value: AppModeContextValue = {
+  const value: AppStateContextValue = {
     mode,
     setMode,
     switchToSimulation,
@@ -68,14 +69,14 @@ export function AppModeProvider({ children }: AppModeProviderProps) {
   };
 
   return (
-    <AppModeContext.Provider value={value}>{children}</AppModeContext.Provider>
+    <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>
   );
 }
 
-export function useAppMode(): AppModeContextValue {
-  const context = useContext(AppModeContext);
+export function useAppState(): AppStateContextValue {
+  const context = useContext(AppStateContext);
   if (!context) {
-    throw new Error("useAppMode must be used within an AppModeProvider");
+    throw new Error("useAppState must be used within an AppStateProvider");
   }
   return context;
 }
