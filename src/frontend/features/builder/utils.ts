@@ -2,6 +2,7 @@ import type { SimulationEntityState } from "@features/visualization";
 
 import type {
   BlueprintEntity,
+  ParameterType,
   ParameterValue,
   SimulationBlueprint,
 } from "./types";
@@ -38,8 +39,8 @@ export const blueprintToEntityStates = (
  * Create a new blueprint entity from a schema and position.
  */
 export const createBlueprintEntity = (
-  entityType: string,
-  parameters: Record<string, "string" | "number">,
+  entityType: BlueprintEntity["entityType"],
+  parameters: Record<string, ParameterType>,
   x: number,
   y: number
 ): BlueprintEntity => {

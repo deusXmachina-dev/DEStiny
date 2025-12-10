@@ -2,8 +2,13 @@
 
 import { createContext, ReactNode, useContext, useRef, useState } from "react";
 
+import type { components } from "@/types/api";
+
 import { SimulationTheme } from "../constants";
 import type { SimulationEntityState } from "../types";
+
+type CanvasDropEntityType = components["schemas"]["BlueprintEntity"]["entityType"];
+type CanvasDropParameterType = components["schemas"]["ParameterType"];
 
 interface ScreenSize {
   width: number;
@@ -14,8 +19,8 @@ export interface InteractionCallbacks {
   onEntityDragEnd?: (entityId: string, x: number, y: number) => void;
   onEntityClick?: (entityId: string) => void;
   onCanvasDrop?: (
-    entityType: string,
-    parameters: Record<string, "string" | "number">,
+    entityType: CanvasDropEntityType,
+    parameters: Record<string, CanvasDropParameterType>,
     x: number,
     y: number
   ) => void;

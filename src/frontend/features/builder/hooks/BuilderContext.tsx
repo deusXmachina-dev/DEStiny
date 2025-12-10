@@ -2,7 +2,12 @@
 
 import { createContext, ReactNode, useContext, useRef, useState } from "react";
 
-import type { ParameterValue, SimulationBlueprint } from "../types";
+import type {
+  BlueprintEntity,
+  ParameterType,
+  ParameterValue,
+  SimulationBlueprint,
+} from "../types";
 import {
   createBlueprintEntity,
   removeBlueprintEntity,
@@ -18,8 +23,8 @@ interface BuilderContextValue {
 
   // Blueprint actions
   addEntity: (
-    entityType: string,
-    parameters: Record<string, "string" | "number">,
+    entityType: BlueprintEntity["entityType"],
+    parameters: Record<string, ParameterType>,
     x: number,
     y: number
   ) => void;
@@ -65,8 +70,8 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   const justClosedRef = useRef(false);
 
   const addEntity = (
-    entityType: string,
-    parameters: Record<string, "string" | "number">,
+    entityType: BlueprintEntity["entityType"],
+    parameters: Record<string, ParameterType>,
     x: number,
     y: number
   ) => {
