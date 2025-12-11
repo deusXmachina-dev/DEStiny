@@ -9,14 +9,6 @@ from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 
 
-def _find_param(params: list[ParameterInfo], name: str) -> ParameterInfo | None:
-    """Helper to find a parameter by name in the list."""
-    for param in params:
-        if param.name == name:
-            return param
-    return None
-
-
 def test_human_schema_generation():
     """Test that Human entity generates correct parameter schema."""
     schema = Human.get_parameters_schema()
@@ -27,17 +19,17 @@ def test_human_schema_generation():
     params = schema.parameters
     
     # Should have all the parameters from Human.__init__ (excluding self and env)
-    param_names = {p.name for p in params}
+    param_names = set(params.keys())
     assert "x" in param_names
     assert "y" in param_names
     assert "targetX" in param_names
     assert "targetY" in param_names
     
     # All should be ParameterType.NUMBER (float)
-    assert _find_param(params, "x").type == ParameterType.NUMBER
-    assert _find_param(params, "y").type == ParameterType.NUMBER
-    assert _find_param(params, "targetX").type == ParameterType.NUMBER
-    assert _find_param(params, "targetY").type == ParameterType.NUMBER
+    assert params["x"].type == ParameterType.NUMBER
+    assert params["y"].type == ParameterType.NUMBER
+    assert params["targetX"].type == ParameterType.NUMBER
+    assert params["targetY"].type == ParameterType.NUMBER
     
     # Should not include self or env
     assert "self" not in param_names
@@ -63,13 +55,13 @@ def test_schema_type_mapping():
     schema = TestEntity.get_parameters_schema()
     params = schema.parameters
     
-    assert _find_param(params, "num_int").type == ParameterType.NUMBER
-    assert _find_param(params, "num_float").type == ParameterType.NUMBER
-    assert _find_param(params, "text").type == ParameterType.STRING
-    assert _find_param(params, "flag").type == ParameterType.BOOLEAN
+    assert params["num_int"].type == ParameterType.NUMBER
+    assert params["num_float"].type == ParameterType.NUMBER
+    assert params["text"].type == ParameterType.STRING
+    assert params["flag"].type == ParameterType.BOOLEAN
     
     # Should exclude self and env
-    param_names = {p.name for p in params}
+    param_names = set(params.keys())
     assert "self" not in param_names
     assert "env" not in param_names
 
@@ -85,9 +77,9 @@ def test_schema_with_no_parameters():
     
     schema = MinimalEntity.get_parameters_schema()
 
-    # Should have entityType and parameters (parameters should be empty list)
+    # Should have entityType and parameters (parameters should be empty dict)
     assert schema.entityType == SimulationEntityType.ROBOT
-    assert schema.parameters == []
+    assert schema.parameters == {}
 
 
 def test_schema_excludes_kwargs():
@@ -109,9 +101,9 @@ def test_schema_excludes_kwargs():
     params = schema.parameters
     
     # Should only include normal_param
-    param_names = {p.name for p in params}
+    param_names = set(params.keys())
     assert "normal_param" in param_names
-    assert _find_param(params, "normal_param").type == ParameterType.NUMBER
+    assert params["normal_param"].type == ParameterType.NUMBER
     
     # Should exclude args and kwargs
     assert "args" not in param_names
@@ -130,10 +122,9 @@ def test_entity_parameter_with_specific_type():
     schema = EntityWithHumanTarget.get_parameters_schema()
     params = schema.parameters
     
-    target_param = _find_param(params, "target")
-    assert target_param is not None
-    assert target_param.type == ParameterType.ENTITY
-    assert target_param.allowedEntityTypes == [SimulationEntityType.HUMAN]
+    assert "target" in params
+    assert params["target"].type == ParameterType.ENTITY
+    assert params["target"].allowedEntityTypes == [SimulationEntityType.HUMAN]
 
 
 def test_entity_parameter_with_union_type():
@@ -148,7 +139,6 @@ def test_entity_parameter_with_union_type():
     schema = EntityWithHumanTarget.get_parameters_schema()
     params = schema.parameters
     
-    target_param = _find_param(params, "target")
-    assert target_param is not None
-    assert target_param.type == ParameterType.ENTITY
-    assert target_param.allowedEntityTypes == [SimulationEntityType.HUMAN, SimulationEntityType.SINK]
+    assert "target" in params
+    assert params["target"].type == ParameterType.ENTITY
+    assert params["target"].allowedEntityTypes == [SimulationEntityType.HUMAN, SimulationEntityType.SINK]

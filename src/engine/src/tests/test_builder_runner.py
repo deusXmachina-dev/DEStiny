@@ -42,12 +42,12 @@ def test_run_blueprint_with_human():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters=[
-                    _primitive("x", 100.0),
-                    _primitive("y", 100.0),
-                    _primitive("targetX", 500.0),
-                    _primitive("targetY", 300.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 100.0),
+                    "y": _primitive("y", 100.0),
+                    "targetX": _primitive("targetX", 500.0),
+                    "targetY": _primitive("targetY", 300.0),
+                },
             ),
         ],
     )
@@ -81,22 +81,22 @@ def test_run_blueprint_multiple_entities():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters=[
-                    _primitive("x", 100.0),
-                    _primitive("y", 100.0),
-                    _primitive("targetX", 200.0),
-                    _primitive("targetY", 200.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 100.0),
+                    "y": _primitive("y", 100.0),
+                    "targetX": _primitive("targetX", 200.0),
+                    "targetY": _primitive("targetY", 200.0),
+                },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-2",
-                parameters=[
-                    _primitive("x", 300.0),
-                    _primitive("y", 300.0),
-                    _primitive("targetX", 400.0),
-                    _primitive("targetY", 400.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 300.0),
+                    "y": _primitive("y", 300.0),
+                    "targetX": _primitive("targetX", 400.0),
+                    "targetY": _primitive("targetY", 400.0),
+                },
             ),
         ],
     )
@@ -115,12 +115,12 @@ def test_run_blueprint_default_initial_time():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters=[
-                    _primitive("x", 100.0),
-                    _primitive("y", 100.0),
-                    _primitive("targetX", 200.0),
-                    _primitive("targetY", 200.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 100.0),
+                    "y": _primitive("y", 100.0),
+                    "targetX": _primitive("targetX", 200.0),
+                    "targetY": _primitive("targetY", 200.0),
+                },
             ),
         ],
     )
@@ -139,12 +139,12 @@ def test_run_blueprint_without_duration():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters=[
-                    _primitive("x", 100.0),
-                    _primitive("y", 100.0),
-                    _primitive("targetX", 200.0),
-                    _primitive("targetY", 200.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 100.0),
+                    "y": _primitive("y", 100.0),
+                    "targetX": _primitive("targetX", 200.0),
+                    "targetY": _primitive("targetY", 200.0),
+                },
             ),
         ],
     )
@@ -174,7 +174,7 @@ def test_run_blueprint_unknown_entity_type():
             BlueprintEntity(
                 entityType=SimulationEntityType.COUNTER,  # Not in default registry
                 uuid="test-1",
-                parameters=[],
+                parameters={},
             ),
         ],
     )
@@ -191,9 +191,9 @@ def test_run_blueprint_invalid_parameters():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters=[
+                parameters={
                     # Missing required parameters
-                ],
+                },
             ),
         ],
     )
@@ -234,9 +234,9 @@ def test_register_entity():
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="test-1",
-                parameters=[
-                    _primitive("value", 42.0),
-                ],
+                parameters={
+                    "value": _primitive("value", 42.0),
+                },
             ),
         ],
     )
@@ -302,21 +302,21 @@ def test_entity_reference_resolution():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="human-1",
-                parameters=[
-                    _primitive("x", 100.0),
-                    _primitive("y", 100.0),
-                    _primitive("targetX", 200.0),
-                    _primitive("targetY", 200.0),
-                ],
+                parameters={
+                    "x": _primitive("x", 100.0),
+                    "y": _primitive("y", 100.0),
+                    "targetX": _primitive("targetX", 200.0),
+                    "targetY": _primitive("targetY", 200.0),
+                },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="robot-1",
-                parameters=[
-                    _entity("target", "human-1"),
-                    _primitive("x", 50.0),
-                    _primitive("y", 50.0),
-                ],
+                parameters={
+                    "target": _entity("target", "human-1"),
+                    "x": _primitive("x", 50.0),
+                    "y": _primitive("y", 50.0),
+                },
             ),
         ],
     )
@@ -356,16 +356,16 @@ def test_entity_reference_cycle():
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
                 uuid="a-1",
-                parameters=[
-                    _entity("ref", "b-1"),
-                ],
+                parameters={
+                    "ref": _entity("ref", "b-1"),
+                },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="b-1",
-                parameters=[
-                    _entity("ref", "a-1"),
-                ],
+                parameters={
+                    "ref": _entity("ref", "a-1"),
+                },
             ),
         ],
     )
@@ -394,9 +394,9 @@ def test_entity_reference_invalid_uuid():
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="robot-1",
-                parameters=[
-                    _entity("target", "non-existent-uuid"),
-                ],
+                parameters={
+                    "target": _entity("target", "non-existent-uuid"),
+                },
             ),
         ],
     )
@@ -449,25 +449,25 @@ def test_entity_reference_multiple_levels():
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="level3-1",
-                parameters=[
-                    _entity("level2", "level2-1"),
-                    _primitive("value", 3.0),
-                ],
+                parameters={
+                    "level2": _entity("level2", "level2-1"),
+                    "value": _primitive("value", 3.0),
+                },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="level2-1",
-                parameters=[
-                    _entity("level1", "level1-1"),
-                    _primitive("value", 2.0),
-                ],
+                parameters={
+                    "level1": _entity("level1", "level1-1"),
+                    "value": _primitive("value", 2.0),
+                },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
                 uuid="level1-1",
-                parameters=[
-                    _primitive("value", 1.0),
-                ],
+                parameters={
+                    "value": _primitive("value", 1.0),
+                },
             ),
         ],
     )

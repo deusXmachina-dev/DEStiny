@@ -36,7 +36,7 @@ class BuilderEntity(SimulationEntity):
     def get_parameters_schema(cls) -> BuilderEntitySchema:
         """Extract parameter schema from __init__ arguments."""
         sig = inspect.signature(cls.__init__)
-        params = []
+        params = {}
         for name, param in sig.parameters.items():
             if name in ("self", "env", "args", "kwargs"):
                 continue
@@ -59,11 +59,11 @@ class BuilderEntity(SimulationEntity):
                 if entity_info is not None:
                     param_type, allowed_entity_types = entity_info
 
-            params.append(ParameterInfo(
+            params[name] = ParameterInfo(
                 name=name,
                 type=param_type,
                 allowedEntityTypes=allowed_entity_types,
-            ))
+            )
 
         return BuilderEntitySchema(
             entityType=cls.entity_type,

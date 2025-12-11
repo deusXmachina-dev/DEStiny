@@ -3,7 +3,7 @@ Schema definitions for builder entities and blueprints.
 """
 
 from enum import StrEnum
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -63,7 +63,7 @@ class BuilderEntitySchema(BaseModel):
     """Schema for a builder entity definition."""
 
     entityType: SimulationEntityType
-    parameters: List[ParameterInfo]
+    parameters: Dict[str, ParameterInfo]
 
 
 class SimParams(BaseModel):
@@ -78,7 +78,7 @@ class BlueprintEntity(BaseModel):
 
     entityType: SimulationEntityType
     uuid: str
-    parameters: List[BlueprintEntityParameter]
+    parameters: Dict[str, BlueprintEntityParameter]
 
 
 class Blueprint(BaseModel):

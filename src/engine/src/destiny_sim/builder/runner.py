@@ -176,22 +176,22 @@ def _resolve_entity_parameters(
             resolved_params: Dict[str, Any] = {}
             can_resolve = True
 
-            for param in entity.parameters:
+            for param_name, param in entity.parameters.items():
                 if param.parameterType == BlueprintParameterType.PRIMITIVE:
-                    resolved_params[param.name] = param.value
+                    resolved_params[param_name] = param.value
                 elif param.parameterType == BlueprintParameterType.ENTITY:
                     # Entity parameter - value should be a UUID string
                     referenced_uuid = param.value
                     if not isinstance(referenced_uuid, str):
                         raise ValueError(
-                            f"Entity parameter '{param.name}' must have string UUID value, "
+                            f"Entity parameter '{param_name}' must have string UUID value, "
                             f"got {type(referenced_uuid).__name__}"
                         )
 
                     # Validate UUID exists in blueprint
                     if referenced_uuid not in all_uuids:
                         raise ValueError(
-                            f"Entity reference '{referenced_uuid}' in parameter '{param.name}' "
+                            f"Entity reference '{referenced_uuid}' in parameter '{param_name}' "
                             f"does not exist in blueprint"
                         )
 
@@ -202,5 +202,5 @@ def _resolve_entity_parameters(
                         break
 
                     # Resolve to actual entity instance
-                    resolved_params[param.name] = uuid_to_entity[referenced_uuid]
+                    resolved_params[param_name] = uuid_to_entity[referenced_uuid]
             return resolved_params, can_resolve
