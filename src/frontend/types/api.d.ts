@@ -55,7 +55,9 @@ export interface components {
         BuilderEntitySchema: {
             entityType: components["schemas"]["SimulationEntityType"];
             /** Parameters */
-            parameters: components["schemas"]["ParameterInfo"][];
+            parameters: {
+                [key: string]: components["schemas"]["ParameterInfo"];
+            };
         };
         /**
          * ParameterInfo
@@ -89,7 +91,7 @@ export interface components {
          * @description Simulation entity types for rendering entities in the frontend.
          * @enum {string}
          */
-        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "";
+        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "manufacturing_cell" | "";
         /**
          * Metric
          * @description Represents a single metric with columnar tabular data.
@@ -246,7 +248,9 @@ export interface components {
             /** Uuid */
             uuid: string;
             /** Parameters */
-            parameters: components["schemas"]["BlueprintEntityParameter"][];
+            parameters: {
+                [key: string]: components["schemas"]["BlueprintEntityParameter"];
+            };
         };
         /**
          * BlueprintEntityParameter
