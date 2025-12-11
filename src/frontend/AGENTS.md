@@ -21,6 +21,31 @@ const { data, error, isLoading } = $api.useQuery("get", "/users/{user_id}", {
     path: { user_id: 5 },
   },
 });
+
+// POST/PUT/PATCH/DELETE request (React Query useMutation hook)
+const mutation = $api.useMutation("post", "/api/simulate");
+
+// Execute mutation
+const handleSubmit = async () => {
+  try {
+    const result = await mutation.mutateAsync({
+      body: {
+        // request body data
+      },
+      // Optional: params for path/query parameters
+      // params: {
+      //   path: { id: 123 },
+      //   query: { filter: "active" },
+      // },
+    });
+    // Handle success
+  } catch (error) {
+    // Handle error
+  }
+};
+
+// Access mutation state
+const { isPending, error, data } = mutation;
 ```
 
 **Do not use fetch/axios directly for API calls**—always use `$api`, as it provides type safety, React Query integration, and handles credentials.

@@ -28,7 +28,7 @@ export function EntityPalette({
     );
   };
   return (
-    <div className={cn("grid grid-cols-2 auto-rows-min gap-2", className)}>
+    <div className={cn("grid grid-cols-2 auto-rows-min gap-2 h-full overflow-y-auto", className)}>
       {isLoading
         ? Array.from({ length: 8 }).map((_, index) => (
             <Skeleton

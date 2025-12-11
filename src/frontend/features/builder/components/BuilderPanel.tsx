@@ -6,20 +6,23 @@ import { SidePanel } from "@/components/common/SidePanel";
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();
 
   return (
     <SidePanel>
-      <SidePanel.Content className="flex flex-col p-0">
-        <EntityPalette
-          schemas={schemas}
-          isLoading={isLoading}
-          className="h-[30%] p-4 overflow-y-auto"
-        />
-        <div className="border-t border-border" />
-        <ChatInterface className="h-[70%] p-4" />
+      <SidePanel.Content className="p-0">
+        <ResizablePanelGroup direction="vertical">
+          <ResizablePanel defaultSize={25}>
+            <EntityPalette schemas={schemas} isLoading={isLoading} className="p-4" />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={75}>
+            <ChatInterface />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </SidePanel.Content>
     </SidePanel>
   );

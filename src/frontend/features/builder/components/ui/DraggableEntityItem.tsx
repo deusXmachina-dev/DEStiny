@@ -65,7 +65,7 @@ export function DraggableEntityItem({
           alt={schema.entityType}
           width={displayWidth}
           height={displayHeight}
-          className="w-12 h-12 object-contain pointer-events-none"
+          className="w-12 h-12 object-contain pointer-events-none mx-2"
         />
         <span className="text-md font-medium text-foreground capitalize pointer-events-none">
           {schema.entityType}
