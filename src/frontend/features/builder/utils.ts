@@ -4,7 +4,7 @@ import type {
   BlueprintEntity,
   BlueprintEntityParameter,
   BlueprintParameterType,
-  ParameterType,
+  ParameterInfo,
   ParameterValue,
   SimulationBlueprint,
 } from "./types";
@@ -66,7 +66,7 @@ export const blueprintToEntityStates = (
  */
 export const createBlueprintEntity = (
   entityType: BlueprintEntity["entityType"],
-  parameters: Record<string, ParameterType>,
+  parameters: Record<string, ParameterInfo>,
   x: number,
   y: number,
 ): BlueprintEntity => {
@@ -80,13 +80,16 @@ export const createBlueprintEntity = (
   };
 
   // Add default values for other parameters based on their types
-  for (const [key, type] of Object.entries(parameters)) {
+  for (const [key, { type }] of Object.entries(parameters)) {
     if (key !== "x" && key !== "y") {
       let defaultValue: ParameterValue;
       let paramType: BlueprintParameterType = "primitive";
 
+      console.log(type);
+
       if (type === "number") {
         defaultValue = 0;
+        console.log("number");
       } else if (type === "boolean") {
         defaultValue = false;
       } else if (type === "entity") {
@@ -101,6 +104,8 @@ export const createBlueprintEntity = (
         parameterType: paramType,
         value: defaultValue,
       };
+
+      console.log(entityParameters[key]);
     }
   }
 
