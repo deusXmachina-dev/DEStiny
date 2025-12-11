@@ -107,11 +107,8 @@ export const createBlueprintEntity = (
       let defaultValue: ParameterValue;
       let paramType: BlueprintParameterType = "primitive";
 
-      console.log(type);
-
       if (type === "number") {
         defaultValue = 0;
-        console.log("number");
       } else if (type === "boolean") {
         defaultValue = false;
       } else if (type === "entity") {
@@ -126,8 +123,6 @@ export const createBlueprintEntity = (
         parameterType: paramType,
         value: defaultValue,
       };
-
-      console.log(entityParameters[key]);
     }
   }
 
@@ -214,7 +209,8 @@ export const getAvailableEntitiesForParameter = (
   blueprint: SimulationBlueprint,
   allowedEntityTypes: string[] | null | undefined,
   excludeUuid?: string,
-): BlueprintEntity[] => blueprint.entities.filter((entity) => {
+): BlueprintEntity[] =>
+  blueprint.entities.filter((entity) => {
     // Exclude the current entity being edited
     if (excludeUuid && entity.uuid === excludeUuid) {
       return false;
@@ -233,7 +229,8 @@ export const getAvailableEntitiesForParameter = (
  * Check if a string value represents an intermediate number input state
  * (e.g., empty, just "-", just ".", "-.").
  */
-export const isIntermediateNumberState = (value: string): boolean => value === "" || value === "-" || value === "." || value === "-.";
+export const isIntermediateNumberState = (value: string): boolean =>
+  value === "" || value === "-" || value === "." || value === "-.";
 
 /**
  * Parse a string value to a number, handling intermediate states.
@@ -251,4 +248,5 @@ export const parseNumberValue = (value: string): number => {
  * Finalize a number input value, converting intermediate states to 0.
  * Used on blur and form submission.
  */
-export const finalizeNumberValue = (value: string): number => parseNumberValue(value);
+export const finalizeNumberValue = (value: string): number =>
+  parseNumberValue(value);

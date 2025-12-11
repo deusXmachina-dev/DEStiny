@@ -27,7 +27,7 @@ export const EntityEditorDialog = ({
   entity,
   formId,
   onDelete,
-  onClose,
+  onClose: _onClose,
   children,
 }: EntityEditorDialogProps) => {
   const handleSave = () => {

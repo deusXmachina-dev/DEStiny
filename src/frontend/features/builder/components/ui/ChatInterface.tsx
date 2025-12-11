@@ -1,26 +1,21 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { useChat } from "@ai-sdk/react";
+import { TextStreamChatTransport } from "ai";
+import { nanoid } from "nanoid";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import { Message, MessageContent } from "@/components/ai-elements/message";
-import { MessageResponse } from "@/components/ai-elements/message";
 import {
-  ModelSelector,
-  ModelSelectorContent,
-  ModelSelectorEmpty,
-  ModelSelectorGroup,
-  ModelSelectorInput,
-  ModelSelectorItem,
-  ModelSelectorList,
-  ModelSelectorLogo,
-  ModelSelectorLogoGroup,
-  ModelSelectorName,
-  ModelSelectorTrigger,
-} from "@/components/ai-elements/model-selector";
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
@@ -28,13 +23,8 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import { MessageResponse } from "@/components/ai-elements/message";
-import { useChat } from "@ai-sdk/react";
-import { TextStreamChatTransport } from "ai";
 import { BACKEND_URL } from "@/config/api";
-import { toast } from "sonner";
-import { useMemo, useState } from "react";
-import { nanoid } from "nanoid";
+import { cn } from "@/lib/utils";
 
 interface ChatInterfaceProps {
   className?: string;
@@ -48,30 +38,33 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
     () =>
       new TextStreamChatTransport({
         api: `${BACKEND_URL}/api/chat?protocol=text`,
-        prepareSendMessagesRequest: ({ id, messages, trigger }) => {
-          return {
-            body: {
-              id: id,
-              messages: messages.map((msg) => {
-                const textParts = msg.parts.filter(
-                  (part): part is { type: "text"; text: string } =>
-                    part.type === "text"
-                );
-                const content = textParts.map((part) => part.text).join("");
-                return {
-                  role: msg.role,
-                  content: content,
-                };
-              }),
-              trigger: trigger === "submit-message" ? "submit" : "regenerate",
-            },
-          };
-        },
+        prepareSendMessagesRequest: ({ id, messages, trigger }) => ({
+          body: {
+            id,
+            messages: messages.map((msg) => {
+              const textParts = msg.parts.filter(
+                (part): part is { type: "text"; text: string } =>
+                  part.type === "text",
+              );
+              const content = textParts.map((part) => part.text).join("");
+              return {
+                role: msg.role,
+                content,
+              };
+            }),
+            trigger: trigger === "submit-message" ? "submit" : "regenerate",
+          },
+        }),
       }),
-    []
+    [],
   );
 
-  const { messages, sendMessage, status, error } = useChat({
+  const {
+    messages,
+    sendMessage,
+    status,
+    error: _error,
+  } = useChat({
     id: chatId,
     transport,
     onError: (error) => {
@@ -81,18 +74,18 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
 
   const handleSubmit = (
     message: { text: string; files: unknown[] },
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    if (!message.text.trim()) return;
+    if (!message.text.trim()) {
+      return;
+    }
 
     sendMessage({ text: message.text });
     setInput("");
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
@@ -110,7 +103,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
           {messages.map((message) => {
             const textParts = message.parts.filter(
               (part): part is { type: "text"; text: string } =>
-                part.type === "text"
+                part.type === "text",
             );
             const content = textParts.map((part) => part.text).join("");
 
@@ -128,10 +121,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
       <div className="w-full px-4 pb-4 pt-4">
         <PromptInput onSubmit={handleSubmit}>
           <PromptInputBody>
-            <PromptInputTextarea
-              onChange={handleInputChange}
-              value={input}
-            />
+            <PromptInputTextarea onChange={handleInputChange} value={input} />
           </PromptInputBody>
           <PromptInputFooter className="flex justify-end">
             <PromptInputSubmit

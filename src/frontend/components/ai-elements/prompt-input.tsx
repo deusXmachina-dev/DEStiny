@@ -202,13 +202,16 @@ export function PromptInputProvider({
   attachmentsRef.current = attachmentFiles;
 
   // Cleanup blob URLs on unmount to prevent memory leaks
-  useEffect(() => () => {
+  useEffect(
+    () => () => {
       for (const f of attachmentsRef.current) {
         if (f.url) {
           URL.revokeObjectURL(f.url);
         }
       }
-    }, []);
+    },
+    [],
+  );
 
   const openFileDialog = useCallback(() => {
     openRef.current?.();
@@ -594,7 +597,9 @@ export const PromptInput = ({
 
   // Let provider know about our hidden file input so external menus can call openFileDialog()
   useEffect(() => {
-    if (!usingProvider) {return;}
+    if (!usingProvider) {
+      return;
+    }
     controller.__registerFileInput(inputRef, () => inputRef.current?.click());
   }, [usingProvider, controller]);
 
@@ -609,8 +614,12 @@ export const PromptInput = ({
   // Attach drop handlers on nearest form and document (opt-in)
   useEffect(() => {
     const form = formRef.current;
-    if (!form) {return;}
-    if (globalDrop) {return;} // when global drop is on, let the document-level handler own drops
+    if (!form) {
+      return;
+    }
+    if (globalDrop) {
+      return;
+    } // when global drop is on, let the document-level handler own drops
 
     const onDragOver = (e: DragEvent) => {
       if (e.dataTransfer?.types?.includes("Files")) {
@@ -634,7 +643,9 @@ export const PromptInput = ({
   }, [add, globalDrop]);
 
   useEffect(() => {
-    if (!globalDrop) {return;}
+    if (!globalDrop) {
+      return;
+    }
 
     const onDragOver = (e: DragEvent) => {
       if (e.dataTransfer?.types?.includes("Files")) {
@@ -661,11 +672,13 @@ export const PromptInput = ({
     () => () => {
       if (!usingProvider) {
         for (const f of filesRef.current) {
-          if (f.url) {URL.revokeObjectURL(f.url);}
+          if (f.url) {
+            URL.revokeObjectURL(f.url);
+          }
         }
       }
     },
-     
+
     [usingProvider],
   );
 

@@ -83,8 +83,8 @@ function HomeContent() {
       </div>
 
       {mode === "simulation" && (
-      <div className="border-t border-border shadow-lg">
-        <div className="p-4 max-w-7xl mx-auto">
+        <div className="border-t border-border shadow-lg">
+          <div className="p-4 max-w-7xl mx-auto">
             <PlaybackControls />
           </div>
         </div>
