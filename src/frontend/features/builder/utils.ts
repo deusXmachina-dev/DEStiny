@@ -230,3 +230,31 @@ export const getAvailableEntitiesForParameter = (
     return allowedEntityTypes.includes(entity.entityType);
   });
 };
+
+/**
+ * Check if a string value represents an intermediate number input state
+ * (e.g., empty, just "-", just ".", "-.").
+ */
+export const isIntermediateNumberState = (value: string): boolean => {
+  return value === "" || value === "-" || value === "." || value === "-.";
+};
+
+/**
+ * Parse a string value to a number, handling intermediate states.
+ * Returns the parsed number or 0 for intermediate/invalid states.
+ */
+export const parseNumberValue = (value: string): number => {
+  if (isIntermediateNumberState(value)) {
+    return 0;
+  }
+  const parsed = Number(value);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+/**
+ * Finalize a number input value, converting intermediate states to 0.
+ * Used on blur and form submission.
+ */
+export const finalizeNumberValue = (value: string): number => {
+  return parseNumberValue(value);
+};
