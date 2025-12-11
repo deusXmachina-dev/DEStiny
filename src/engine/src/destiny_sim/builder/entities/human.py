@@ -13,7 +13,6 @@ class Human(BuilderEntity):
     """
     
     entity_type = SimulationEntityType.HUMAN
-    icon = SimulationEntityType.HUMAN
 
     def __init__(
         self, 
