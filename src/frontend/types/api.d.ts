@@ -55,16 +55,35 @@ export interface components {
         BuilderEntitySchema: {
             entityType: components["schemas"]["SimulationEntityType"];
             /** Parameters */
-            parameters: {
-                [key: string]: components["schemas"]["ParameterType"];
-            };
+            parameters: components["schemas"]["ParameterInfo"][];
+        };
+        /**
+         * ParameterInfo
+         * @description Information about a parameter, including its name, type and optional constraints.
+         *
+         *     This allows for richer parameter definitions beyond just the type,
+         *     such as filtering allowed entity types for entity parameters.
+         */
+        ParameterInfo: {
+            /**
+             * Name
+             * @description The name of the parameter
+             */
+            name: string;
+            /** @description The type of the parameter */
+            type: components["schemas"]["ParameterType"];
+            /**
+             * Allowedentitytypes
+             * @description For ENTITY type parameters, optionally restrict which entity types are valid. If None, all entity types are allowed.
+             */
+            allowedEntityTypes?: components["schemas"]["SimulationEntityType"][] | null;
         };
         /**
          * ParameterType
          * @description Allowed primitive parameter types for builder entities.
          * @enum {string}
          */
-        ParameterType: "string" | "number" | "boolean";
+        ParameterType: "string" | "number" | "boolean" | "entity";
         /**
          * SimulationEntityType
          * @description Simulation entity types for rendering entities in the frontend.
@@ -227,10 +246,32 @@ export interface components {
             /** Uuid */
             uuid: string;
             /** Parameters */
-            parameters: {
-                [key: string]: string | number | boolean;
-            };
+            parameters: components["schemas"]["BlueprintEntityParameter"][];
         };
+        /**
+         * BlueprintEntityParameter
+         * @description Single parameter for a blueprint entity.
+         */
+        BlueprintEntityParameter: {
+            /**
+             * Name
+             * @description The name of the parameter
+             */
+            name: string;
+            /** @description PRIMITIVE or ENTITY */
+            parameterType: components["schemas"]["BlueprintParameterType"];
+            /**
+             * Value
+             * @description The parameter value (primitive value or UUID string for entities)
+             */
+            value: string | number | boolean;
+        };
+        /**
+         * BlueprintParameterType
+         * @description Parameter type for blueprint entity parameters.
+         * @enum {string}
+         */
+        BlueprintParameterType: "primitive" | "entity";
         /**
          * SimParams
          * @description Simulation-level parameters shared between frontend and engine.
