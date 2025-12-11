@@ -37,8 +37,7 @@ class BuilderEntity(SimulationEntity):
         Extract parameter schema from __init__ arguments.
         Returns a dictionary representing the entity schema for the frontend:
         {
-            "entityType": str,
-            "icon": SimulationEntityType,
+            "entityType": SimulationEntityType,
             "parameters": { param_name: type_name }
         }
         """
