@@ -83,14 +83,12 @@ def run_blueprint(
     # Instantiate entities and start their processes
     _instantiate_entities(blueprint, env)
     
-    # Determine simulation end time
-    if duration is not None:
-        run_until = initial_time + duration
-        env.run(until=run_until)
-    else:
-        # Run until all processes complete
-        env.run()
-    
+    if duration is None:
+        duration = 3600 # let's cap this at 1 hour for now
+
+    run_until = initial_time + duration
+    env.run(until=run_until)
+
     # Return recording
     return env.get_recording()
 
