@@ -12,8 +12,8 @@ class Human(BuilderEntity):
     A simple human entity that walks from a starting position to a target.
     """
     
-    entity_type = "human"
-    icon = "/assets/human.png"
+    entity_type = SimulationEntityType.HUMAN
+    icon = SimulationEntityType.HUMAN
 
     def __init__(
         self, 
@@ -27,9 +27,6 @@ class Human(BuilderEntity):
         self.y = y
         self.target_x = targetX
         self.target_y = targetY
-
-    def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
 
     def process(self, env: RecordingEnvironment):
         """

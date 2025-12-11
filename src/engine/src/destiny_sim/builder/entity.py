@@ -6,6 +6,7 @@ import inspect
 from typing import Dict, Any
 
 from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
 
 
@@ -15,13 +16,13 @@ class BuilderEntity(SimulationEntity):
     """
 
     # The unique type identifier matching the frontend entityType
-    entity_type: str = ""
-    
-    # The icon path for the frontend builder
-    icon: str = ""  # todo: reconcile this with rendering info on simulation entity
+    entity_type: SimulationEntityType = SimulationEntityType.EMPTY
 
     def __init__(self, **kwargs):
         super().__init__()
+        
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(self.entity_type)
 
     def process(self, env: RecordingEnvironment):
         """
@@ -37,7 +38,7 @@ class BuilderEntity(SimulationEntity):
         Returns a dictionary representing the entity schema for the frontend:
         {
             "entityType": str,
-            "icon": str,
+            "icon": SimulationEntityType,
             "parameters": { param_name: type_name }
         }
         """
@@ -60,6 +61,5 @@ class BuilderEntity(SimulationEntity):
 
         return {
             "entityType": cls.entity_type,
-            "icon": cls.icon,
             "parameters": params
         }

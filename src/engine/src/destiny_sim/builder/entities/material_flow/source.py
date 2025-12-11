@@ -16,8 +16,7 @@ class Source(BuilderEntity):
     A simple source entity that produces items.
     """
     
-    entity_type = "source"
-    icon = "/assets/palette.png"
+    entity_type = SimulationEntityType.SOURCE
 
     def __init__(
         self,
@@ -28,10 +27,9 @@ class Source(BuilderEntity):
         self.x = x
         self.y = y
         
+    def process(self, env: RecordingEnvironment):
+        yield env.record_stay(self, x=self.x, y=self.y)
 
-    def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
-    
     def get_item(self, env: RecordingEnvironment) -> simpy.events.Event:
         """Request an item from the source."""
         event = env.event()

@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 
+import { ASSET_MAP } from "@/features/visualization/constants";
+
 import type { BuilderEntitySchema } from "../../types";
 
 interface DraggableEntityItemProps {
@@ -14,6 +16,7 @@ export function DraggableEntityItem({
   schema,
   onDragStart,
 }: DraggableEntityItemProps) {
+  const iconUrl = ASSET_MAP[schema.entityType];
   const dragImageRef = useRef<HTMLImageElement>(null);
   const [dimensions, setDimensions] = useState<{
     width: number;
@@ -54,7 +57,7 @@ export function DraggableEntityItem({
         className="inline-flex items-center py-2 rounded border border-border hover:bg-accent/50 transition-colors cursor-grab active:cursor-grabbing"
       >
         <Image
-          src={schema.icon}
+          src={iconUrl}
           alt={schema.entityType}
           width={displayWidth}
           height={displayHeight}
@@ -68,7 +71,7 @@ export function DraggableEntityItem({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={dragImageRef}
-        src={schema.icon}
+        src={iconUrl}
         alt=""
         className="fixed -left-[9999px] object-contain"
         style={{

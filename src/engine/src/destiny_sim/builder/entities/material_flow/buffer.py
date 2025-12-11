@@ -17,8 +17,7 @@ class Buffer(BuilderEntity):
     A simple buffer entity that stores items.
     """
     
-    entity_type = "buffer"
-    icon = "/assets/palette.png"
+    entity_type = SimulationEntityType.BUFFER
 
     def __init__(
         self,
@@ -32,9 +31,9 @@ class Buffer(BuilderEntity):
         self.capacity = capacity
         
         self._store: simpy.Store | None = None
-
-    def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
+        
+    def process(self, env: RecordingEnvironment):
+        yield env.record_stay(self, x=self.x, y=self.y)
     
     def get_item(self, env: RecordingEnvironment) -> simpy.events.Event:
         """Request an item from the buffer."""

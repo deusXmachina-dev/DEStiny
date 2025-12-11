@@ -18,8 +18,7 @@ class Sink(BuilderEntity):
     A simple sink entity that consumes items.
     """
     
-    entity_type = "sink"
-    icon = "/assets/palette.png"
+    entity_type = SimulationEntityType.SINK
 
     def __init__(
         self,
@@ -29,9 +28,9 @@ class Sink(BuilderEntity):
         super().__init__()
         self.x = x
         self.y = y
-
-    def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(entity_type=SimulationEntityType.PALETTE)
+        
+    def process(self, env: RecordingEnvironment):
+        yield env.record_stay(self, x=self.x, y=self.y)
 
     def put_item(self, env: RecordingEnvironment, item: Any) -> simpy.events.Event:
         """Put an item into the sink."""

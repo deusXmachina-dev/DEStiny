@@ -6,13 +6,20 @@ from typing import Dict, Type, Any
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities import Human
+from destiny_sim.builder.entities.material_flow.buffer import Buffer
+from destiny_sim.builder.entities.material_flow.sink import Sink
+from destiny_sim.builder.entities.material_flow.source import Source
 from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import SimulationEntityType
 from destiny_sim.core.timeline import SimulationRecording
 
 
 # Registry of available builder entities by their entity_type
-_ENTITY_REGISTRY: Dict[str, Type[BuilderEntity]] = {
+_ENTITY_REGISTRY: Dict[SimulationEntityType, Type[BuilderEntity]] = {
     Human.entity_type: Human,
+    Source.entity_type: Source,
+    Sink.entity_type: Sink,
+    Buffer.entity_type: Buffer,
 }
 
 
