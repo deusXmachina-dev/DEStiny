@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import type { BlueprintEntity } from "../../types";
 
 interface EntityEditorDialogProps {

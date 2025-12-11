@@ -1,6 +1,5 @@
 "use client";
 
-
 import { $api } from "@/lib/api-client";
 
 /**
@@ -13,8 +12,11 @@ import { $api } from "@/lib/api-client";
  * - error: Any error that occurred during fetching
  */
 export const useBuilderSchemas = () => {
-
-  const { data: schemas = [], isLoading, error } = $api.useQuery("get", "/api/schema");
+  const {
+    data: schemas = [],
+    isLoading,
+    error,
+  } = $api.useQuery("get", "/api/schema");
 
   return { schemas, isLoading, error };
 };

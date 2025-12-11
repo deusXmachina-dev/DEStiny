@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import type {
   BlueprintEntityParameter,
   BuilderEntitySchema,
@@ -58,7 +59,7 @@ export const EntityEditorForm = ({
 
   const handlePrimitiveParameterChange = (key: string, value: string) => {
     const paramInfo = schema.parameters[key];
-    if (!paramInfo) return;
+    if (!paramInfo) {return;}
 
     // Always update the input value to allow typing
     setInputValues((prev) => ({ ...prev, [key]: value }));

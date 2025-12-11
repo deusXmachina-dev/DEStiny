@@ -80,7 +80,8 @@ export class SimulationEngine {
         }
 
         // Determine effective end time (null means indefinite)
-        const effectiveEndTime = segment.endTime ?? segment.startTime + this.recording.duration;
+        const effectiveEndTime =
+          segment.endTime ?? segment.startTime + this.recording.duration;
 
         // Only render if time is within [startTime, effectiveEndTime]
         if (

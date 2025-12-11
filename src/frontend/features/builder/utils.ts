@@ -150,13 +150,13 @@ export const updateBlueprintEntityPosition = (
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
     entity.uuid === entityId
-        ? {
-            ...entity,
-            parameters: {
-              ...entity.parameters,
-              ...createPositionParameters(x, y),
-            },
-          }
+      ? {
+          ...entity,
+          parameters: {
+            ...entity.parameters,
+            ...createPositionParameters(x, y),
+          },
+        }
       : entity,
   ),
 });
@@ -214,8 +214,7 @@ export const getAvailableEntitiesForParameter = (
   blueprint: SimulationBlueprint,
   allowedEntityTypes: string[] | null | undefined,
   excludeUuid?: string,
-): BlueprintEntity[] => {
-  return blueprint.entities.filter((entity) => {
+): BlueprintEntity[] => blueprint.entities.filter((entity) => {
     // Exclude the current entity being edited
     if (excludeUuid && entity.uuid === excludeUuid) {
       return false;
@@ -229,15 +228,12 @@ export const getAvailableEntitiesForParameter = (
     // Filter by allowed entity types
     return allowedEntityTypes.includes(entity.entityType);
   });
-};
 
 /**
  * Check if a string value represents an intermediate number input state
  * (e.g., empty, just "-", just ".", "-.").
  */
-export const isIntermediateNumberState = (value: string): boolean => {
-  return value === "" || value === "-" || value === "." || value === "-.";
-};
+export const isIntermediateNumberState = (value: string): boolean => value === "" || value === "-" || value === "." || value === "-.";
 
 /**
  * Parse a string value to a number, handling intermediate states.
@@ -255,6 +251,4 @@ export const parseNumberValue = (value: string): number => {
  * Finalize a number input value, converting intermediate states to 0.
  * Used on blur and form submission.
  */
-export const finalizeNumberValue = (value: string): number => {
-  return parseNumberValue(value);
-};
+export const finalizeNumberValue = (value: string): number => parseNumberValue(value);

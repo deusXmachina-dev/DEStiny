@@ -1,5 +1,16 @@
 "use client";
 
+import type { ToolUIPart } from "ai";
+import { CheckIcon, GlobeIcon, MicIcon } from "lucide-react";
+import { nanoid } from "nanoid";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
+
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
 import {
   MessageBranch,
   MessageBranchContent,
@@ -8,13 +19,21 @@ import {
   MessageBranchPrevious,
   MessageBranchSelector,
 } from "@/components/ai-elements/message";
-import { cn } from "@/lib/utils";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
 import { Message, MessageContent } from "@/components/ai-elements/message";
+import { MessageResponse } from "@/components/ai-elements/message";
+import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorLogoGroup,
+  ModelSelectorName,
+  ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
 import {
   PromptInput,
   PromptInputActionAddAttachments,
@@ -33,24 +52,10 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import {
-  ModelSelector,
-  ModelSelectorContent,
-  ModelSelectorEmpty,
-  ModelSelectorGroup,
-  ModelSelectorInput,
-  ModelSelectorItem,
-  ModelSelectorList,
-  ModelSelectorLogo,
-  ModelSelectorLogoGroup,
-  ModelSelectorName,
-  ModelSelectorTrigger,
-} from "@/components/ai-elements/model-selector";
-import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
-import { MessageResponse } from "@/components/ai-elements/message";
 import {
   Source,
   Sources,
@@ -58,11 +63,7 @@ import {
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
-import type { ToolUIPart } from "ai";
-import { CheckIcon, GlobeIcon, MicIcon } from "lucide-react";
-import { nanoid } from "nanoid";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type MessageType = {
   key: string;
@@ -343,7 +344,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   >("ready");
   const [messages, setMessages] = useState<MessageType[]>(initialMessages);
   const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
-    null
+    null,
   );
 
   const selectedModelData = models.find((m) => m.id === model);
@@ -365,23 +366,23 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
               return {
                 ...msg,
                 versions: msg.versions.map((v) =>
-                  v.id === messageId ? { ...v, content: currentContent } : v
+                  v.id === messageId ? { ...v, content: currentContent } : v,
                 ),
               };
             }
             return msg;
-          })
+          }),
         );
 
         await new Promise((resolve) =>
-          setTimeout(resolve, Math.random() * 100 + 50)
+          setTimeout(resolve, Math.random() * 100 + 50),
         );
       }
 
       setStatus("ready");
       setStreamingMessageId(null);
     },
-    []
+    [],
   );
 
   const addUserMessage = useCallback(
@@ -419,7 +420,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
         streamResponse(assistantMessageId, randomResponse ?? "");
       }, 500);
     },
-    [streamResponse]
+    [streamResponse],
   );
 
   const handleSubmit = (message: PromptInputMessage) => {
@@ -448,7 +449,12 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className={cn("relative flex size-full flex-col divide-y overflow-hidden", className)}>
+    <div
+      className={cn(
+        "relative flex size-full flex-col divide-y overflow-hidden",
+        className,
+      )}
+    >
       <Conversation>
         <ConversationContent>
           {messages.map(({ versions, ...message }) => (
@@ -553,7 +559,9 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
                   <ModelSelectorTrigger asChild>
                     <PromptInputButton>
                       {selectedModelData?.chefSlug && (
-                        <ModelSelectorLogo provider={selectedModelData.chefSlug} />
+                        <ModelSelectorLogo
+                          provider={selectedModelData.chefSlug}
+                        />
                       )}
                       {selectedModelData?.name && (
                         <ModelSelectorName>

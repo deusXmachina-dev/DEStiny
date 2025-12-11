@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
 
 interface BooleanParameterInputProps {
@@ -23,9 +24,7 @@ export const BooleanParameterInput = ({
   onValueChange,
 }: BooleanParameterInputProps) => {
   const currentValue =
-    value?.parameterType === "primitive"
-      ? Boolean(value.value)
-      : false;
+    value?.parameterType === "primitive" ? Boolean(value.value) : false;
 
   const handleChange = (selectedValue: string) => {
     onValueChange(selectedValue);

@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createPrimitiveParameter, finalizeNumberValue } from "../../../utils";
+
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
 
 interface NumberParameterInputProps {
