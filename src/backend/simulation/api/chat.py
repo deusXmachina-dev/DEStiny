@@ -126,6 +126,7 @@ class ChatPayload(BaseModel):
 
 @router.post("")
 async def handle_chat_data(request, chat_payload: ChatPayload, protocol: str = Query('data')):
+    logger.info(f"Chat payload: {chat_payload}")
     openai_messages = convert_to_openai_messages(chat_payload.messages)
 
     response = StreamingHttpResponse(stream_text(openai_messages, protocol))
