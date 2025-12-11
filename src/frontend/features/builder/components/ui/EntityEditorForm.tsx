@@ -109,8 +109,7 @@ export const EntityEditorForm = ({
     setInputValues((prev) => ({ ...prev, [key]: String(finalValue) }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const performSubmit = () => {
     // Finalize all number values before submit
     const finalized = { ...formValues };
     Object.entries(schema.parameters).forEach(([key, paramInfo]) => {
@@ -121,6 +120,11 @@ export const EntityEditorForm = ({
       }
     });
     onSave(finalized);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    performSubmit();
   };
 
   return (
@@ -150,12 +154,12 @@ export const EntityEditorForm = ({
                 name={key}
                 paramInfo={paramInfo}
                 value={currentParam}
-                inputValue={inputValues[key]}
+                inputValue={inputValues[key] ?? ""}
                 onInputChange={(value) =>
                   handlePrimitiveParameterChange(key, value)
                 }
                 onBlur={() => handleNumberBlur(key)}
-                onSubmit={handleSubmit}
+                onSubmit={performSubmit}
               />
             );
           }
@@ -184,7 +188,7 @@ export const EntityEditorForm = ({
               onValueChange={(value) =>
                 handlePrimitiveParameterChange(key, value)
               }
-              onSubmit={handleSubmit}
+              onSubmit={performSubmit}
             />
           );
         })}

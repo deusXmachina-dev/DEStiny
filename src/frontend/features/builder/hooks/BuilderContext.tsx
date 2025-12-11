@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useRef, useState } from "react";
 import type {
   BlueprintEntity,
   BlueprintEntityParameter,
-  ParameterType,
+  ParameterInfo,
   SimulationBlueprint,
 } from "../types";
 import {
@@ -24,7 +24,7 @@ interface BuilderContextValue {
   // Blueprint actions
   addEntity: (
     entityType: BlueprintEntity["entityType"],
-    parameters: Record<string, ParameterType>,
+    parameters: Record<string, ParameterInfo>,
     x: number,
     y: number,
   ) => void;
@@ -71,7 +71,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const addEntity = (
     entityType: BlueprintEntity["entityType"],
-    parameters: Record<string, ParameterType>,
+    parameters: Record<string, ParameterInfo>,
     x: number,
     y: number,
   ) => {

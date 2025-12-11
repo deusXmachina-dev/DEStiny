@@ -3,6 +3,11 @@ Test settings for destiny-backend project.
 Inherits from main settings and overrides for testing environment.
 """
 
+import os
+
+# Set mock OpenAI API key before any imports that might use it
+os.environ.setdefault("OPENAI_API_KEY", "test-api-key-for-testing")
+
 from .settings import *
 
 # Override settings for testing

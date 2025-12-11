@@ -9,7 +9,7 @@ import type { SimulationEntityState } from "../types";
 
 type CanvasDropEntityType =
   components["schemas"]["BlueprintEntity"]["entityType"];
-type CanvasDropParameterType = components["schemas"]["ParameterType"];
+type CanvasDropParameterInfo = components["schemas"]["ParameterInfo"];
 
 interface ScreenSize {
   width: number;
@@ -26,7 +26,7 @@ export interface InteractionCallbacks {
   onEntityClick?: (entityId: string) => void;
   onCanvasDrop?: (
     entityType: CanvasDropEntityType,
-    parameters: Record<string, CanvasDropParameterType>,
+    parameters: Record<string, CanvasDropParameterInfo>,
     x: number,
     y: number,
   ) => void;
