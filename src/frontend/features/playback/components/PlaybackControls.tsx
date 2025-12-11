@@ -2,7 +2,7 @@
 
 import { useBuilder } from "@features/builder";
 import { formatTime } from "@lib/utils";
-import { FastForward, Pause, Play, Rewind, Square } from "lucide-react";
+import { FastForward, Pause, Play, Rewind } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {

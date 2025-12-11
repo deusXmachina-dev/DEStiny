@@ -25,7 +25,7 @@ export function useSimulationControl() {
     if (!blueprint) {
       switchToSimulation();
       return;
-    } else if (isFetchingSimulationResult) {
+    } if (isFetchingSimulationResult) {
       return;
     }
 

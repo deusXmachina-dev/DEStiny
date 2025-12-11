@@ -59,12 +59,13 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^15.14.0",
+    "openapi-typescript": "^7.0.0",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5",
-    "vitest": "^4.0.14",
-    "openapi-typescript": "^7.0.0"
+    "vitest": "^4.0.14"
   }
 }

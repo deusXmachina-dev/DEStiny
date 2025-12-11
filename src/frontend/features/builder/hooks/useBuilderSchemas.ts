@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 
-import { $api, client } from "@/lib/api-client";
-
-import type { BuilderEntitySchema } from "../types";
+import { $api } from "@/lib/api-client";
 
 /**
  * Hook to fetch builder entity schemas from the backend API.

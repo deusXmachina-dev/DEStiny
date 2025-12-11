@@ -5,6 +5,7 @@ import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import prettierConfig from "eslint-config-prettier";
 
@@ -46,6 +47,7 @@ export default [
       "react-hooks": reactHooks,
       "@next/next": nextPlugin,
       "simple-import-sort": simpleImportSort,
+      "unused-imports": unusedImports,
     },
     settings: {
       react: {
@@ -82,6 +84,18 @@ export default [
         },
       ],
       "@typescript-eslint/no-non-null-assertion": "warn",
+
+      // Unused imports (auto-fixable)
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
 
       // Import sorting
       "simple-import-sort/imports": "error",

@@ -1,7 +1,8 @@
 import createFetchClient from "openapi-fetch";
 import createClient from "openapi-react-query";
-import type { paths } from "@/types/api";
+
 import { BACKEND_URL } from "@/config/api";
+import type { paths } from "@/types/api";
 
 const client = createFetchClient<paths>({
   baseUrl: BACKEND_URL,
@@ -10,4 +11,4 @@ const client = createFetchClient<paths>({
 
 const $api = createClient(client);
 
-export { client, $api };
+export { $api,client };

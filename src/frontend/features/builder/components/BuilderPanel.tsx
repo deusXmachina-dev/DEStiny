@@ -3,9 +3,9 @@
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
+import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
-import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();

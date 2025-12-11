@@ -17,10 +17,10 @@ import { $api } from "@lib/api-client";
 
 // GET request (React Query useQuery hook)
 const { data, error, isLoading } = $api.useQuery("get", "/users/{user_id}", {
-    params: {
-      path: { user_id: 5 },
-    },
-  });
+  params: {
+    path: { user_id: 5 },
+  },
+});
 ```
 
 **Do not use fetch/axios directly for API calls**—always use `$api`, as it provides type safety, React Query integration, and handles credentials.
