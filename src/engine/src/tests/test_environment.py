@@ -96,7 +96,7 @@ def test_recording_to_dict():
 
     env.run(until=10)
     recording = env.get_recording()
-    data = recording.model_dump()
+    data = recording.model_dump(by_alias=True)
 
     assert data["duration"] == 10
     assert len(data["segments_by_entity"][entity.id]) == 1

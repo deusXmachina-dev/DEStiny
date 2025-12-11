@@ -241,6 +241,6 @@ class RecordingEnvironment(Environment):
 
         # Write JSON file
         with open(file_path, "w") as f:
-            json.dump(recording.model_dump(), f, indent=2)
+            json.dump(recording.model_dump(by_alias=True), f, indent=2)
 
         print(f"Recording exported to {file_path}")

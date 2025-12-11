@@ -8,8 +8,7 @@ its parent for hierarchical rendering.
 To record segments use env helper methods.
 """
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel, ConfigDict, Field
 
 from destiny_sim.core.metrics import Metric
 from destiny_sim.core.rendering import SimulationEntityType
@@ -30,17 +29,19 @@ class MotionSegment(BaseModel):
     Position at time t is computed via linear interpolation.
     """
 
-    entity_id: str
-    entity_type: SimulationEntityType
-    parent_id: str | None = None
-    start_time: float
-    end_time: float | None = None
-    start_x: float
-    start_y: float
-    end_x: float
-    end_y: float
-    start_angle: float = 0.0
-    end_angle: float = 0.0
+    model_config = ConfigDict(populate_by_name=True)
+
+    entity_id: str = Field(alias="entityId")
+    entity_type: SimulationEntityType = Field(alias="entityType")
+    parent_id: str | None = Field(default=None, alias="parentId")
+    start_time: float = Field(alias="startTime")
+    end_time: float | None = Field(default=None, alias="endTime")
+    start_x: float = Field(alias="startX")
+    start_y: float = Field(alias="startY")
+    end_x: float = Field(alias="endX")
+    end_y: float = Field(alias="endY")
+    start_angle: float = Field(default=0.0, alias="startAngle")
+    end_angle: float = Field(default=0.0, alias="endAngle")
 
 
 class SimulationRecording(BaseModel):
