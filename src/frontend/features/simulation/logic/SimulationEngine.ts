@@ -80,8 +80,7 @@ export class SimulationEngine {
         }
 
         // Determine effective end time (null means indefinite)
-        const effectiveEndTime =
-          segment.endTime === null ? this.recording.duration : segment.endTime;
+        const effectiveEndTime = segment.endTime ?? segment.startTime + this.recording.duration;
 
         // Only render if time is within [startTime, effectiveEndTime]
         if (
@@ -101,7 +100,7 @@ export class SimulationEngine {
             y: lerp(segment.startY, segment.endY, t),
             angle: lerp(segment.startAngle, segment.endAngle, t),
             children: [],
-            parentId: segment.parentId,
+            parentId: segment.parentId ?? null,
           });
         }
       },
