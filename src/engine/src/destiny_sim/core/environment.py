@@ -190,7 +190,7 @@ class RecordingEnvironment(Environment):
         rendering_info = entity.get_rendering_info()
         segment = MotionSegment(
             entity_id=entity.id,
-            entity_type=rendering_info.entity_type,
+            entity_type=rendering_info.entity_type,  # Already SimulationEntityType enum
             parent_id=parent.id if parent else None,
             start_time=start_time,
             end_time=end_time,
@@ -241,6 +241,6 @@ class RecordingEnvironment(Environment):
 
         # Write JSON file
         with open(file_path, "w") as f:
-            json.dump(recording.to_dict(), f, indent=2)
+            json.dump(recording.model_dump(), f, indent=2)
 
         print(f"Recording exported to {file_path}")

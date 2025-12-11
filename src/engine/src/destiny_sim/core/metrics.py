@@ -8,9 +8,11 @@ Provides a flexible, columnar data format that can represent any metric type:
 All metrics use a columnar format (col_name: [values]) which is efficient for
 serialization and frontend consumption.
 """
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic.alias_generators import to_camel
 
 
 class MetricType(str, Enum):
@@ -21,8 +23,7 @@ class MetricType(str, Enum):
     GENERIC = "generic"
 
 
-@dataclass
-class Metric:
+class Metric(BaseModel):
     """
     Represents a single metric with columnar tabular data.
     
@@ -47,24 +48,28 @@ class Metric:
     
     name: str
     type: MetricType
-    labels: dict[str, str] = field(default_factory=dict)
-    data: dict[str, list[Any]] = field(default_factory=dict)
+    labels: dict[str, str] = {}
+    data: dict[str, list[Any]] = {}
+
     
-    def validate(self) -> None:
+    @field_validator("data")
+    @classmethod
+    def validate_column_lengths(cls, v: dict[str, list[Any]]) -> dict[str, list[Any]]:
         """
         Validate that all columns have the same length.
         
         Raises:
             ValueError: If columns have mismatched lengths
         """
-        if not self.data:
-            return
+        if not v:
+            return v
         
-        lengths = {col: len(values) for col, values in self.data.items()}
+        lengths = {col: len(values) for col, values in v.items()}
         if len(set(lengths.values())) > 1:
             raise ValueError(
-                f"Metric '{self.name}' has mismatched column lengths: {lengths}"
+                f"Metric has mismatched column lengths: {lengths}"
             )
+        return v
     
     def row_count(self) -> int:
         """Return the number of rows in this metric's data."""
@@ -74,41 +79,6 @@ class Metric:
         first_col = next(iter(self.data.values()))
         return len(first_col)
     
-    def to_dict(self) -> dict[str, Any]:
-        """
-        Convert metric to dictionary for JSON serialization.
-        
-        Returns:
-            Dictionary with camelCase keys for frontend consumption
-        """
-        return {
-            "name": self.name,
-            "type": self.type.value,
-            "labels": self.labels,
-            "data": self.data,
-        }
-    
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Metric":
-        """
-        Create a Metric from a dictionary.
-        
-        Args:
-            data: Dictionary with metric data (from JSON deserialization)
-            
-        Returns:
-            Metric instance
-        """
-        metric_type = data["type"]
-        # Handle both string and MetricType enum values
-        if isinstance(metric_type, str):
-            metric_type = MetricType(metric_type)
-        return cls(
-            name=data["name"],
-            type=metric_type,
-            labels=data.get("labels", {}),
-            data=data.get("data", {}),
-        )
 
 
 class MetricsContainer:

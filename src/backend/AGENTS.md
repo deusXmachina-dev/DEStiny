@@ -46,9 +46,10 @@ backend/
 ## Key Rules
 
 1. **Schema Definitions**: 
-   - `BuilderEntitySchema`, `ParameterType`, `Blueprint`, `BlueprintEntity`, `SimParams`, and `ParameterValue` are defined in the **engine** (`destiny_sim.builder.schema`), not in backend schemas
-   - Backend imports and uses the engine's schemas directly - no duplication
-   - Other schemas (SimulationRecordingSchema, MetricSchema, etc.) are in `simulation/schemas.py`
+   - **ALL schemas are defined in the engine** - there are no schemas in `backend/simulation/schemas.py` anymore
+   - `BuilderEntitySchema`, `ParameterType`, `Blueprint`, `BlueprintEntity`, `SimParams`, `ParameterValue` are in `destiny_sim.builder.schema`
+   - `SimulationRecording`, `MotionSegment`, `Metric` are in `destiny_sim.core.timeline` and `destiny_sim.core.metrics`
+   - Backend imports and uses the engine's schemas directly - single source of truth
 
 2. **Dependencies**:
    - The backend depends on the engine via `destiny-sim` (editable path dependency)

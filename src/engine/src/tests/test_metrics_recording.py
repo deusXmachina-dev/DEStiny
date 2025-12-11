@@ -89,7 +89,7 @@ def test_metrics_in_to_dict():
     env = RecordingEnvironment()
     env.incr_counter("test_metric")
     
-    data = env.get_recording().to_dict()
+    data = env.get_recording().model_dump()
     assert "metrics" in data
     assert len(data["metrics"]) == 1
     assert data["metrics"][0]["name"] == "test_metric"
