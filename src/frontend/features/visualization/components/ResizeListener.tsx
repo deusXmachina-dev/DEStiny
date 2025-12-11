@@ -9,13 +9,54 @@ export const ResizeListener = () => {
 
   // Initialize screen size and then listen to resize events
   useEffect(() => {
-    setScreenSize({ width: app.screen.width, height: app.screen.height });
-
-    const handleResize = () => {
+    const updateScreenSize = () => {
       setScreenSize({ width: app.screen.width, height: app.screen.height });
+      console.log("Screen size updated", app.screen.width, app.screen.height);
+    };
+
+    // Initial size
+    updateScreenSize();
+
+    // Listen to PixiJS renderer resize events
+    const handleResize = () => {
+      updateScreenSize();
     };
 
     app.renderer.on("resize", handleResize);
+
+    // Also observe the container element to catch size changes
+    // that might not trigger PixiJS resize events immediately
+    // (e.g., when bottom navigation bar appears/disappears)
+    const canvas = app.canvas;
+    const container = canvas?.parentElement;
+    
+    if (container) {
+      const resizeObserver = new ResizeObserver(() => {
+        // Get the container's actual dimensions
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        // Only update if dimensions actually changed and are valid
+        if (
+          width > 0 &&
+          height > 0 &&
+          (Math.abs(width - app.screen.width) > 1 ||
+            Math.abs(height - app.screen.height) > 1)
+        ) {
+          // Force PixiJS to resize to match the container
+          app.renderer.resize(width, height);
+          updateScreenSize();
+        }
+      });
+
+      resizeObserver.observe(container);
+
+      return () => {
+        app.renderer.off("resize", handleResize);
+        resizeObserver.disconnect();
+      };
+    }
 
     return () => {
       app.renderer.off("resize", handleResize);

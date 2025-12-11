@@ -82,13 +82,13 @@ function HomeContent() {
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
-      {/* TODO: Only show playback controls if in simulation mode - needs some better resize handling */}
+      {mode === "simulation" && (
       <div className="border-t border-border shadow-lg">
         <div className="p-4 max-w-7xl mx-auto">
-          <PlaybackControls />
+            <PlaybackControls />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

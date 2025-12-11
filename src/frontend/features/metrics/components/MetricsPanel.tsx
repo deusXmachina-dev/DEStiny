@@ -35,7 +35,7 @@ function MetricsPanelContent() {
         )}
       </SidePanel.Header>
 
-      <SidePanel.Content className="space-y-4 py-0">
+      <SidePanel.Content className="space-y-4 pt-0">
         {!hasRecording ? (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             No recording loaded
