@@ -35,6 +35,30 @@ const createPositionParameter = (
 });
 
 /**
+ * Create a primitive parameter as a BlueprintEntityParameter.
+ */
+export const createPrimitiveParameter = (
+  name: string,
+  value: ParameterValue,
+): BlueprintEntityParameter => ({
+  name,
+  parameterType: "primitive" as BlueprintParameterType,
+  value,
+});
+
+/**
+ * Create an entity parameter as a BlueprintEntityParameter.
+ */
+export const createEntityParameter = (
+  name: string,
+  uuid: string,
+): BlueprintEntityParameter => ({
+  name,
+  parameterType: "entity" as BlueprintParameterType,
+  value: uuid,
+});
+
+/**
  * Convert blueprint entities to simulation entity states for rendering.
  * Extracts x, y, and angle from entity parameters.
  */
