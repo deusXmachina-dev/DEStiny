@@ -20,7 +20,6 @@ class ParameterType(StrEnum):
 
 
 ParameterValue = str | int | float | bool
-# Entity parameters are represented as UUID strings (references to other entities)
 
 
 class ParameterInfo(BaseModel):
