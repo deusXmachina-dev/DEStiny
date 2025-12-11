@@ -1,0 +1,52 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
+
+interface StringParameterInputProps {
+  name: string;
+  paramInfo: ParameterInfo;
+  value: BlueprintEntityParameter | undefined;
+  onValueChange: (value: string) => void;
+  onSubmit: () => void;
+}
+
+export const StringParameterInput = ({
+  name,
+  value,
+  onValueChange,
+  onSubmit,
+}: StringParameterInputProps) => {
+  const currentValue =
+    value?.parameterType === "primitive" ? String(value.value ?? "") : "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onValueChange(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-4 items-center gap-4">
+      <Label htmlFor={name} className="text-right capitalize">
+        {name}
+      </Label>
+      <Input
+        id={name}
+        type="text"
+        value={currentValue}
+        onChange={handleChange}
+        onFocus={(e) => e.target.select()}
+        onKeyDown={handleKeyDown}
+        className="col-span-3"
+      />
+    </div>
+  );
+};

@@ -1,6 +1,7 @@
-"""Tests for material flow entities (Source, Sink, Buffer)."""
+"""Tests for material flow entities (Source, Sink, Buffer, ManufacturingCell)."""
 
 from destiny_sim.builder.entities.material_flow.buffer import Buffer, BUFFER_NUMBER_OF_ITEMS_METRIC
+from destiny_sim.builder.entities.material_flow.manufacturing_cell import ManufacturingCell
 from destiny_sim.builder.entities.material_flow.sink import Sink, SINK_ITEM_DELIVERED_METRIC
 from destiny_sim.builder.entities.material_flow.source import Source, SOURCE_ITEM_PRODUCED_METRIC
 from destiny_sim.core.environment import RecordingEnvironment
@@ -116,3 +117,49 @@ def test_buffer_respects_capacity():
     # Check that store has correct capacity
     store = buffer._get_store(env)
     assert store.capacity == 2.0
+
+
+def test_manufacturing_cell_processes_items():
+    """Test that ManufacturingCell processes items from input buffer to output buffer."""
+    env = RecordingEnvironment()
+    
+    # Create buffers and manufacturing cell
+    buffer_in = Buffer(x=0.0, y=0.0, capacity=10.0)
+    buffer_out = Buffer(x=100.0, y=100.0, capacity=10.0)
+    cell = ManufacturingCell(
+        x=50.0,
+        y=50.0,
+        buffer_in=buffer_in,
+        buffer_out=buffer_out,
+        mean=1.0,  # Mean processing time
+        std_dev=0.5,  # Standard deviation
+    )
+    
+    items_processed = []
+    processing_times = []
+    
+    def producer():
+        # Put items into input buffer
+        yield buffer_in.put_item(env, "item_1")
+        yield buffer_in.put_item(env, "item_2")
+        yield buffer_in.put_item(env, "item_3")
+    
+    def consumer():
+        # Get items from output buffer
+        while True:
+            item = yield buffer_out.get_item(env)
+            items_processed.append((env.now, item))
+            if len(items_processed) >= 3:
+                break
+    
+    # Start processes
+    env.process(producer())
+    env.process(cell.process(env))
+    env.process(consumer())
+    
+    # Run simulation
+    env.run(until=100.0)
+    
+    # Should have processed all 3 items
+    assert len(items_processed) == 3
+    assert all(item[1] in ["item_1", "item_2", "item_3"] for item in items_processed)

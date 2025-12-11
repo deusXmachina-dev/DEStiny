@@ -15,6 +15,29 @@ def api_client():
     return client
 
 
+def make_parameters(**kwargs):
+    """
+    Helper function to create parameters in the BlueprintEntityParameter format.
+    
+    Converts a dict of parameter name -> value to the format:
+    {
+        "param_name": {
+            "name": "param_name",
+            "parameterType": "primitive",
+            "value": <value>
+        }
+    }
+    """
+    return {
+        name: {
+            "name": name,
+            "parameterType": "primitive",
+            "value": value,
+        }
+        for name, value in kwargs.items()
+    }
+
+
 class TestSchemaEndpoint:
     """Tests for GET /api/schema endpoint."""
 
@@ -67,12 +90,12 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
-                    "parameters": {
-                        "x": 100.0,
-                        "y": 100.0,
-                        "targetX": 500.0,
-                        "targetY": 300.0,
-                    },
+                    "parameters": make_parameters(
+                        x=100.0,
+                        y=100.0,
+                        targetX=500.0,
+                        targetY=300.0,
+                    ),
                 },
             ],
         }
@@ -108,22 +131,22 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
-                    "parameters": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "targetX": 100.0,
-                        "targetY": 100.0,
-                    },
+                    "parameters": make_parameters(
+                        x=0.0,
+                        y=0.0,
+                        targetX=100.0,
+                        targetY=100.0,
+                    ),
                 },
                 {
                     "entityType": "human",
                     "uuid": "person-2",
-                    "parameters": {
-                        "x": 200.0,
-                        "y": 200.0,
-                        "targetX": 300.0,
-                        "targetY": 300.0,
-                    },
+                    "parameters": make_parameters(
+                        x=200.0,
+                        y=200.0,
+                        targetX=300.0,
+                        targetY=300.0,
+                    ),
                 },
             ],
         }
@@ -150,12 +173,12 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
-                    "parameters": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "targetX": 100.0,
-                        "targetY": 100.0,
-                    },
+                    "parameters": make_parameters(
+                        x=0.0,
+                        y=0.0,
+                        targetX=100.0,
+                        targetY=100.0,
+                    ),
                 },
             ],
         }
@@ -178,12 +201,12 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
-                    "parameters": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "targetX": 100.0,
-                        "targetY": 100.0,
-                    },
+                    "parameters": make_parameters(
+                        x=0.0,
+                        y=0.0,
+                        targetX=100.0,
+                        targetY=100.0,
+                    ),
                 },
             ],
         }
@@ -361,12 +384,12 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
-                    "parameters": {
-                        "x": 100.0,
-                        "y": 100.0,
-                        "targetX": 500.0,
-                        "targetY": 300.0,
-                    },
+                    "parameters": make_parameters(
+                        x=100.0,
+                        y=100.0,
+                        targetX=500.0,
+                        targetY=300.0,
+                    ),
                 },
             ],
         }

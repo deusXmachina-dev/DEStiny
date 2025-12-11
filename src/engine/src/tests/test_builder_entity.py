@@ -1,8 +1,10 @@
 """Tests for BuilderEntity schema generation."""
 
+from typing import Optional, Union
+from destiny_sim.builder.entities.material_flow.sink import Sink
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
-from destiny_sim.builder.schema import ParameterType
+from destiny_sim.builder.schema import ParameterInfo, ParameterType
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 
@@ -17,20 +19,21 @@ def test_human_schema_generation():
     params = schema.parameters
     
     # Should have all the parameters from Human.__init__ (excluding self and env)
-    assert "x" in params
-    assert "y" in params
-    assert "targetX" in params
-    assert "targetY" in params
+    param_names = set(params.keys())
+    assert "x" in param_names
+    assert "y" in param_names
+    assert "targetX" in param_names
+    assert "targetY" in param_names
     
     # All should be ParameterType.NUMBER (float)
-    assert params["x"] == ParameterType.NUMBER
-    assert params["y"] == ParameterType.NUMBER
-    assert params["targetX"] == ParameterType.NUMBER
-    assert params["targetY"] == ParameterType.NUMBER
+    assert params["x"].type == ParameterType.NUMBER
+    assert params["y"].type == ParameterType.NUMBER
+    assert params["targetX"].type == ParameterType.NUMBER
+    assert params["targetY"].type == ParameterType.NUMBER
     
     # Should not include self or env
-    assert "self" not in params
-    assert "env" not in params
+    assert "self" not in param_names
+    assert "env" not in param_names
 
 
 def test_schema_type_mapping():
@@ -52,14 +55,15 @@ def test_schema_type_mapping():
     schema = TestEntity.get_parameters_schema()
     params = schema.parameters
     
-    assert params["num_int"] == ParameterType.NUMBER
-    assert params["num_float"] == ParameterType.NUMBER
-    assert params["text"] == ParameterType.STRING
-    assert params["flag"] == ParameterType.BOOLEAN
+    assert params["num_int"].type == ParameterType.NUMBER
+    assert params["num_float"].type == ParameterType.NUMBER
+    assert params["text"].type == ParameterType.STRING
+    assert params["flag"].type == ParameterType.BOOLEAN
     
     # Should exclude self and env
-    assert "self" not in params
-    assert "env" not in params
+    param_names = set(params.keys())
+    assert "self" not in param_names
+    assert "env" not in param_names
 
 
 def test_schema_with_no_parameters():
@@ -73,7 +77,7 @@ def test_schema_with_no_parameters():
     
     schema = MinimalEntity.get_parameters_schema()
 
-    # Should have entityType and parameters (parameters should be empty)
+    # Should have entityType and parameters (parameters should be empty dict)
     assert schema.entityType == SimulationEntityType.ROBOT
     assert schema.parameters == {}
 
@@ -97,9 +101,44 @@ def test_schema_excludes_kwargs():
     params = schema.parameters
     
     # Should only include normal_param
-    assert "normal_param" in params
-    assert params["normal_param"] == ParameterType.NUMBER
+    param_names = set(params.keys())
+    assert "normal_param" in param_names
+    assert params["normal_param"].type == ParameterType.NUMBER
     
     # Should exclude args and kwargs
-    assert "args" not in params
-    assert "kwargs" not in params
+    assert "args" not in param_names
+    assert "kwargs" not in param_names
+
+
+def test_entity_parameter_with_specific_type():
+    """Test that entity parameters with specific BuilderEntity subclass are detected."""
+    
+    class EntityWithHumanTarget(BuilderEntity):
+        entity_type = SimulationEntityType.ROBOT
+        
+        def __init__(self, target: Human):
+            super().__init__()
+    
+    schema = EntityWithHumanTarget.get_parameters_schema()
+    params = schema.parameters
+    
+    assert "target" in params
+    assert params["target"].type == ParameterType.ENTITY
+    assert params["target"].allowedEntityTypes == [SimulationEntityType.HUMAN]
+
+
+def test_entity_parameter_with_union_type():
+    """Test that entity parameters with specific BuilderEntity subclass are detected."""
+    
+    class EntityWithHumanTarget(BuilderEntity):
+        entity_type = SimulationEntityType.ROBOT
+        
+        def __init__(self, target: Union[Human, Sink]):
+            super().__init__()
+    
+    schema = EntityWithHumanTarget.get_parameters_schema()
+    params = schema.parameters
+    
+    assert "target" in params
+    assert params["target"].type == ParameterType.ENTITY
+    assert params["target"].allowedEntityTypes == [SimulationEntityType.HUMAN, SimulationEntityType.SINK]

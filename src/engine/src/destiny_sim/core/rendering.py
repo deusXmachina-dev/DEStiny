@@ -18,6 +18,7 @@ class SimulationEntityType(StrEnum):
     HUMAN = "human"
     COUNTER = "counter"
     GRID_NODE = "grid_node"
+    MANUFACTURING_CELL = "manufacturing_cell"
     EMPTY = ""
 
 

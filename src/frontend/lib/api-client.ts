@@ -11,4 +11,4 @@ const client = createFetchClient<paths>({
 
 const $api = createClient(client);
 
-export { $api,client };
+export { $api, client };

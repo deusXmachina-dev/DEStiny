@@ -2,11 +2,15 @@
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();
@@ -16,7 +20,11 @@ function BuilderPanelContent() {
       <SidePanel.Content className="p-0">
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={25}>
-            <EntityPalette schemas={schemas} isLoading={isLoading} className="p-4" />
+            <EntityPalette
+              schemas={schemas}
+              isLoading={isLoading}
+              className="p-4"
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={75}>

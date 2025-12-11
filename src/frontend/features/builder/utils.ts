@@ -2,10 +2,60 @@ import type { SimulationEntityState } from "@features/visualization";
 
 import type {
   BlueprintEntity,
-  ParameterType,
+  BlueprintEntityParameter,
+  BlueprintParameterType,
+  ParameterInfo,
   ParameterValue,
   SimulationBlueprint,
 } from "./types";
+
+/**
+ * Extract a numeric parameter value from entity parameters.
+ * Returns the default value if the parameter is missing or not a number.
+ */
+const extractNumericParameter = (
+  parameters: Record<string, BlueprintEntityParameter>,
+  key: string,
+  defaultValue: number = 0,
+): number => {
+  const param = parameters[key];
+  return param && typeof param.value === "number" ? param.value : defaultValue;
+};
+
+/**
+ * Create both x and y position parameters as a record.
+ */
+const createPositionParameters = (
+  x: number,
+  y: number,
+): Record<"x" | "y", BlueprintEntityParameter> => ({
+  x: createPrimitiveParameter("x", x),
+  y: createPrimitiveParameter("y", y),
+});
+
+/**
+ * Create a primitive parameter as a BlueprintEntityParameter.
+ */
+export const createPrimitiveParameter = (
+  name: string,
+  value: ParameterValue,
+): BlueprintEntityParameter => ({
+  name,
+  parameterType: "primitive" as BlueprintParameterType,
+  value,
+});
+
+/**
+ * Create an entity parameter as a BlueprintEntityParameter.
+ */
+export const createEntityParameter = (
+  name: string,
+  uuid: string,
+): BlueprintEntityParameter => ({
+  name,
+  parameterType: "entity" as BlueprintParameterType,
+  value: uuid,
+});
 
 /**
  * Convert blueprint entities to simulation entity states for rendering.
@@ -19,10 +69,9 @@ export const blueprintToEntityStates = (
   }
 
   return blueprint.entities.map((entity: BlueprintEntity) => {
-    const x = typeof entity.parameters.x === "number" ? entity.parameters.x : 0;
-    const y = typeof entity.parameters.y === "number" ? entity.parameters.y : 0;
-    const angle =
-      typeof entity.parameters.angle === "number" ? entity.parameters.angle : 0;
+    const x = extractNumericParameter(entity.parameters, "x");
+    const y = extractNumericParameter(entity.parameters, "y");
+    const angle = extractNumericParameter(entity.parameters, "angle");
 
     return {
       entityId: entity.uuid,
@@ -40,27 +89,45 @@ export const blueprintToEntityStates = (
  */
 export const createBlueprintEntity = (
   entityType: BlueprintEntity["entityType"],
-  parameters: Record<string, ParameterType>,
+  parameters: Record<string, ParameterInfo>,
   x: number,
   y: number,
 ): BlueprintEntity => {
   // Generate UUID
   const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Create parameters object with default values based on schema
-  const entityParameters: Record<string, ParameterValue> = {
-    x,
-    y,
+  // Create parameters dict with default values based on schema
+  const entityParameters: Record<string, BlueprintEntityParameter> = {
+    ...createPositionParameters(x, y),
   };
 
   // Add default values for other parameters based on their types
-  for (const [key, type] of Object.entries(parameters)) {
+  for (const [key, { type }] of Object.entries(parameters)) {
     if (key !== "x" && key !== "y") {
+      let defaultValue: ParameterValue;
+      let paramType: BlueprintParameterType = "primitive";
+
+      console.log(type);
+
       if (type === "number") {
-        entityParameters[key] = 0;
+        defaultValue = 0;
+        console.log("number");
+      } else if (type === "boolean") {
+        defaultValue = false;
+      } else if (type === "entity") {
+        defaultValue = "";
+        paramType = "entity";
       } else {
-        entityParameters[key] = "";
+        defaultValue = "";
       }
+
+      entityParameters[key] = {
+        name: key,
+        parameterType: paramType,
+        value: defaultValue,
+      };
+
+      console.log(entityParameters[key]);
     }
   }
 
@@ -87,8 +154,7 @@ export const updateBlueprintEntityPosition = (
           ...entity,
           parameters: {
             ...entity.parameters,
-            x,
-            y,
+            ...createPositionParameters(x, y),
           },
         }
       : entity,
@@ -112,7 +178,7 @@ export const removeBlueprintEntity = (
 export const updateBlueprintEntityParameters = (
   blueprint: SimulationBlueprint,
   entityId: string,
-  parameters: Record<string, ParameterValue>,
+  parameters: Record<string, BlueprintEntityParameter>,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
@@ -140,3 +206,49 @@ export const findBlueprintEntity = (
   }
   return blueprint.entities.find((entity) => entity.uuid === entityId);
 };
+
+/**
+ * Get available entities for an entity parameter, filtered by allowed types.
+ */
+export const getAvailableEntitiesForParameter = (
+  blueprint: SimulationBlueprint,
+  allowedEntityTypes: string[] | null | undefined,
+  excludeUuid?: string,
+): BlueprintEntity[] => blueprint.entities.filter((entity) => {
+    // Exclude the current entity being edited
+    if (excludeUuid && entity.uuid === excludeUuid) {
+      return false;
+    }
+
+    // If no restrictions, allow all entity types
+    if (!allowedEntityTypes || allowedEntityTypes.length === 0) {
+      return true;
+    }
+
+    // Filter by allowed entity types
+    return allowedEntityTypes.includes(entity.entityType);
+  });
+
+/**
+ * Check if a string value represents an intermediate number input state
+ * (e.g., empty, just "-", just ".", "-.").
+ */
+export const isIntermediateNumberState = (value: string): boolean => value === "" || value === "-" || value === "." || value === "-.";
+
+/**
+ * Parse a string value to a number, handling intermediate states.
+ * Returns the parsed number or 0 for intermediate/invalid states.
+ */
+export const parseNumberValue = (value: string): number => {
+  if (isIntermediateNumberState(value)) {
+    return 0;
+  }
+  const parsed = Number(value);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+/**
+ * Finalize a number input value, converting intermediate states to 0.
+ * Used on blur and form submission.
+ */
+export const finalizeNumberValue = (value: string): number => parseNumberValue(value);

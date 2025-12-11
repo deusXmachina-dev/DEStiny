@@ -97,7 +97,11 @@ export function PlaybackControls() {
             min={0}
             max={duration || 1}
             step={0.01}
-            onValueChange={(vals) => { if (vals[0] !== undefined) {seek(vals[0]);}}}
+            onValueChange={(vals) => {
+              if (vals[0] !== undefined) {
+                seek(vals[0]);
+              }
+            }}
             className="flex-1"
           />
           {mode === "simulation" && (

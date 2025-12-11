@@ -1,146 +1,20 @@
 "use client";
 
 import { useBuilder } from "@features/builder";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Dialog } from "@/components/ui/dialog";
 
 import { useBuilderSchemas } from "../../hooks/useBuilderSchemas";
-import type { BuilderEntitySchema, ParameterValue } from "../../types";
+import type { BlueprintEntityParameter } from "../../types";
 import { findBlueprintEntity } from "../../utils";
+import { EntityEditorDialog } from "./EntityEditorDialog";
+import { EntityEditorForm } from "./EntityEditorForm";
 
 /**
- * Form component for editing entity parameters.
- * Uses key prop to reset state when entity changes, avoiding cascading renders.
+ * Main entity editor component.
+ * Coordinates dialog state, data loading, and delegates to dialog/form components.
  */
-interface EntityFormProps {
-  entity: NonNullable<ReturnType<typeof findBlueprintEntity>>;
-  schema: BuilderEntitySchema;
-  onSave: (formValues: Record<string, ParameterValue>) => void;
-  onDelete: () => void;
-}
-
-const EntityForm = ({ entity, schema, onSave, onDelete }: EntityFormProps) => {
-  const [formValues, setFormValues] = useState<Record<string, ParameterValue>>(
-    () => ({ ...entity.parameters }),
-  );
-  const [inputValues, setInputValues] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    Object.entries(entity.parameters).forEach(([key, value]) => {
-      initial[key] = String(value);
-    });
-    return initial;
-  });
-
-  const handleParameterChange = (key: string, value: string) => {
-    const paramType = schema.parameters[key];
-
-    // Always update the input value to allow typing
-    setInputValues((prev) => ({ ...prev, [key]: value }));
-
-    if (paramType === "number") {
-      // Allow intermediate states, but try to parse valid numbers
-      if (value === "" || value === "-" || value === "." || value === "-.") {
-        return; // Keep current form value while typing
-      }
-      const parsed = Number(value);
-      if (!isNaN(parsed)) {
-        setFormValues((prev) => ({ ...prev, [key]: parsed }));
-      }
-    } else if (paramType === "boolean") {
-      setFormValues((prev) => ({
-        ...prev,
-        [key]: value === "true" || value === "1",
-      }));
-    } else {
-      setFormValues((prev) => ({ ...prev, [key]: value }));
-    }
-  };
-
-  const handleBlur = (key: string) => {
-    const paramType = schema.parameters[key];
-    const value = inputValues[key] ?? "";
-    if (paramType === "number") {
-      const parsed =
-        value === "" || value === "-" || value === "." || value === "-."
-          ? 0
-          : Number(value);
-      const finalValue = isNaN(parsed) ? 0 : parsed;
-      setFormValues((prev) => ({ ...prev, [key]: finalValue }));
-      setInputValues((prev) => ({ ...prev, [key]: String(finalValue) }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Finalize all number values before submit
-    const finalized = { ...formValues };
-    Object.entries(schema.parameters).forEach(([key, paramType]) => {
-      if (paramType === "number") {
-        const value = inputValues[key] ?? "";
-        const parsed =
-          value === "" || value === "-" || value === "." || value === "-."
-            ? 0
-            : Number(value);
-        finalized[key] = isNaN(parsed) ? 0 : parsed;
-      }
-    });
-    onSave(finalized);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <DialogHeader>
-        <DialogTitle>Edit Entity: {entity.entityType}</DialogTitle>
-        <DialogDescription>
-          Modify the parameters for this entity or remove it from the blueprint.
-        </DialogDescription>
-      </DialogHeader>
-      <div className="grid gap-4 py-4">
-        {Object.entries(schema.parameters).map(([key, paramType]) => (
-          <div key={key} className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor={key} className="text-right capitalize">
-              {key}
-            </Label>
-            <Input
-              id={key}
-              type="text"
-              inputMode={paramType === "number" ? "decimal" : "text"}
-              value={inputValues[key] ?? ""}
-              onChange={(e) => handleParameterChange(key, e.target.value)}
-              onFocus={(e) => e.target.select()}
-              onBlur={() => handleBlur(key)}
-              className="col-span-3"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      <DialogFooter className="flex-row justify-between">
-        <Button type="button" variant="destructive" onClick={onDelete}>
-          Delete Entity
-        </Button>
-        <Button type="submit">Save Changes</Button>
-      </DialogFooter>
-    </form>
-  );
-};
-
 export const EntityEditor = () => {
   const {
     blueprint,
@@ -168,11 +42,11 @@ export const EntityEditor = () => {
     return schemas.find((s) => s.entityType === entity.entityType) ?? null;
   }, [entity, schemas]);
 
-  if (!entity || !schema) {
+  if (!entity || !schema || !blueprint) {
     return null;
   }
 
-  const handleSave = (formValues: Record<string, ParameterValue>) => {
+  const handleSave = (formValues: Record<string, BlueprintEntityParameter>) => {
     if (!selectedEntityId) {
       return;
     }
@@ -190,18 +64,26 @@ export const EntityEditor = () => {
     closeEditor();
   };
 
+  const formId = `entity-editor-form-${selectedEntityId}`;
+
   return (
     <Dialog open={isEditorOpen} onOpenChange={(open) => !open && closeEditor()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <EntityEditorDialog
+        entity={entity}
+        formId={formId}
+        onDelete={handleDelete}
+        onClose={closeEditor}
+      >
         {/* Key prop ensures form state resets when entity changes, avoiding cascading renders */}
-        <EntityForm
+        <EntityEditorForm
           key={selectedEntityId}
           entity={entity}
           schema={schema}
+          blueprint={blueprint}
           onSave={handleSave}
-          onDelete={handleDelete}
+          formId={formId}
         />
-      </DialogContent>
+      </EntityEditorDialog>
     </Dialog>
   );
 };
