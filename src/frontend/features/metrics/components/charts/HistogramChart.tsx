@@ -93,6 +93,7 @@ export function HistogramChart({
     values.forEach((value) => {
       for (let i = 0; i < bins.length; i++) {
         const bin = bins[i];
+        if (!bin) {continue;}
         // Last bin includes the max value
         if (i === bins.length - 1) {
           if (value >= bin.binMin && value <= bin.binMax) {

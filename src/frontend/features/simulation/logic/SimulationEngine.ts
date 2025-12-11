@@ -53,15 +53,20 @@ export class SimulationEngine {
 
         // Optimization: Keep current valid index
         // 1. If we are past the start of the NEXT segment, move forward
-        while (
-          index < segments.length - 1 &&
-          segments[index + 1].startTime <= timeSeconds
-        ) {
+        while (index < segments.length - 1) {
+          const nextSegment = segments[index + 1];
+          if (!nextSegment || nextSegment.startTime > timeSeconds) {
+            break;
+          }
           index++;
         }
 
         // 2. If we are before the start of the CURRENT segment (e.g. rewind), move backward
-        while (index > 0 && segments[index].startTime > timeSeconds) {
+        while (index > 0) {
+          const currentSegment = segments[index];
+          if (!currentSegment || currentSegment.startTime <= timeSeconds) {
+            break;
+          }
           index--;
         }
 
@@ -70,6 +75,9 @@ export class SimulationEngine {
 
         // 3. Check if the current segment is valid for rendering
         const segment = segments[index];
+        if (!segment) {
+          return;
+        }
 
         // Determine effective end time (null means indefinite)
         const effectiveEndTime =

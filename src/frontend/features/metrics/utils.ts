@@ -9,8 +9,12 @@ export function transformMetricData(metric: {
   data: MetricData;
 }): Array<{ timestamp: number; value: number }> {
   const { timestamp, value } = metric.data;
-  return timestamp.map((t, i) => ({
-    timestamp: t,
-    value: value[i],
-  }));
+  return timestamp
+    .map((t, i) => {
+      const val = value[i];
+      return val !== undefined ? { timestamp: t, value: val } : null;
+    })
+    .filter(
+      (item): item is { timestamp: number; value: number } => item !== null,
+    );
 }
