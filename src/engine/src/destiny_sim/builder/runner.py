@@ -2,13 +2,14 @@
 Blueprint runner - executes simulations from blueprint definitions.
 """
 
-from typing import Dict, Type, Any
+from typing import Dict, Type
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities import Human
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
 from destiny_sim.builder.entities.material_flow.sink import Sink
 from destiny_sim.builder.entities.material_flow.source import Source
+from destiny_sim.builder.schema import Blueprint
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 from destiny_sim.core.timeline import SimulationRecording
@@ -51,67 +52,34 @@ def get_registered_entities() -> Dict[str, Type[BuilderEntity]]:
 
 
 def run_blueprint(
-    blueprint: Dict[str, Any],
+    blueprint: Blueprint,
 ) -> SimulationRecording:
     """
     Run a simulation from a blueprint definition.
     
-    A blueprint is a dictionary with the following structure:
-    {
-        "simParams": {
-            "initialTime": 0.0,  # Optional, defaults to 0
-            "duration": 10.0,    # Optional, simulation duration
-        },
-        "entities": [
-            {
-                "entityType": "human",
-                "uuid": "person-1",  # Required: unique identifier for tracking
-                "parameters": {
-                    "x": 100.0,
-                    "y": 100.0,
-                    # ... other parameters specific to the entity type
-                }
-            },
-            # ... more entities
-        ]
-    }
-    
     Args:
-        blueprint: Blueprint dictionary defining the simulation
+        blueprint: Blueprint object defining the simulation
     
     Returns:
         SimulationRecording containing all motion segments and metrics
     
     Raises:
-        ValueError: If blueprint structure is invalid
         KeyError: If entity_type is not registered
         TypeError: If entity instantiation fails
     """
     # Extract simulation parameters
-    sim_params = blueprint.get("simParams", {})
+    sim_params = blueprint.simParams
     # Handle None values explicitly - when schema validation includes None,
     # we want to use defaults instead
-    initial_time = sim_params.get("initialTime")
-    if initial_time is None:
-        initial_time = 0.0
-    duration = sim_params.get("duration")
+    initial_time = sim_params.initialTime if sim_params.initialTime is not None else 0.0
+    duration = sim_params.duration
     
     # Create environment
     env = RecordingEnvironment(initial_time=initial_time)
     
-    # Extract entities
-    entities_data = blueprint.get("entities", [])
-    if not isinstance(entities_data, list):
-        raise ValueError("blueprint['entities'] must be a list")
-    
     # Instantiate entities and start their processes
-    for entity_data in entities_data:
-        if not isinstance(entity_data, dict):
-            raise ValueError("Each entity in blueprint['entities'] must be a dictionary")
-        
-        entity_type = entity_data.get("entityType")
-        if not entity_type:
-            raise ValueError("Each entity must have an 'entityType' field")
+    for entity_data in blueprint.entities:
+        entity_type = entity_data.entityType
         
         # Look up entity class in registry
         entity_class = _ENTITY_REGISTRY.get(entity_type)
@@ -122,9 +90,7 @@ def run_blueprint(
             )
         
         # Extract parameters
-        parameters = entity_data.get("parameters", {})
-        if not isinstance(parameters, dict):
-            raise ValueError("Entity 'parameters' must be a dictionary")
+        parameters = entity_data.parameters
         
         # Instantiate entity
         try:

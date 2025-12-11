@@ -53,9 +53,10 @@ engine/
 ## Key Rules
 
 1. **Schema Definitions**:
-   - `BuilderEntitySchema` and `ParameterType` are defined in `destiny_sim.builder.schema`
+   - `BuilderEntitySchema`, `ParameterType`, `Blueprint`, `BlueprintEntity`, `SimParams`, and `ParameterValue` are defined in `destiny_sim.builder.schema`
    - These are **Pydantic BaseModel** classes (not dataclasses) for compatibility with Django Ninja
    - The backend imports and uses these schemas directly - single source of truth
+   - `run_blueprint()` accepts a `Blueprint` object directly, not a dictionary
 
 2. **Entity Types**:
    - `SimulationEntityType` is a `StrEnum` in `destiny_sim.core.rendering`

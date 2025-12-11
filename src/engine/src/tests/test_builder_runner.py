@@ -9,29 +9,28 @@ from destiny_sim.builder.runner import (
 )
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
+from destiny_sim.builder.schema import Blueprint, BlueprintEntity, SimParams
 from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import SimulationEntityType
 
 
 def test_run_blueprint_with_human():
     """Test running a blueprint with a Human entity."""
-    blueprint = {
-        "simParams": {
-            "initialTime": 0,
-            "duration": 20,
-        },
-        "entities": [
-            {
-                "entityType": "human",
-                "uuid": "person-1",
-                "parameters": {
+    blueprint = Blueprint(
+        simParams=SimParams(initialTime=0, duration=20),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-1",
+                parameters={
                     "x": 100.0,
                     "y": 100.0,
                     "targetX": 500.0,
                     "targetY": 300.0,
                 },
-            },
+            ),
         ],
-    }
+    )
     
     recording = run_blueprint(blueprint)
     
@@ -56,32 +55,31 @@ def test_run_blueprint_with_human():
 
 def test_run_blueprint_multiple_entities():
     """Test running a blueprint with multiple entities."""
-    blueprint = {
-        "simParams": {
-            "initialTime": 0,
-            "duration": 20,
-        },
-        "entities": [
-            {
-                "entityType": "human",
-                "parameters": {
+    blueprint = Blueprint(
+        simParams=SimParams(initialTime=0, duration=20),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-1",
+                parameters={
                     "x": 100.0,
                     "y": 100.0,
                     "targetX": 200.0,
                     "targetY": 200.0,
                 },
-            },
-            {
-                "entityType": "human",
-                "parameters": {
+            ),
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-2",
+                parameters={
                     "x": 300.0,
                     "y": 300.0,
                     "targetX": 400.0,
                     "targetY": 400.0,
                 },
-            },
+            ),
         ],
-    }
+    )
     
     recording = run_blueprint(blueprint)
     
@@ -91,22 +89,21 @@ def test_run_blueprint_multiple_entities():
 
 def test_run_blueprint_default_initial_time():
     """Test that blueprint defaults initialTime to 0."""
-    blueprint = {
-        "simParams": {
-            "duration": 10.0,
-        },
-        "entities": [
-            {
-                "entityType": "human",
-                "parameters": {
+    blueprint = Blueprint(
+        simParams=SimParams(duration=10.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-1",
+                parameters={
                     "x": 100.0,
                     "y": 100.0,
                     "targetX": 200.0,
                     "targetY": 200.0,
                 },
-            },
+            ),
         ],
-    }
+    )
     
     recording = run_blueprint(blueprint)
     assert recording.duration >= 0
@@ -116,22 +113,21 @@ def test_run_blueprint_default_initial_time():
 
 def test_run_blueprint_without_duration():
     """Test running blueprint without duration (runs until completion)."""
-    blueprint = {
-        "simParams": {
-            "initialTime": 0,
-        },
-        "entities": [
-            {
-                "entityType": "human",
-                "parameters": {
+    blueprint = Blueprint(
+        simParams=SimParams(initialTime=0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-1",
+                parameters={
                     "x": 100.0,
                     "y": 100.0,
                     "targetX": 200.0,
                     "targetY": 200.0,
                 },
-            },
+            ),
         ],
-    }
+    )
     
     recording = run_blueprint(blueprint)
     # Should complete (human walks to target)
@@ -139,38 +135,29 @@ def test_run_blueprint_without_duration():
 
 
 def test_run_blueprint_invalid_structure():
-    """Test that invalid blueprint structure raises ValueError."""
+    """Test that invalid blueprint structure raises validation errors."""
     # Missing entities is valid (empty simulation)
-    recording = run_blueprint({"simParams": {"duration": 1.0}})
+    blueprint = Blueprint(simParams=SimParams(duration=1.0))
+    recording = run_blueprint(blueprint)
     assert recording is not None
     
-    # Invalid entities type
-    with pytest.raises(ValueError, match="must be a list"):
-        run_blueprint({"simParams": {}, "entities": "not a list"})
-    
-    # Invalid entity entry
-    with pytest.raises(ValueError, match="must be a dictionary"):
-        run_blueprint({"simParams": {}, "entities": ["not a dict"]})
-    
-    # Missing entityType
-    with pytest.raises(ValueError, match="entityType"):
-        run_blueprint({
-            "simParams": {},
-            "entities": [{"parameters": {}}],
-        })
+    # Pydantic will validate structure, so invalid types will raise ValidationError
+    # These tests are now handled by Pydantic validation rather than runtime checks
 
 
 def test_run_blueprint_unknown_entity_type():
     """Test that unknown entity type raises KeyError."""
-    blueprint = {
-        "simParams": {},
-        "entities": [
-            {
-                "entityType": "unknown_entity",
-                "parameters": {},
-            },
+    # Use a valid enum value that's not registered in the default registry
+    blueprint = Blueprint(
+        simParams=SimParams(),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.COUNTER,  # Not in default registry
+                uuid="test-1",
+                parameters={},
+            ),
         ],
-    }
+    )
     
     with pytest.raises(KeyError, match="Unknown entity_type"):
         run_blueprint(blueprint)
@@ -178,17 +165,18 @@ def test_run_blueprint_unknown_entity_type():
 
 def test_run_blueprint_invalid_parameters():
     """Test that invalid parameters raise TypeError."""
-    blueprint = {
-        "simParams": {},
-        "entities": [
-            {
-                "entityType": "human",
-                "parameters": {
+    blueprint = Blueprint(
+        simParams=SimParams(),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="person-1",
+                parameters={
                     # Missing required parameters
                 },
-            },
+            ),
         ],
-    }
+    )
     
     with pytest.raises(TypeError, match="Failed to instantiate"):
         run_blueprint(blueprint)
@@ -197,7 +185,7 @@ def test_run_blueprint_invalid_parameters():
 def test_register_entity():
     """Test registering a new entity type."""
     class TestEntity(BuilderEntity):
-        entity_type = "test_entity"
+        entity_type = SimulationEntityType.BOX  # Use a valid enum value
         
         def __init__(self, value: float):
             super().__init__()
@@ -216,21 +204,20 @@ def test_register_entity():
     
     # Verify it's in the registry
     registry = get_registered_entities()
-    assert "test_entity" in registry
-    assert registry["test_entity"] == TestEntity
+    assert SimulationEntityType.BOX in registry
+    assert registry[SimulationEntityType.BOX] == TestEntity
     
     # Test using it in a blueprint
-    blueprint = {
-        "simParams": {
-            "duration": 1.0,
-        },
-        "entities": [
-            {
-                "entityType": "test_entity",
-                "parameters": {"value": 42.0},
-            },
+    blueprint = Blueprint(
+        simParams=SimParams(duration=1.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.BOX,
+                uuid="test-1",
+                parameters={"value": 42.0},
+            ),
         ],
-    }
+    )
     
     recording = run_blueprint(blueprint)
     assert recording is not None

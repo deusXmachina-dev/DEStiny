@@ -2,9 +2,8 @@ from ninja import NinjaAPI
 from typing import List
 
 from destiny_sim.builder.runner import get_registered_entities, run_blueprint
-from destiny_sim.builder.schema import BuilderEntitySchema
+from destiny_sim.builder.schema import BuilderEntitySchema, Blueprint
 from .schemas import (
-    Blueprint,
     SimulationRecordingSchema,
 )
 
@@ -25,9 +24,8 @@ def run_simulation(request, blueprint: Blueprint) -> SimulationRecordingSchema:
     Runs a simulation blueprint and returns the recording.
     """
     try:
-        # Convert Ninja Schema back to dict
-        blueprint_dict = blueprint.dict()
-        recording = run_blueprint(blueprint_dict)
+        # Use Blueprint object directly - no conversion needed
+        recording = run_blueprint(blueprint)
         return SimulationRecordingSchema(**recording.to_dict())
     except Exception as e:
         # We'll let Ninja handle the 500, or we could catch and return 400

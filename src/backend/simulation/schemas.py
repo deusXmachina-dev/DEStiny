@@ -1,38 +1,8 @@
-from typing import Any, Dict, List, Literal
+from typing import Dict, List, Literal
 
 from ninja import Schema
 
 from destiny_sim.core.rendering import SimulationEntityType
-
-
-ParameterValue = str | int | float | bool
-
-
-class SimParams(Schema):
-    """Simulation-level parameters shared between frontend and engine."""
-
-    initialTime: float | None = None
-    duration: float | None = None
-
-
-class BlueprintEntity(Schema):
-    """Single entity instance in a simulation blueprint."""
-
-    entityType: SimulationEntityType
-    uuid: str
-    parameters: Dict[str, ParameterValue]
-
-
-class Blueprint(Schema):
-    """
-    Simulation blueprint used by the engine.
-
-    This mirrors the structure expected by destiny_sim.builder.runner.run_blueprint
-    and by the frontend builder feature.
-    """
-
-    simParams: SimParams = SimParams()
-    entities: List[BlueprintEntity] = []
 
 
 class MetricDataSchema(Schema):
