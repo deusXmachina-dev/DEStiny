@@ -1,9 +1,13 @@
 {
-    "folders": [
-      { "path": "src/backend" },
-      { "path": "src/engine" },
-      { "path": "src/frontend" }
-    ],
-    "settings": {}
-  }
+  "folders": [
+    { "path": "src/backend" },
+    { "path": "src/engine" },
+    { "path": "src/frontend", 
+      "settings": {
+        "python.terminal.activateEnvironment": false
+      }
+    },
+  ],
+  "settings": {}
+}
   
