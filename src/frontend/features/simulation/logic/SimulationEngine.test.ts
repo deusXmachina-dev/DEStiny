@@ -27,6 +27,7 @@ describe("SimulationEngine", () => {
       const recording: SimulationRecording = {
         duration: 30,
         segments_by_entity: {},
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       expect(engine.duration).toBe(30);
@@ -38,6 +39,7 @@ describe("SimulationEngine", () => {
       const recording: SimulationRecording = {
         duration: 10,
         segments_by_entity: {},
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
@@ -49,6 +51,7 @@ describe("SimulationEngine", () => {
         segments_by_entity: {
           "entity-1": [],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
@@ -71,14 +74,15 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
       expect(entities).toHaveLength(1);
-      expect(entities[0].entityId).toBe("agv1");
-      expect(entities[0].x).toBe(50);
-      expect(entities[0].y).toBe(100);
+      expect(entities[0]?.entityId).toBe("agv1");
+      expect(entities[0]?.x).toBe(50);
+      expect(entities[0]?.y).toBe(100);
     });
 
     it("returns start position at time 0", () => {
@@ -98,12 +102,13 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(0);
 
-      expect(entities[0].x).toBe(10);
-      expect(entities[0].y).toBe(20);
+      expect(entities[0]?.x).toBe(10);
+      expect(entities[0]?.y).toBe(20);
     });
 
     it("returns end position at end time", () => {
@@ -123,12 +128,13 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(10);
 
-      expect(entities[0].x).toBe(100);
-      expect(entities[0].y).toBe(200);
+      expect(entities[0]?.x).toBe(100);
+      expect(entities[0]?.y).toBe(200);
     });
 
     it("does not return entity before its segment starts", () => {
@@ -144,6 +150,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(2);
@@ -164,6 +171,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(15);
@@ -186,6 +194,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
 
@@ -193,7 +202,7 @@ describe("SimulationEngine", () => {
       const entities = engine.getEntitiesAtTime(50);
       expect(entities).toHaveLength(1);
       // Interpolation: t = 50/100 = 0.5, x = 0 + (100-0)*0.5 = 50
-      expect(entities[0].x).toBe(50);
+      expect(entities[0]?.x).toBe(50);
     });
 
     it("interpolates angle correctly", () => {
@@ -211,11 +220,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
-      expect(entities[0].angle).toBeCloseTo(Math.PI / 2);
+      expect(entities[0]?.angle).toBeCloseTo(Math.PI / 2);
     });
   });
 
@@ -243,20 +253,21 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
 
       // In first segment
       let entities = engine.getEntitiesAtTime(5);
-      expect(entities[0].x).toBe(50);
+      expect(entities[0]?.x).toBe(50);
 
       // At transition point (should be in second segment)
       entities = engine.getEntitiesAtTime(10);
-      expect(entities[0].x).toBe(100);
+      expect(entities[0]?.x).toBe(100);
 
       // In second segment
       entities = engine.getEntitiesAtTime(15);
-      expect(entities[0].x).toBe(150);
+      expect(entities[0]?.x).toBe(150);
     });
 
     it("handles backward seeking (rewind)", () => {
@@ -282,6 +293,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
 
@@ -290,7 +302,7 @@ describe("SimulationEngine", () => {
 
       // Then rewind
       const entities = engine.getEntitiesAtTime(5);
-      expect(entities[0].x).toBe(50);
+      expect(entities[0]?.x).toBe(50);
     });
   });
 
@@ -318,17 +330,18 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
       // Should have one root entity (agv1)
       expect(entities).toHaveLength(1);
-      expect(entities[0].entityId).toBe("agv1");
+      expect(entities[0]?.entityId).toBe("agv1");
 
       // Box should be a child of agv1
-      expect(entities[0].children).toHaveLength(1);
-      expect(entities[0].children[0].entityId).toBe("box1");
+      expect(entities[0]?.children).toHaveLength(1);
+      expect(entities[0]?.children[0]?.entityId).toBe("box1");
     });
 
     it("treats entity as root when parent is not rendered", () => {
@@ -353,20 +366,21 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
 
       // At time 3, both are visible, box is child of agv
       let entities = engine.getEntitiesAtTime(3);
       expect(entities).toHaveLength(1);
-      expect(entities[0].entityId).toBe("agv1");
-      expect(entities[0].children[0].entityId).toBe("box1");
+      expect(entities[0]?.entityId).toBe("agv1");
+      expect(entities[0]?.children[0]?.entityId).toBe("box1");
 
       // At time 10, only box is visible, becomes root
       entities = engine.getEntitiesAtTime(10);
       expect(entities).toHaveLength(1);
-      expect(entities[0].entityId).toBe("box1");
-      expect(entities[0].children).toHaveLength(0);
+      expect(entities[0]?.entityId).toBe("box1");
+      expect(entities[0]?.children).toHaveLength(0);
     });
   });
 
@@ -394,6 +408,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
 
@@ -405,7 +420,7 @@ describe("SimulationEngine", () => {
 
       // Jump to first segment - should work correctly
       const entities = engine.getEntitiesAtTime(5);
-      expect(entities[0].x).toBe(50);
+      expect(entities[0]?.x).toBe(50);
     });
   });
 
@@ -431,6 +446,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
+        metrics: [],
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);

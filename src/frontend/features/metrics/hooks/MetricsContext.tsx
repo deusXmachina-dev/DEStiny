@@ -83,10 +83,12 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
       }
 
       const newOrder = [...prev.metricOrder];
-      [newOrder[index - 1], newOrder[index]] = [
-        newOrder[index],
-        newOrder[index - 1],
-      ];
+      const prevItem = newOrder[index - 1];
+      const currentItem = newOrder[index];
+      if (prevItem !== undefined && currentItem !== undefined) {
+        newOrder[index - 1] = currentItem;
+        newOrder[index] = prevItem;
+      }
       return { ...prev, metricOrder: newOrder };
     });
   };
@@ -100,10 +102,12 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
       }
 
       const newOrder = [...prev.metricOrder];
-      [newOrder[index], newOrder[index + 1]] = [
-        newOrder[index + 1],
-        newOrder[index],
-      ];
+      const currentItem = newOrder[index];
+      const nextItem = newOrder[index + 1];
+      if (currentItem !== undefined && nextItem !== undefined) {
+        newOrder[index] = nextItem;
+        newOrder[index + 1] = currentItem;
+      }
       return { ...prev, metricOrder: newOrder };
     });
   };

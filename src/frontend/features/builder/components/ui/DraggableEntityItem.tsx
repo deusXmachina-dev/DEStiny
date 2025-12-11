@@ -23,6 +23,10 @@ export function DraggableEntityItem({
     height: number;
   } | null>(null);
 
+  if (!iconUrl) {
+    return null;
+  }
+
   const handleDragStart = (e: React.DragEvent) => {
     if (dragImageRef.current && dimensions) {
       // Use half the dimensions as the drag offset (center of image)

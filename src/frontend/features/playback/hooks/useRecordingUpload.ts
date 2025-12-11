@@ -16,7 +16,7 @@ export function useRecordingUpload() {
       const name = _file.name.split(".")[0];
       if (parsed) {
         setRecording(parsed);
-        setSimulationName(name);
+        setSimulationName(name ?? "Uploaded Simulation");
         pause();
       }
     },

@@ -41,7 +41,7 @@ export function AreaChartWithSteps({
     if (visibleData.length === 0) {
       return null;
     }
-    return visibleData[visibleData.length - 1].value;
+    return visibleData[visibleData.length - 1]?.value;
   }, [visibleData]);
 
   // Format badge value
@@ -49,7 +49,7 @@ export function AreaChartWithSteps({
     currentValue !== null
       ? Number.isInteger(currentValue)
         ? currentValue
-        : currentValue.toFixed(1)
+        : currentValue?.toFixed(1)
       : null;
 
   return (

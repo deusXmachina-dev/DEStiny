@@ -20,7 +20,7 @@ ParameterValue = str | int | float | bool
 class BuilderEntitySchema(Schema):
     """Schema for a builder entity definition."""
 
-    entityType: str
+    entityType: SimulationEntityType
     parameters: Dict[str, ParameterType]
 
 

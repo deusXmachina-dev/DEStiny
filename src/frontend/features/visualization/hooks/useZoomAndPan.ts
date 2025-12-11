@@ -155,6 +155,9 @@ export const useZoomAndPan = () => {
         if (pinchState.pointerPositions.size === 2 && !pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers;
+          if (!p1 || !p2) {
+            return;
+          }
 
           pinchState.isPinching = true;
           pinchState.startZoom = zoomRef.current;
@@ -218,6 +221,9 @@ export const useZoomAndPan = () => {
         if (pinchState.pointerPositions.size === 2 && !pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers;
+          if (!p1 || !p2) {
+            return;
+          }
 
           pinchState.isPinching = true;
           pinchState.startZoom = zoomRef.current;
@@ -241,6 +247,9 @@ export const useZoomAndPan = () => {
         if (pinchState.isPinching) {
           const pointers = Array.from(pinchState.pointerPositions.values());
           const [p1, p2] = pointers.slice(0, 2);
+          if (!p1 || !p2) {
+            return;
+          }
 
           const currentDistance = getDistance(p1, p2);
 

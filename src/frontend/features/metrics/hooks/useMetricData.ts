@@ -29,7 +29,10 @@ export function useMetricData({
   const visibleData = useMemo(() => {
     let data = chartData.filter((point) => point.timestamp <= currentTime);
     if (data.length === 0) {
-      data = [chartData[0]];
+      const firstDataPoint = chartData[0];
+      if (firstDataPoint) {
+        data = [firstDataPoint];
+      }
     }
     return data;
   }, [chartData, currentTime]);
