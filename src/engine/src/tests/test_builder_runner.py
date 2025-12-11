@@ -9,9 +9,29 @@ from destiny_sim.builder.runner import (
 )
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
-from destiny_sim.builder.schema import Blueprint, BlueprintEntity, SimParams
+from destiny_sim.builder.schema import (
+    Blueprint,
+    BlueprintEntity,
+    BlueprintEntityParameter,
+    BlueprintParameterType,
+    SimParams,
+)
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
+
+
+def _primitive(name: str, value: float | int | str | bool) -> BlueprintEntityParameter:
+    """Helper to create a primitive parameter."""
+    return BlueprintEntityParameter(
+        name=name, parameterType=BlueprintParameterType.PRIMITIVE, value=value
+    )
+
+
+def _entity(name: str, uuid: str) -> BlueprintEntityParameter:
+    """Helper to create an entity parameter."""
+    return BlueprintEntityParameter(
+        name=name, parameterType=BlueprintParameterType.ENTITY, value=uuid
+    )
 
 
 def test_run_blueprint_with_human():
@@ -22,12 +42,12 @@ def test_run_blueprint_with_human():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters={
-                    "x": 100.0,
-                    "y": 100.0,
-                    "targetX": 500.0,
-                    "targetY": 300.0,
-                },
+                parameters=[
+                    _primitive("x", 100.0),
+                    _primitive("y", 100.0),
+                    _primitive("targetX", 500.0),
+                    _primitive("targetY", 300.0),
+                ],
             ),
         ],
     )
@@ -61,22 +81,22 @@ def test_run_blueprint_multiple_entities():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters={
-                    "x": 100.0,
-                    "y": 100.0,
-                    "targetX": 200.0,
-                    "targetY": 200.0,
-                },
+                parameters=[
+                    _primitive("x", 100.0),
+                    _primitive("y", 100.0),
+                    _primitive("targetX", 200.0),
+                    _primitive("targetY", 200.0),
+                ],
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-2",
-                parameters={
-                    "x": 300.0,
-                    "y": 300.0,
-                    "targetX": 400.0,
-                    "targetY": 400.0,
-                },
+                parameters=[
+                    _primitive("x", 300.0),
+                    _primitive("y", 300.0),
+                    _primitive("targetX", 400.0),
+                    _primitive("targetY", 400.0),
+                ],
             ),
         ],
     )
@@ -95,12 +115,12 @@ def test_run_blueprint_default_initial_time():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters={
-                    "x": 100.0,
-                    "y": 100.0,
-                    "targetX": 200.0,
-                    "targetY": 200.0,
-                },
+                parameters=[
+                    _primitive("x", 100.0),
+                    _primitive("y", 100.0),
+                    _primitive("targetX", 200.0),
+                    _primitive("targetY", 200.0),
+                ],
             ),
         ],
     )
@@ -119,12 +139,12 @@ def test_run_blueprint_without_duration():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters={
-                    "x": 100.0,
-                    "y": 100.0,
-                    "targetX": 200.0,
-                    "targetY": 200.0,
-                },
+                parameters=[
+                    _primitive("x", 100.0),
+                    _primitive("y", 100.0),
+                    _primitive("targetX", 200.0),
+                    _primitive("targetY", 200.0),
+                ],
             ),
         ],
     )
@@ -154,7 +174,7 @@ def test_run_blueprint_unknown_entity_type():
             BlueprintEntity(
                 entityType=SimulationEntityType.COUNTER,  # Not in default registry
                 uuid="test-1",
-                parameters={},
+                parameters=[],
             ),
         ],
     )
@@ -171,9 +191,9 @@ def test_run_blueprint_invalid_parameters():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
-                parameters={
+                parameters=[
                     # Missing required parameters
-                },
+                ],
             ),
         ],
     )
@@ -214,7 +234,9 @@ def test_register_entity():
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="test-1",
-                parameters={"value": 42.0},
+                parameters=[
+                    _primitive("value", 42.0),
+                ],
             ),
         ],
     )
@@ -255,3 +277,200 @@ def test_get_registered_entities():
     registry["test"] = "test"
     registry2 = get_registered_entities()
     assert "test" not in registry2
+
+
+def test_entity_reference_resolution():
+    """Test that entity references are correctly resolved."""
+    # Create a test entity that accepts another entity
+    class EntityWithReference(BuilderEntity):
+        entity_type = SimulationEntityType.ROBOT
+        
+        def __init__(self, target: Human, x: float, y: float):
+            super().__init__()
+            self.target = target
+            self.x = x
+            self.y = y
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    register_entity(EntityWithReference)
+    
+    blueprint = Blueprint(
+        simParams=SimParams(duration=1.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.HUMAN,
+                uuid="human-1",
+                parameters=[
+                    _primitive("x", 100.0),
+                    _primitive("y", 100.0),
+                    _primitive("targetX", 200.0),
+                    _primitive("targetY", 200.0),
+                ],
+            ),
+            BlueprintEntity(
+                entityType=SimulationEntityType.ROBOT,
+                uuid="robot-1",
+                parameters=[
+                    _entity("target", "human-1"),
+                    _primitive("x", 50.0),
+                    _primitive("y", 50.0),
+                ],
+            ),
+        ],
+    )
+    
+    recording = run_blueprint(blueprint)
+    assert recording is not None
+
+
+def test_entity_reference_cycle():
+    """Test that circular entity references are detected."""
+    class EntityA(BuilderEntity):
+        entity_type = SimulationEntityType.AGV
+        
+        def __init__(self, ref: "EntityB"):
+            super().__init__()
+            self.ref = ref
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    class EntityB(BuilderEntity):
+        entity_type = SimulationEntityType.BOX
+        
+        def __init__(self, ref: EntityA):
+            super().__init__()
+            self.ref = ref
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    register_entity(EntityA)
+    register_entity(EntityB)
+    
+    blueprint = Blueprint(
+        simParams=SimParams(duration=1.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.AGV,
+                uuid="a-1",
+                parameters=[
+                    _entity("ref", "b-1"),
+                ],
+            ),
+            BlueprintEntity(
+                entityType=SimulationEntityType.BOX,
+                uuid="b-1",
+                parameters=[
+                    _entity("ref", "a-1"),
+                ],
+            ),
+        ],
+    )
+    
+    with pytest.raises(ValueError, match="Circular dependency"):
+        run_blueprint(blueprint)
+
+
+def test_entity_reference_invalid_uuid():
+    """Test that invalid entity reference UUIDs are detected."""
+    class EntityWithReference(BuilderEntity):
+        entity_type = SimulationEntityType.ROBOT
+        
+        def __init__(self, target: Human):
+            super().__init__()
+            self.target = target
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    register_entity(EntityWithReference)
+    
+    blueprint = Blueprint(
+        simParams=SimParams(duration=1.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.ROBOT,
+                uuid="robot-1",
+                parameters=[
+                    _entity("target", "non-existent-uuid"),
+                ],
+            ),
+        ],
+    )
+    
+    with pytest.raises(ValueError, match="does not exist in blueprint"):
+        run_blueprint(blueprint)
+
+
+def test_entity_reference_multiple_levels():
+    """Test entity references with multiple dependency levels."""
+    class Level1(BuilderEntity):
+        entity_type = SimulationEntityType.AGV
+        
+        def __init__(self, value: float):
+            super().__init__()
+            self.value = value
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    class Level2(BuilderEntity):
+        entity_type = SimulationEntityType.BOX
+        
+        def __init__(self, level1: Level1, value: float):
+            super().__init__()
+            self.level1 = level1
+            self.value = value
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    class Level3(BuilderEntity):
+        entity_type = SimulationEntityType.ROBOT
+        
+        def __init__(self, level2: Level2, value: float):
+            super().__init__()
+            self.level2 = level2
+            self.value = value
+        
+        def process(self, env: RecordingEnvironment):
+            yield env.timeout(0)
+    
+    register_entity(Level1)
+    register_entity(Level2)
+    register_entity(Level3)
+    
+    blueprint = Blueprint(
+        simParams=SimParams(duration=1.0),
+        entities=[
+            BlueprintEntity(
+                entityType=SimulationEntityType.ROBOT,
+                uuid="level3-1",
+                parameters=[
+                    _entity("level2", "level2-1"),
+                    _primitive("value", 3.0),
+                ],
+            ),
+            BlueprintEntity(
+                entityType=SimulationEntityType.BOX,
+                uuid="level2-1",
+                parameters=[
+                    _entity("level1", "level1-1"),
+                    _primitive("value", 2.0),
+                ],
+            ),
+            BlueprintEntity(
+                entityType=SimulationEntityType.AGV,
+                uuid="level1-1",
+                parameters=[
+                    _primitive("value", 1.0),
+                ],
+            ),
+        ],
+    )
+    
+    recording = run_blueprint(blueprint)
+    assert recording is not None
