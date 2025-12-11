@@ -4,8 +4,8 @@ import { createContext, ReactNode, useContext, useRef, useState } from "react";
 
 import type {
   BlueprintEntity,
+  BlueprintEntityParameter,
   ParameterType,
-  ParameterValue,
   SimulationBlueprint,
 } from "../types";
 import {
@@ -31,7 +31,7 @@ interface BuilderContextValue {
   removeEntity: (entityId: string) => void;
   updateEntity: (
     entityId: string,
-    parameters: Record<string, ParameterValue>,
+    parameters: Record<string, BlueprintEntityParameter>,
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
 
@@ -101,7 +101,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const updateEntity = (
     entityId: string,
-    parameters: Record<string, ParameterValue>,
+    parameters: Record<string, BlueprintEntityParameter>,
   ) => {
     if (!blueprint) {
       return;
