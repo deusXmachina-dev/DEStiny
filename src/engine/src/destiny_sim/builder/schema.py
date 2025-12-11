@@ -3,7 +3,7 @@ Schema definitions for builder entities and blueprints.
 """
 
 from enum import StrEnum
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -20,6 +20,24 @@ class ParameterType(StrEnum):
 
 
 ParameterValue = str | int | float | bool
+
+
+class BlueprintParameterType(StrEnum):
+    """Parameter type for blueprint entity parameters."""
+
+    PRIMITIVE = "primitive"
+    ENTITY = "entity"
+
+
+class BlueprintEntityParameter(BaseModel):
+    """Single parameter for a blueprint entity."""
+
+    name: str = Field(..., description="The name of the parameter")
+    parameterType: BlueprintParameterType = Field(..., description="PRIMITIVE or ENTITY")
+    value: ParameterValue = Field(
+        ...,
+        description="The parameter value (primitive value or UUID string for entities)",
+    )
 
 
 class ParameterInfo(BaseModel):
@@ -60,7 +78,7 @@ class BlueprintEntity(BaseModel):
 
     entityType: SimulationEntityType
     uuid: str
-    parameters: Dict[str, ParameterValue]
+    parameters: List[BlueprintEntityParameter]
 
 
 class Blueprint(BaseModel):
