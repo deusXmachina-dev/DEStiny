@@ -2,6 +2,7 @@
 ManufacturingCell entity for simulation.
 """
 
+from ctypes import Union
 import numpy as np
 
 from destiny_sim.builder.entity import BuilderEntity
@@ -9,6 +10,8 @@ from destiny_sim.builder.entities.material_flow.buffer import Buffer
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 
+from destiny_sim.builder.entities.material_flow.source import Source
+from destiny_sim.builder.entities.material_flow.sink import Sink
 
 class ManufacturingCell(BuilderEntity):
     """
@@ -22,8 +25,8 @@ class ManufacturingCell(BuilderEntity):
         self,
         x: float,
         y: float,
-        buffer_in: Buffer,
-        buffer_out: Buffer,
+        buffer_in: Union[Buffer, Source],
+        buffer_out: Union[Buffer, Sink],
         mean: float,
         std_dev: float,
     ):
@@ -34,7 +37,7 @@ class ManufacturingCell(BuilderEntity):
         self.buffer_out = buffer_out
         self.mean = mean
         self.std_dev = std_dev
-        
+
     def process(self, env: RecordingEnvironment):
         """
         Main process: continuously get items from input buffer,
