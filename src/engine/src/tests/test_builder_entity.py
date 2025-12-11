@@ -4,6 +4,7 @@ from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
 from destiny_sim.builder.schema import ParameterType
 from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import SimulationEntityType
 
 
 def test_human_schema_generation():
@@ -36,7 +37,7 @@ def test_schema_type_mapping():
     """Test that schema generation correctly maps Python types to frontend types."""
     
     class TestEntity(BuilderEntity):
-        entity_type = "test"
+        entity_type = SimulationEntityType.AGV
         
         def __init__(
             self,
@@ -46,7 +47,7 @@ def test_schema_type_mapping():
             text: str,
             flag: bool,
         ):
-            super().__init__(env)
+            super().__init__()
     
     schema = TestEntity.get_parameters_schema()
     params = schema.parameters
@@ -65,15 +66,15 @@ def test_schema_with_no_parameters():
     """Test that schema generation works for entities with no custom parameters."""
     
     class MinimalEntity(BuilderEntity):
-        entity_type = "minimal"
+        entity_type = SimulationEntityType.ROBOT
         
         def __init__(self, env: RecordingEnvironment):
-            super().__init__(env)
+            super().__init__()
     
     schema = MinimalEntity.get_parameters_schema()
 
     # Should have entityType and parameters (parameters should be empty)
-    assert schema.entityType == "minimal"
+    assert schema.entityType == SimulationEntityType.ROBOT
     assert schema.parameters == {}
 
 
@@ -81,7 +82,7 @@ def test_schema_excludes_kwargs():
     """Test that schema generation excludes *args and **kwargs."""
     
     class KwargsEntity(BuilderEntity):
-        entity_type = "kwargs_test"
+        entity_type = SimulationEntityType.BOX
         
         def __init__(
             self,
@@ -90,7 +91,7 @@ def test_schema_excludes_kwargs():
             *args,
             **kwargs,
         ):
-            super().__init__(env)
+            super().__init__()
     
     schema = KwargsEntity.get_parameters_schema()
     params = schema.parameters
