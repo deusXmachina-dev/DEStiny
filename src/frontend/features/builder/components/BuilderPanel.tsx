@@ -14,7 +14,7 @@ function BuilderPanelContent() {
     <SidePanel>
       <SidePanel.Content className="flex flex-col p-0">
         <EntityPalette
-          schemas={schemas ?? []}
+          schemas={schemas}
           isLoading={isLoading}
           className="h-[30%] p-4 overflow-y-auto"
         />
