@@ -7,6 +7,7 @@ from typing import Any, Dict, Type
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities import Human
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
+from destiny_sim.builder.entities.material_flow.manufacturing_cell import ManufacturingCell
 from destiny_sim.builder.entities.material_flow.sink import Sink
 from destiny_sim.builder.entities.material_flow.source import Source
 from destiny_sim.builder.schema import Blueprint, BlueprintEntity, BlueprintParameterType
@@ -21,6 +22,7 @@ _ENTITY_REGISTRY: Dict[SimulationEntityType, Type[BuilderEntity]] = {
     Source.entity_type: Source,
     Sink.entity_type: Sink,
     Buffer.entity_type: Buffer,
+    ManufacturingCell.entity_type: ManufacturingCell,
 }
 
 
