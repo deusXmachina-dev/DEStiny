@@ -20,8 +20,8 @@ def test_counter_metric():
     assert metric.name == "served"
     assert metric.type == MetricType.COUNTER
     assert metric.labels == {"type": "regular"}
-    assert metric.data["timestamp"] == [0.0, 5.0]
-    assert metric.data["value"] == [1, 3]  # 1, then 1+2=3
+    assert metric.data.timestamp == [0.0, 5.0]
+    assert metric.data.value == [1, 3]  # 1, then 1+2=3
 
 def test_gauge_metric():
     env = RecordingEnvironment()
@@ -39,8 +39,8 @@ def test_gauge_metric():
     metric = metrics[0]
     assert metric.name == "queue_length"
     assert metric.type == MetricType.GAUGE
-    assert metric.data["timestamp"] == [0.0, 2.0, 4.0]
-    assert metric.data["value"] == [0, 5, 3]
+    assert metric.data.timestamp == [0.0, 2.0, 4.0]
+    assert metric.data.value == [0, 5, 3]
 
 def test_adjust_gauge():
     """Test adjusting a gauge with positive and negative deltas."""
@@ -66,8 +66,8 @@ def test_adjust_gauge():
     
     assert metric.name == "active_agents"
     assert metric.type == MetricType.GAUGE
-    assert metric.data["timestamp"] == [0.0, 1.0, 2.0, 3.0, 3.0]
-    assert metric.data["value"] == [1, 3, 2, 0, -1]
+    assert metric.data.timestamp == [0.0, 1.0, 2.0, 3.0, 3.0]
+    assert metric.data.value == [1, 3, 2, 0, -1]
 
 def test_multiple_metrics_and_labels():
     env = RecordingEnvironment()
@@ -82,8 +82,8 @@ def test_multiple_metrics_and_labels():
     m1 = next(m for m in recording.metrics if m.labels["id"] == "1")
     m2 = next(m for m in recording.metrics if m.labels["id"] == "2")
     
-    assert m1.data["value"] == [1]
-    assert m2.data["value"] == [1]
+    assert m1.data.value == [1]
+    assert m2.data.value == [1]
 
 def test_metrics_in_to_dict():
     env = RecordingEnvironment()
@@ -113,8 +113,8 @@ def test_sample_metric():
     metric = metrics[0]
     assert metric.name == "package_delivery_time"
     assert metric.type == MetricType.SAMPLE
-    assert metric.data["timestamp"] == [0.0, 10.0, 15.0]
-    assert metric.data["value"] == [5.2, 8.7, 3.1]
+    assert metric.data.timestamp == [0.0, 10.0, 15.0]
+    assert metric.data.value == [5.2, 8.7, 3.1]
 
 def test_sample_metric_with_labels():
     """Test that samples with different labels create separate metrics."""
@@ -131,8 +131,8 @@ def test_sample_metric_with_labels():
     north = next(m for m in metrics if m.labels.get("region") == "north")
     south = next(m for m in metrics if m.labels.get("region") == "south")
     
-    assert north.data["value"] == [5.2]
-    assert south.data["value"] == [8.7]
+    assert north.data.value == [5.2]
+    assert south.data.value == [8.7]
 
 def test_different_types_same_name():
     """Test that metrics with same name but different types are distinct."""
@@ -159,6 +159,6 @@ def test_different_types_same_name():
     assert counter.name == "foo"
     assert gauge.name == "foo"
     assert sample.name == "foo"
-    assert counter.data["value"] == [1]
-    assert gauge.data["value"] == [10]
-    assert sample.data["value"] == [42.0]
+    assert counter.data.value == [1]
+    assert gauge.data.value == [10]
+    assert sample.data.value == [42.0]

@@ -4,6 +4,6 @@ import type { components } from "@/types/api";
 export type SimulationEntityType =
   components["schemas"]["SimulationEntityType"];
 export type SimulationMotionSegment =
-  components["schemas"]["MotionSegmentSchema"];
+  components["schemas"]["MotionSegment"];
 export type SimulationRecording =
-  components["schemas"]["SimulationRecordingSchema"];
+  components["schemas"]["SimulationRecording"];

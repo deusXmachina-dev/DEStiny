@@ -9,10 +9,8 @@ All metrics use a columnar format (col_name: [values]) which is efficient for
 serialization and frontend consumption.
 """
 from enum import Enum
-from typing import Any
 
-from pydantic import BaseModel, ConfigDict, field_validator
-from pydantic.alias_generators import to_camel
+from pydantic import BaseModel
 
 
 class MetricType(str, Enum):
@@ -21,6 +19,18 @@ class MetricType(str, Enum):
     GAUGE = "gauge"
     SAMPLE = "sample"
     GENERIC = "generic"
+
+
+class MetricData(BaseModel):
+    """
+    Data of a metric.
+    Timestamp and value are parallel arrays.
+    
+    For now only this format is supported
+    """
+    
+    timestamp: list[float]
+    value: list[float]
 
 
 class Metric(BaseModel):
@@ -49,36 +59,7 @@ class Metric(BaseModel):
     name: str
     type: MetricType
     labels: dict[str, str] = {}
-    data: dict[str, list[Any]] = {}
-
-    
-    @field_validator("data")
-    @classmethod
-    def validate_column_lengths(cls, v: dict[str, list[Any]]) -> dict[str, list[Any]]:
-        """
-        Validate that all columns have the same length.
-        
-        Raises:
-            ValueError: If columns have mismatched lengths
-        """
-        if not v:
-            return v
-        
-        lengths = {col: len(values) for col, values in v.items()}
-        if len(set(lengths.values())) > 1:
-            raise ValueError(
-                f"Metric has mismatched column lengths: {lengths}"
-            )
-        return v
-    
-    def row_count(self) -> int:
-        """Return the number of rows in this metric's data."""
-        if not self.data:
-            return 0
-        # All columns should have the same length (validated)
-        first_col = next(iter(self.data.values()))
-        return len(first_col)
-    
+    data: MetricData
 
 
 class MetricsContainer:
@@ -103,7 +84,7 @@ class MetricsContainer:
                 name=name,
                 type=metric_type,
                 labels=labels or {},
-                data={"timestamp": [], "value": []}
+                data=MetricData(timestamp=[], value=[])
             )
         return self._metrics[key]
 
@@ -120,12 +101,12 @@ class MetricsContainer:
         metric = self._get_or_create_metric(name, MetricType.COUNTER, labels)
         
         current_value = 0
-        if metric.data["value"]:
-            current_value = metric.data["value"][-1]
+        if metric.data.value:
+            current_value = metric.data.value[-1]
             
         new_value = current_value + amount
-        metric.data["timestamp"].append(time)
-        metric.data["value"].append(new_value)
+        metric.data.timestamp.append(time)
+        metric.data.value.append(new_value)
 
     def set_gauge(self, name: str, time: float, value: int | float, labels: dict[str, str] | None = None) -> None:
         """
@@ -138,8 +119,8 @@ class MetricsContainer:
             labels: Optional filtering labels
         """
         metric = self._get_or_create_metric(name, MetricType.GAUGE, labels)
-        metric.data["timestamp"].append(time)
-        metric.data["value"].append(value)
+        metric.data.timestamp.append(time)
+        metric.data.value.append(value)
 
     def adjust_gauge(self, name: str, time: float, delta: int | float, labels: dict[str, str] | None = None) -> None:
         """
@@ -154,12 +135,12 @@ class MetricsContainer:
         metric = self._get_or_create_metric(name, MetricType.GAUGE, labels)
         
         current_value = 0
-        if metric.data["value"]:
-            current_value = metric.data["value"][-1]
+        if metric.data.value:
+            current_value = metric.data.value[-1]
             
         new_value = current_value + delta
-        metric.data["timestamp"].append(time)
-        metric.data["value"].append(new_value)
+        metric.data.timestamp.append(time)
+        metric.data.value.append(new_value)
     
     def record_sample(self, name: str, time: float, value: int | float, labels: dict[str, str] | None = None) -> None:
         """
@@ -176,8 +157,8 @@ class MetricsContainer:
             labels: Optional filtering labels
         """
         metric = self._get_or_create_metric(name, MetricType.SAMPLE, labels)
-        metric.data["timestamp"].append(time)
-        metric.data["value"].append(value)
+        metric.data.timestamp.append(time)
+        metric.data.value.append(value)
     
     def get_all(self) -> list[Metric]:
         """Return all recorded metrics."""

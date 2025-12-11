@@ -72,47 +72,82 @@ export interface components {
          */
         SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "";
         /**
-         * MetricDataSchema
-         * @description Schema for metric data with timestamp and value arrays.
+         * Metric
+         * @description Represents a single metric with columnar tabular data.
+         *
+         *     A metric has:
+         *     - name: Unique identifier for the metric (e.g., "queue_length", "service_time")
+         *     - type: MetricType enum value (e.g.: COUNTER, GAUGE, or GENERIC) used for visualization
+         *     - labels: Key-value pairs for filtering/grouping (e.g., {"counter_id": "counter_1", "location": "bank"})
+         *     - data: Columnar format dictionary where keys are column names and values are lists
+         *
+         *     Example:
+         *         Metric(
+         *             name="queue_length",
+         *             type=MetricType.GAUGE,
+         *             labels={"counter_id": "counter_1"},
+         *             data={
+         *                 "timestamp": [0.0, 1.5, 3.2, 4.0, 5.5, 6.2],
+         *                 "value": [0, 1, 2, 1, 3, 0]
+         *             }
+         *         )
          */
-        MetricDataSchema: {
+        Metric: {
+            /** Name */
+            name: string;
+            type: components["schemas"]["MetricType"];
+            /**
+             * Labels
+             * @default {}
+             */
+            labels: {
+                [key: string]: string;
+            };
+            data: components["schemas"]["MetricData"];
+        };
+        /**
+         * MetricData
+         * @description Data of a metric.
+         *     Timestamp and value are parallel arrays.
+         *
+         *     For now only this format is supported
+         */
+        MetricData: {
             /** Timestamp */
             timestamp: number[];
             /** Value */
             value: number[];
         };
         /**
-         * MetricSchema
-         * @description Serialized metric definition compatible with destiny_sim.core.metrics.Metric.
+         * MetricType
+         * @description Enumeration of metric types.
+         * @enum {string}
          */
-        MetricSchema: {
-            /** Name */
-            name: string;
-            /**
-             * Type
-             * @enum {string}
-             */
-            type: "gauge" | "counter" | "sample";
-            /** Labels */
-            labels: {
-                [key: string]: string;
-            };
-            data: components["schemas"]["MetricDataSchema"];
-        };
+        MetricType: "counter" | "gauge" | "sample" | "generic";
         /**
-         * MotionSegmentSchema
-         * @description Serialized motion segment compatible with destiny_sim.core.timeline.MotionSegment.
+         * MotionSegment
+         * @description Describes an entity's position/motion during a time interval.
+         *
+         *     - entity_id: Unique identifier for the entity
+         *     - entity_type: Type for rendering (e.g., "agv", "box", "source")
+         *     - parent_id: If set, coordinates are relative to parent; if None, world coordinates
+         *     - start_time: When this segment begins
+         *     - end_time: When this segment ends (None = until simulation end)
+         *     - start_x/y, end_x/y: Position at start and end of segment
+         *     - start_angle, end_angle: Rotation at start and end of segment
+         *
+         *     Position at time t is computed via linear interpolation.
          */
-        MotionSegmentSchema: {
+        MotionSegment: {
             /** Entityid */
             entityId: string;
             entityType: components["schemas"]["SimulationEntityType"];
             /** Parentid */
-            parentId: string | null;
+            parentId?: string | null;
             /** Starttime */
             startTime: number;
             /** Endtime */
-            endTime: number | null;
+            endTime?: number | null;
             /** Startx */
             startX: number;
             /** Starty */
@@ -121,27 +156,46 @@ export interface components {
             endX: number;
             /** Endy */
             endY: number;
-            /** Startangle */
+            /**
+             * Startangle
+             * @default 0
+             */
             startAngle: number;
-            /** Endangle */
+            /**
+             * Endangle
+             * @default 0
+             */
             endAngle: number;
         };
         /**
-         * SimulationRecordingSchema
-         * @description Complete simulation recording returned to the frontend.
+         * SimulationRecording
+         * @description Complete recording of a simulation run.
+         *
+         *     For each component there is a sequence of records
+         *     where the start time of each record needs to be higher than
+         *     start time of previous one for the same component.
+         *
+         *     Notes:
+         *     - new record invalidates the previous one
+         *     - to record stay in location, use the same start and end time and coordinates
+         *     - to stay indefinitely, use None for end time
+         *     - to stop rendering of an entity use same start and end time
          */
-        SimulationRecordingSchema: {
+        SimulationRecording: {
             /** Duration */
             duration: number;
-            /** Segments By Entity */
+            /**
+             * Segments By Entity
+             * @default {}
+             */
             segments_by_entity: {
-                [key: string]: components["schemas"]["MotionSegmentSchema"][];
+                [key: string]: components["schemas"]["MotionSegment"][];
             };
             /**
              * Metrics
              * @default []
              */
-            metrics: components["schemas"]["MetricSchema"][];
+            metrics: components["schemas"]["Metric"][];
         };
         /**
          * Blueprint
@@ -235,7 +289,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["SimulationRecordingSchema"];
+                    "application/json": components["schemas"]["SimulationRecording"];
                 };
             };
         };

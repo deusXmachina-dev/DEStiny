@@ -32,7 +32,7 @@ def test_source_produces_item():
     source_metric = next((m for m in metrics if m.name == SOURCE_ITEM_PRODUCED_METRIC), None)
     assert source_metric is not None
     assert source_metric.type == MetricType.COUNTER
-    assert source_metric.data["value"][-1] == 1
+    assert source_metric.data.value[-1] == 1
 
 
 def test_sink_consumes_item():
@@ -53,7 +53,7 @@ def test_sink_consumes_item():
     sink_metric = next((m for m in metrics if m.name == SINK_ITEM_DELIVERED_METRIC), None)
     assert sink_metric is not None
     assert sink_metric.type == MetricType.COUNTER
-    assert sink_metric.data["value"][-1] == 1
+    assert sink_metric.data.value[-1] == 1
 
 
 def test_buffer_stores_and_retrieves_item():
@@ -91,7 +91,7 @@ def test_buffer_stores_and_retrieves_item():
     buffer_metric = next((m for m in metrics if m.name == BUFFER_NUMBER_OF_ITEMS_METRIC), None)
     assert buffer_metric is not None
     assert buffer_metric.type == MetricType.GAUGE
-    assert buffer_metric.data["value"] == [1, 2, 1, 0]
+    assert buffer_metric.data.value == [1, 2, 1, 0]
 
 
 def test_buffer_respects_capacity():
