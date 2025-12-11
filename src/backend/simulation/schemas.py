@@ -1,4 +1,3 @@
-from enum import StrEnum
 from typing import Any, Dict, List, Literal
 
 from ninja import Schema
@@ -6,22 +5,7 @@ from ninja import Schema
 from destiny_sim.core.rendering import SimulationEntityType
 
 
-class ParameterType(StrEnum):
-    """Allowed primitive parameter types for builder entities."""
-
-    STRING = "string"
-    NUMBER = "number"
-    BOOLEAN = "boolean"
-
-
 ParameterValue = str | int | float | bool
-
-
-class BuilderEntitySchema(Schema):
-    """Schema for a builder entity definition."""
-
-    entityType: SimulationEntityType
-    parameters: Dict[str, ParameterType]
 
 
 class SimParams(Schema):

@@ -19,6 +19,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
 ]
 dependencies = [
+    "pydantic>=2.0.0",
     "rustworkx>=0.17.1",
     "simpy>=4.1.1",
 ]

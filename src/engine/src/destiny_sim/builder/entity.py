@@ -3,11 +3,11 @@ Base classes for builder entities.
 """
 
 import inspect
-from typing import Dict, Any
 
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
+from destiny_sim.builder.schema import BuilderEntitySchema, ParameterType
 
 
 class BuilderEntity(SimulationEntity):
@@ -32,14 +32,10 @@ class BuilderEntity(SimulationEntity):
         pass
 
     @classmethod
-    def get_parameters_schema(cls) -> Dict[str, Any]:
+    def get_parameters_schema(cls) -> BuilderEntitySchema:
         """
         Extract parameter schema from __init__ arguments.
-        Returns a dictionary representing the entity schema for the frontend:
-        {
-            "entityType": SimulationEntityType,
-            "parameters": { param_name: type_name }
-        }
+        Returns a BuilderEntitySchema representing the entity schema for the frontend.
         """
         sig = inspect.signature(cls.__init__)
         params = {}
@@ -47,18 +43,18 @@ class BuilderEntity(SimulationEntity):
             if name in ("self", "env", "args", "kwargs"):
                 continue
 
-            # Map Python types to frontend schema types
-            type_name = "any"
+            # Map Python types to ParameterType enum
+            param_type = ParameterType.STRING  # default
             if param.annotation == int or param.annotation == float:
-                type_name = "number"
+                param_type = ParameterType.NUMBER
             elif param.annotation == str:
-                type_name = "string"
+                param_type = ParameterType.STRING
             elif param.annotation == bool:
-                type_name = "boolean"
+                param_type = ParameterType.BOOLEAN
 
-            params[name] = type_name
+            params[name] = param_type
 
-        return {
-            "entityType": cls.entity_type,
-            "parameters": params
-        }
+        return BuilderEntitySchema(
+            entityType=cls.entity_type,
+            parameters=params
+        )

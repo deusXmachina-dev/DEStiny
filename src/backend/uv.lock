@@ -104,12 +104,14 @@ name = "destiny-sim"
 version = "0.2.0"
 source = { editable = "../engine" }
 dependencies = [
+    { name = "pydantic" },
     { name = "rustworkx" },
     { name = "simpy" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "pydantic", specifier = ">=2.0.0" },
     { name = "rustworkx", specifier = ">=0.17.1" },
     { name = "simpy", specifier = ">=4.1.1" },
 ]

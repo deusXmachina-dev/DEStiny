@@ -2,6 +2,7 @@
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
+from destiny_sim.builder.schema import ParameterType
 from destiny_sim.core.environment import RecordingEnvironment
 
 
@@ -9,12 +10,10 @@ def test_human_schema_generation():
     """Test that Human entity generates correct parameter schema."""
     schema = Human.get_parameters_schema()
     
-    # Schema should have entityType, icon, and parameters
-    assert "entityType" in schema
-    assert "parameters" in schema
-    assert schema["entityType"] == "human"
+    # Schema should be a BuilderEntitySchema instance
+    assert schema.entityType == "human"
     
-    params = schema["parameters"]
+    params = schema.parameters
     
     # Should have all the parameters from Human.__init__ (excluding self and env)
     assert "x" in params
@@ -22,11 +21,11 @@ def test_human_schema_generation():
     assert "targetX" in params
     assert "targetY" in params
     
-    # All should be "number" type (float)
-    assert params["x"] == "number"
-    assert params["y"] == "number"
-    assert params["targetX"] == "number"
-    assert params["targetY"] == "number"
+    # All should be ParameterType.NUMBER (float)
+    assert params["x"] == ParameterType.NUMBER
+    assert params["y"] == ParameterType.NUMBER
+    assert params["targetX"] == ParameterType.NUMBER
+    assert params["targetY"] == ParameterType.NUMBER
     
     # Should not include self or env
     assert "self" not in params
@@ -50,12 +49,12 @@ def test_schema_type_mapping():
             super().__init__(env)
     
     schema = TestEntity.get_parameters_schema()
-    params = schema["parameters"]
+    params = schema.parameters
     
-    assert params["num_int"] == "number"
-    assert params["num_float"] == "number"
-    assert params["text"] == "string"
-    assert params["flag"] == "boolean"
+    assert params["num_int"] == ParameterType.NUMBER
+    assert params["num_float"] == ParameterType.NUMBER
+    assert params["text"] == ParameterType.STRING
+    assert params["flag"] == ParameterType.BOOLEAN
     
     # Should exclude self and env
     assert "self" not in params
@@ -72,12 +71,10 @@ def test_schema_with_no_parameters():
             super().__init__(env)
     
     schema = MinimalEntity.get_parameters_schema()
-    
-    # Should have entityType, icon, and parameters (parameters should be empty)
-    assert "entityType" in schema
-    assert "parameters" in schema
-    assert schema["entityType"] == "minimal"
-    assert schema["parameters"] == {}
+
+    # Should have entityType and parameters (parameters should be empty)
+    assert schema.entityType == "minimal"
+    assert schema.parameters == {}
 
 
 def test_schema_excludes_kwargs():
@@ -96,11 +93,11 @@ def test_schema_excludes_kwargs():
             super().__init__(env)
     
     schema = KwargsEntity.get_parameters_schema()
-    params = schema["parameters"]
+    params = schema.parameters
     
     # Should only include normal_param
     assert "normal_param" in params
-    assert params["normal_param"] == "number"
+    assert params["normal_param"] == ParameterType.NUMBER
     
     # Should exclude args and kwargs
     assert "args" not in params

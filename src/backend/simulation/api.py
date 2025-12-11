@@ -2,8 +2,8 @@ from ninja import NinjaAPI
 from typing import List
 
 from destiny_sim.builder.runner import get_registered_entities, run_blueprint
+from destiny_sim.builder.schema import BuilderEntitySchema
 from .schemas import (
-    BuilderEntitySchema,
     Blueprint,
     SimulationRecordingSchema,
 )
@@ -17,12 +17,7 @@ def get_schema(request):
     Returns the entity schema for the frontend builder.
     """
     entities = get_registered_entities()
-    schemas = []
-    for name, cls in entities.items():
-        schema_dict = cls.get_parameters_schema()
-        # Convert dict to BuilderEntitySchema instance
-        schemas.append(BuilderEntitySchema(**schema_dict))
-    return schemas
+    return [cls.get_parameters_schema() for cls in entities.values()]
 
 @api.post("/simulate", response=SimulationRecordingSchema)
 def run_simulation(request, blueprint: Blueprint) -> SimulationRecordingSchema:
