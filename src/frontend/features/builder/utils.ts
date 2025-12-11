@@ -2,10 +2,37 @@ import type { SimulationEntityState } from "@features/visualization";
 
 import type {
   BlueprintEntity,
+  BlueprintEntityParameter,
+  BlueprintParameterType,
   ParameterType,
   ParameterValue,
   SimulationBlueprint,
 } from "./types";
+
+/**
+ * Extract a numeric parameter value from entity parameters.
+ * Returns the default value if the parameter is missing or not a number.
+ */
+const extractNumericParameter = (
+  parameters: Record<string, BlueprintEntityParameter>,
+  key: string,
+  defaultValue: number = 0,
+): number => {
+  const param = parameters[key];
+  return param && typeof param.value === "number" ? param.value : defaultValue;
+};
+
+/**
+ * Create a position parameter (x or y) as a BlueprintEntityParameter.
+ */
+const createPositionParameter = (
+  name: "x" | "y",
+  value: number,
+): BlueprintEntityParameter => ({
+  name,
+  parameterType: "primitive" as BlueprintParameterType,
+  value,
+});
 
 /**
  * Convert blueprint entities to simulation entity states for rendering.
@@ -19,10 +46,9 @@ export const blueprintToEntityStates = (
   }
 
   return blueprint.entities.map((entity: BlueprintEntity) => {
-    const x = typeof entity.parameters.x === "number" ? entity.parameters.x : 0;
-    const y = typeof entity.parameters.y === "number" ? entity.parameters.y : 0;
-    const angle =
-      typeof entity.parameters.angle === "number" ? entity.parameters.angle : 0;
+    const x = extractNumericParameter(entity.parameters, "x");
+    const y = extractNumericParameter(entity.parameters, "y");
+    const angle = extractNumericParameter(entity.parameters, "angle");
 
     return {
       entityId: entity.uuid,
@@ -47,20 +73,34 @@ export const createBlueprintEntity = (
   // Generate UUID
   const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Create parameters object with default values based on schema
-  const entityParameters: Record<string, ParameterValue> = {
-    x,
-    y,
+  // Create parameters dict with default values based on schema
+  const entityParameters: Record<string, BlueprintEntityParameter> = {
+    x: createPositionParameter("x", x),
+    y: createPositionParameter("y", y),
   };
 
   // Add default values for other parameters based on their types
   for (const [key, type] of Object.entries(parameters)) {
     if (key !== "x" && key !== "y") {
+      let defaultValue: ParameterValue;
+      let paramType: BlueprintParameterType = "primitive";
+
       if (type === "number") {
-        entityParameters[key] = 0;
+        defaultValue = 0;
+      } else if (type === "boolean") {
+        defaultValue = false;
+      } else if (type === "entity") {
+        defaultValue = "";
+        paramType = "entity";
       } else {
-        entityParameters[key] = "";
+        defaultValue = "";
       }
+
+      entityParameters[key] = {
+        name: key,
+        parameterType: paramType,
+        value: defaultValue,
+      };
     }
   }
 
@@ -87,8 +127,8 @@ export const updateBlueprintEntityPosition = (
           ...entity,
           parameters: {
             ...entity.parameters,
-            x,
-            y,
+            x: createPositionParameter("x", x),
+            y: createPositionParameter("y", y),
           },
         }
       : entity,
@@ -112,7 +152,7 @@ export const removeBlueprintEntity = (
 export const updateBlueprintEntityParameters = (
   blueprint: SimulationBlueprint,
   entityId: string,
-  parameters: Record<string, ParameterValue>,
+  parameters: Record<string, BlueprintEntityParameter>,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
@@ -139,4 +179,28 @@ export const findBlueprintEntity = (
     return undefined;
   }
   return blueprint.entities.find((entity) => entity.uuid === entityId);
+};
+
+/**
+ * Get available entities for an entity parameter, filtered by allowed types.
+ */
+export const getAvailableEntitiesForParameter = (
+  blueprint: SimulationBlueprint,
+  allowedEntityTypes: string[] | null | undefined,
+  excludeUuid?: string,
+): BlueprintEntity[] => {
+  return blueprint.entities.filter((entity) => {
+    // Exclude the current entity being edited
+    if (excludeUuid && entity.uuid === excludeUuid) {
+      return false;
+    }
+
+    // If no restrictions, allow all entity types
+    if (!allowedEntityTypes || allowedEntityTypes.length === 0) {
+      return true;
+    }
+
+    // Filter by allowed entity types
+    return allowedEntityTypes.includes(entity.entityType);
+  });
 };
