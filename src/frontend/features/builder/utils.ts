@@ -23,15 +23,14 @@ const extractNumericParameter = (
 };
 
 /**
- * Create a position parameter (x or y) as a BlueprintEntityParameter.
+ * Create both x and y position parameters as a record.
  */
-const createPositionParameter = (
-  name: "x" | "y",
-  value: number,
-): BlueprintEntityParameter => ({
-  name,
-  parameterType: "primitive" as BlueprintParameterType,
-  value,
+const createPositionParameters = (
+  x: number,
+  y: number,
+): Record<"x" | "y", BlueprintEntityParameter> => ({
+  x: createPrimitiveParameter("x", x),
+  y: createPrimitiveParameter("y", y),
 });
 
 /**
@@ -99,8 +98,7 @@ export const createBlueprintEntity = (
 
   // Create parameters dict with default values based on schema
   const entityParameters: Record<string, BlueprintEntityParameter> = {
-    x: createPositionParameter("x", x),
-    y: createPositionParameter("y", y),
+    ...createPositionParameters(x, y),
   };
 
   // Add default values for other parameters based on their types
@@ -152,14 +150,13 @@ export const updateBlueprintEntityPosition = (
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
     entity.uuid === entityId
-      ? {
-          ...entity,
-          parameters: {
-            ...entity.parameters,
-            x: createPositionParameter("x", x),
-            y: createPositionParameter("y", y),
-          },
-        }
+        ? {
+            ...entity,
+            parameters: {
+              ...entity.parameters,
+              ...createPositionParameters(x, y),
+            },
+          }
       : entity,
   ),
 });
