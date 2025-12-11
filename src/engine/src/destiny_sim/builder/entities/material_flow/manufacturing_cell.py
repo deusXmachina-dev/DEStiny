@@ -2,7 +2,7 @@
 ManufacturingCell entity for simulation.
 """
 
-from ctypes import Union
+from typing import Union
 import numpy as np
 
 from destiny_sim.builder.entity import BuilderEntity
