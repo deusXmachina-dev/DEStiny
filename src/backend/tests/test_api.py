@@ -46,7 +46,6 @@ class TestSchemaEndpoint:
         if human_schema:
             assert isinstance(human_schema, dict)
             assert "entityType" in human_schema
-            assert "icon" in human_schema
             assert "parameters" in human_schema
             assert isinstance(human_schema["parameters"], dict)
             # Human should have parameters like x, y, targetX, targetY

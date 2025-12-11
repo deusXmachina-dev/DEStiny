@@ -199,8 +199,8 @@ def test_register_entity():
     class TestEntity(BuilderEntity):
         entity_type = "test_entity"
         
-        def __init__(self, env: RecordingEnvironment, value: float):
-            super().__init__(env)
+        def __init__(self, value: float):
+            super().__init__()
             self.value = value
         
         def get_rendering_info(self):

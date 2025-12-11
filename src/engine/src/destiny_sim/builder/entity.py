@@ -6,6 +6,7 @@ import inspect
 from typing import Dict, Any
 
 from destiny_sim.core.environment import RecordingEnvironment
+from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
 
 
@@ -15,15 +16,13 @@ class BuilderEntity(SimulationEntity):
     """
 
     # The unique type identifier matching the frontend entityType
-    entity_type: str = ""
-    # The icon path for the frontend builder
-    icon: str = ""
+    entity_type: SimulationEntityType = SimulationEntityType.EMPTY
 
-    def __init__(self, env: RecordingEnvironment, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
-        # kwargs are passed to match the signature of the concrete class's __init__
-        # This base init doesn't do much with them, but subclasses might use them.
-        pass
+        
+    def get_rendering_info(self) -> RenderingInfo:
+        return RenderingInfo(self.entity_type)
 
     def process(self, env: RecordingEnvironment):
         """
@@ -38,8 +37,7 @@ class BuilderEntity(SimulationEntity):
         Extract parameter schema from __init__ arguments.
         Returns a dictionary representing the entity schema for the frontend:
         {
-            "entityType": str,
-            "icon": str,
+            "entityType": SimulationEntityType,
             "parameters": { param_name: type_name }
         }
         """
@@ -62,6 +60,5 @@ class BuilderEntity(SimulationEntity):
 
         return {
             "entityType": cls.entity_type,
-            "icon": cls.icon,
             "parameters": params
         }

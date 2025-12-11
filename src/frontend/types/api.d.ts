@@ -53,9 +53,8 @@ export interface components {
          * @description Schema for a builder entity definition.
          */
         BuilderEntitySchema: {
-            entityType: components["schemas"]["SimulationEntityType"];
-            /** Icon */
-            icon: string;
+            /** Entitytype */
+            entityType: string;
             /** Parameters */
             parameters: {
                 [key: string]: components["schemas"]["ParameterType"];
@@ -67,12 +66,6 @@ export interface components {
          * @enum {string}
          */
         ParameterType: "string" | "number" | "boolean";
-        /**
-         * SimulationEntityType
-         * @description Simulation entity types for rendering entities in the frontend.
-         * @enum {string}
-         */
-        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "human" | "counter" | "grid_node" | "";
         /**
          * MetricDataSchema
          * @description Schema for metric data with timestamp and value arrays.
@@ -128,6 +121,12 @@ export interface components {
             /** Endangle */
             endAngle: number;
         };
+        /**
+         * SimulationEntityType
+         * @description Simulation entity types for rendering entities in the frontend.
+         * @enum {string}
+         */
+        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "";
         /**
          * SimulationRecordingSchema
          * @description Complete simulation recording returned to the frontend.

@@ -11,7 +11,6 @@ def test_human_schema_generation():
     
     # Schema should have entityType, icon, and parameters
     assert "entityType" in schema
-    assert "icon" in schema
     assert "parameters" in schema
     assert schema["entityType"] == "human"
     
@@ -76,7 +75,6 @@ def test_schema_with_no_parameters():
     
     # Should have entityType, icon, and parameters (parameters should be empty)
     assert "entityType" in schema
-    assert "icon" in schema
     assert "parameters" in schema
     assert schema["entityType"] == "minimal"
     assert schema["parameters"] == {}
