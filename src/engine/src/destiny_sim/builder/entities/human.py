@@ -17,21 +17,16 @@ class Human(BuilderEntity):
 
     def __init__(
         self, 
-        env: RecordingEnvironment, 
         x: float, 
         y: float, 
         targetX: float, 
         targetY: float
     ):
-        super().__init__(env)
+        super().__init__()
         self.x = x
         self.y = y
         self.target_x = targetX
         self.target_y = targetY
-        self._env = env
-
-        # Initial position recording
-        env.record_stay(self, x=x, y=y)
 
     def get_rendering_info(self) -> RenderingInfo:
         return RenderingInfo(entity_type=SimulationEntityType.HUMAN)
@@ -48,7 +43,6 @@ class Human(BuilderEntity):
         dist = (dx**2 + dy**2) ** 0.5
 
         if dist > 0:
-            duration = dist / speed
             
             # Record motion
             # Note: record_motion yields a Timeout event equal to the duration

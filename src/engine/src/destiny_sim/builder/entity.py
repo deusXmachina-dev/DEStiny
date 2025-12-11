@@ -16,14 +16,12 @@ class BuilderEntity(SimulationEntity):
 
     # The unique type identifier matching the frontend entityType
     entity_type: str = ""
+    
     # The icon path for the frontend builder
-    icon: str = ""
+    icon: str = ""  # todo: reconcile this with rendering info on simulation entity
 
-    def __init__(self, env: RecordingEnvironment, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
-        # kwargs are passed to match the signature of the concrete class's __init__
-        # This base init doesn't do much with them, but subclasses might use them.
-        pass
 
     def process(self, env: RecordingEnvironment):
         """

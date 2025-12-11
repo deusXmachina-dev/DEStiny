@@ -121,7 +121,7 @@ def run_blueprint(
         
         # Instantiate entity
         try:
-            entity = entity_class(env=env, **parameters)
+            entity = entity_class(**parameters)
         except Exception as e:
             raise TypeError(
                 f"Failed to instantiate {entity_type} with parameters {parameters}: {e}"
