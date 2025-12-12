@@ -6,6 +6,7 @@ import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
 import { MetricsProvider, useMetrics } from "../hooks";
+import type { StateMetric, TimeSeriesMetric } from "../index";
 import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { HistogramChart } from "./charts/HistogramChart";
 import { StateProportionChart } from "./charts/StateProportionChart";
@@ -52,7 +53,7 @@ function MetricsPanelContent() {
                 return (
                   <HistogramChart
                     key={`${metric.name}-${index}`}
-                    metric={metric}
+                    metric={metric as TimeSeriesMetric}
                     currentTime={currentTime}
                     maxDuration={duration}
                   />
@@ -61,9 +62,8 @@ function MetricsPanelContent() {
                 return (
                   <StateProportionChart
                     key={`${metric.name}-${index}`}
-                    metric={metric}
+                    metric={metric as StateMetric}
                     currentTime={currentTime}
-                    maxDuration={duration}
                   />
                 );
               } 
@@ -71,7 +71,7 @@ function MetricsPanelContent() {
                 return (
                   <AreaChartWithSteps
                     key={`${metric.name}-${index}`}
-                    metric={metric}
+                    metric={metric as TimeSeriesMetric}
                     currentTime={currentTime}
                     maxDuration={duration}
                   />

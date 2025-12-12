@@ -8,7 +8,6 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 
 import type { StateMetric } from "../../index";
@@ -17,7 +16,6 @@ import { ChartLayout } from "./ChartLayout";
 
 interface StateProportionChartProps {
   metric: StateMetric;
-  maxDuration?: number;
   currentTime?: number;
 }
 
@@ -43,13 +41,12 @@ const generateChartConfig = (states: string[]): ChartConfig => {
 
 export function StateProportionChart({
   metric,
-  maxDuration = 600,
-  currentTime = maxDuration,
+  currentTime,
 }: StateProportionChartProps) {
   // Calculate state proportions
   const proportions = useMemo(
-    () => calculateStateProportions(metric, currentTime, maxDuration),
-    [metric, currentTime, maxDuration],
+    () => calculateStateProportions(metric, currentTime || 0),
+    [metric, currentTime],
   );
 
   // Generate chart config for colors
@@ -68,7 +65,8 @@ export function StateProportionChart({
     }
     // Find the last state change before or at currentTime
     for (let i = metric.data.timestamp.length - 1; i >= 0; i--) {
-      if (metric.data.timestamp[i] <= currentTime) {
+      const timestamp = metric.data.timestamp[i];
+      if (timestamp !== undefined && timestamp <= (currentTime || 0)) {
         return metric.data.state[i];
       }
     }
@@ -77,9 +75,9 @@ export function StateProportionChart({
 
   // Get badge style based on current state color
   const badgeStyle = useMemo(() => {
-    if (!currentState) return undefined;
+    if (!currentState) {return undefined;}
     const color = chartConfig[currentState]?.color;
-    if (!color) return undefined;
+    if (!color) {return undefined;}
     return {
       backgroundColor: color,
       color: "white",
@@ -115,6 +113,9 @@ export function StateProportionChart({
                 return null;
               }
               const data = payload[0];
+              if (!data) {
+                return null;
+              }
               // For PieChart, the name is set via nameKey="name", so it's on data.name
               // The original pieData entry is in data.payload
               const pieDataEntry = (data.payload || {}) as {

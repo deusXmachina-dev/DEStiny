@@ -29,7 +29,6 @@ export function transformTimeSeriesMetricData(metric: {
 export function calculateStateProportions(
   metric: { data: StateMetricData },
   currentTime: number,
-  totalDuration: number,
 ): Array<{ state: string; duration: number; proportion: number }> {
   const { timestamp, state, possible_states } = metric.data;
 
@@ -51,6 +50,10 @@ export function calculateStateProportions(
     const currentTimestamp = timestamp[i];
     const currentState = state[i];
 
+    if (currentTimestamp === undefined || currentState === undefined) {
+      continue; // Skip invalid entries
+    }
+
     if (currentTimestamp > currentTime) {
       break; // Stop if we've passed the current time
     }
@@ -59,7 +62,12 @@ export function calculateStateProportions(
     let nextTimestamp: number;
     if (i < timestamp.length - 1) {
       // Next state change exists
-      nextTimestamp = Math.min(timestamp[i + 1], currentTime);
+      const nextTimestampValue = timestamp[i + 1];
+      if (nextTimestampValue !== undefined) {
+        nextTimestamp = Math.min(nextTimestampValue, currentTime);
+      } else {
+        nextTimestamp = currentTime;
+      }
     } else {
       // This is the last state change, continue until currentTime
       nextTimestamp = currentTime;
