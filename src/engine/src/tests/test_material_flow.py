@@ -30,9 +30,8 @@ def test_source_produces_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    source_metric = next((m for m in metrics if m.name == SOURCE_ITEM_PRODUCED_METRIC), None)
+    source_metric = next((m for m in metrics.counter if m.name == SOURCE_ITEM_PRODUCED_METRIC), None)
     assert source_metric is not None
-    assert source_metric.type == MetricType.COUNTER
     assert source_metric.data.value[-1] == 1
 
 
@@ -51,9 +50,8 @@ def test_sink_consumes_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    sink_metric = next((m for m in metrics if m.name == SINK_ITEM_DELIVERED_METRIC), None)
+    sink_metric = next((m for m in metrics.counter if m.name == SINK_ITEM_DELIVERED_METRIC), None)
     assert sink_metric is not None
-    assert sink_metric.type == MetricType.COUNTER
     assert sink_metric.data.value[-1] == 1
 
 
@@ -89,9 +87,8 @@ def test_buffer_stores_and_retrieves_item():
     # Check that gauge was adjusted correctly (should end at 0)
     recording = env.get_recording()
     metrics = recording.metrics
-    buffer_metric = next((m for m in metrics if m.name == BUFFER_NUMBER_OF_ITEMS_METRIC), None)
+    buffer_metric = next((m for m in metrics.gauge if m.name == BUFFER_NUMBER_OF_ITEMS_METRIC), None)
     assert buffer_metric is not None
-    assert buffer_metric.type == MetricType.GAUGE
     assert buffer_metric.data.value == [1, 2, 1, 0]
 
 

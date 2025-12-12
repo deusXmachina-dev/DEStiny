@@ -118,7 +118,12 @@ class TestSimulateEndpoint:
         assert isinstance(data["segments_by_entity"], dict)
         
         assert "metrics" in data
-        assert isinstance(data["metrics"], list)
+        assert isinstance(data["metrics"], dict)
+        assert "counter" in data["metrics"]
+        assert "gauge" in data["metrics"]
+        assert "sample" in data["metrics"]
+        assert "state" in data["metrics"]
+        assert "generic" in data["metrics"]
 
     def test_simulate_with_multiple_entities(self, api_client):
         """Simulate endpoint should handle multiple entities."""

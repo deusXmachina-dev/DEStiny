@@ -1,4 +1,6 @@
 
+from enum import StrEnum
+
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.metrics import MetricType
 
@@ -15,10 +17,9 @@ def test_counter_metric():
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 1
-    metric = metrics[0]
+    assert len(metrics.counter) == 1
+    metric = metrics.counter[0]
     assert metric.name == "served"
-    assert metric.type == MetricType.COUNTER
     assert metric.labels == {"type": "regular"}
     assert metric.data.timestamp == [0.0, 5.0]
     assert metric.data.value == [1, 3]  # 1, then 1+2=3
@@ -35,10 +36,9 @@ def test_gauge_metric():
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 1
-    metric = metrics[0]
+    assert len(metrics.gauge) == 1
+    metric = metrics.gauge[0]
     assert metric.name == "queue_length"
-    assert metric.type == MetricType.GAUGE
     assert metric.data.timestamp == [0.0, 2.0, 4.0]
     assert metric.data.value == [0, 5, 3]
 
@@ -62,10 +62,9 @@ def test_adjust_gauge():
     
     recording = env.get_recording()
     metrics = recording.metrics
-    metric = metrics[0]
+    metric = metrics.gauge[0]
     
     assert metric.name == "active_agents"
-    assert metric.type == MetricType.GAUGE
     assert metric.data.timestamp == [0.0, 1.0, 2.0, 3.0, 3.0]
     assert metric.data.value == [1, 3, 2, 0, -1]
 
@@ -76,11 +75,11 @@ def test_multiple_metrics_and_labels():
     env.incr_counter("served", labels={"id": "2"})
     
     recording = env.get_recording()
-    assert len(recording.metrics) == 2
+    assert len(recording.metrics.counter) == 2
     
     # Check they are distinct
-    m1 = next(m for m in recording.metrics if m.labels["id"] == "1")
-    m2 = next(m for m in recording.metrics if m.labels["id"] == "2")
+    m1 = next(m for m in recording.metrics.counter if m.labels["id"] == "1")
+    m2 = next(m for m in recording.metrics.counter if m.labels["id"] == "2")
     
     assert m1.data.value == [1]
     assert m2.data.value == [1]
@@ -91,9 +90,9 @@ def test_metrics_in_to_dict():
     
     data = env.get_recording().model_dump()
     assert "metrics" in data
-    assert len(data["metrics"]) == 1
-    assert data["metrics"][0]["name"] == "test_metric"
-    assert data["metrics"][0]["data"]["value"] == [1]
+    assert len(data["metrics"]["counter"]) == 1
+    assert data["metrics"]["counter"][0]["name"] == "test_metric"
+    assert data["metrics"]["counter"][0]["data"]["value"] == [1]
 
 def test_sample_metric():
     """Test recording sample metrics."""
@@ -109,10 +108,9 @@ def test_sample_metric():
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 1
-    metric = metrics[0]
+    assert len(metrics.sample) == 1
+    metric = metrics.sample[0]
     assert metric.name == "package_delivery_time"
-    assert metric.type == MetricType.SAMPLE
     assert metric.data.timestamp == [0.0, 10.0, 15.0]
     assert metric.data.value == [5.2, 8.7, 3.1]
 
@@ -126,10 +124,10 @@ def test_sample_metric_with_labels():
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 2
+    assert len(metrics.sample) == 2
     
-    north = next(m for m in metrics if m.labels.get("region") == "north")
-    south = next(m for m in metrics if m.labels.get("region") == "south")
+    north = next(m for m in metrics.sample if m.labels.get("region") == "north")
+    south = next(m for m in metrics.sample if m.labels.get("region") == "south")
     
     assert north.data.value == [5.2]
     assert south.data.value == [8.7]
@@ -150,11 +148,13 @@ def test_different_types_same_name():
     recording = env.get_recording()
     metrics = recording.metrics
     
-    assert len(metrics) == 3
+    assert len(metrics.counter) == 1
+    assert len(metrics.gauge) == 1
+    assert len(metrics.sample) == 1
     
-    counter = next(m for m in metrics if m.type == MetricType.COUNTER)
-    gauge = next(m for m in metrics if m.type == MetricType.GAUGE)
-    sample = next(m for m in metrics if m.type == MetricType.SAMPLE)
+    counter = metrics.counter[0]
+    gauge = metrics.gauge[0]
+    sample = metrics.sample[0]
     
     assert counter.name == "foo"
     assert gauge.name == "foo"
@@ -162,3 +162,51 @@ def test_different_types_same_name():
     assert counter.data.value == [1]
     assert gauge.data.value == [10]
     assert sample.data.value == [42.0]
+
+def test_state_metric():
+    """Test recording state metrics."""
+    class MachineState(StrEnum):
+        IDLE = "idle"
+        PROCESSING = "processing"
+        ERROR = "error"
+    
+    env = RecordingEnvironment()
+    
+    env.set_state("machine_state", MachineState.IDLE)
+    env.run(until=5.0)
+    env.set_state("machine_state", MachineState.PROCESSING)
+    env.run(until=10.0)
+    env.set_state("machine_state", MachineState.IDLE)
+    
+    recording = env.get_recording()
+    metrics = recording.metrics
+    
+    assert len(metrics.state) == 1
+    metric = metrics.state[0]
+    assert metric.name == "machine_state"
+    assert metric.data.timestamp == [0.0, 5.0, 10.0]
+    assert metric.data.state == ["idle", "processing", "idle"]
+    assert set(metric.data.possible_states) == {"idle", "processing", "error"}
+
+
+def test_state_metric_invalid_state():
+    """Test that setting an invalid state raises an error."""
+    class MachineState(StrEnum):
+        IDLE = "idle"
+        PROCESSING = "processing"
+        
+    class InvalidState(StrEnum):
+        INVALID = "invalid"
+    
+    env = RecordingEnvironment()
+    
+    # Valid state should work
+    env.set_state("machine_state", MachineState.IDLE)
+    
+    # Invalid state - trying to use a string instead of enum member
+    # This should raise TypeError since we now require StrEnum
+    try:
+        env.set_state("machine_state", InvalidState.INVALID)  # type: ignore
+        assert False, "Should have raised TypeError"
+    except ValueError:
+        pass  # Expected
