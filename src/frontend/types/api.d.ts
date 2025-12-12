@@ -95,6 +95,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/blueprint/canvas-size": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Canvas Size
+         * @description Update the canvas size in storage.
+         *
+         *     Saves the provided canvas size to the session storage.
+         */
+        post: operations["simulation_api_blueprint_post_canvas_size"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -319,7 +341,8 @@ export interface components {
             /**
              * @default {
              *       "initialTime": 0,
-             *       "duration": null
+             *       "duration": null,
+             *       "canvasSize": null
              *     }
              */
             simParams: components["schemas"]["SimParams"];
@@ -370,6 +393,22 @@ export interface components {
          */
         BlueprintParameterType: "primitive" | "entity";
         /**
+         * CanvasSize
+         * @description Canvas size for the simulation.
+         */
+        CanvasSize: {
+            /**
+             * Width
+             * @description Canvas width in pixels
+             */
+            width: number;
+            /**
+             * Height
+             * @description Canvas height in pixels
+             */
+            height: number;
+        };
+        /**
          * SimParams
          * @description Simulation-level parameters shared between frontend and engine.
          */
@@ -381,6 +420,7 @@ export interface components {
             initialTime: number;
             /** Duration */
             duration?: number | null;
+            canvasSize?: components["schemas"]["CanvasSize"] | null;
         };
     };
     responses: never;
@@ -494,6 +534,28 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Blueprint"];
                 };
+            };
+        };
+    };
+    simulation_api_blueprint_post_canvas_size: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CanvasSize"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

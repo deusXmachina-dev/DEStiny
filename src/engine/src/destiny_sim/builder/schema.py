@@ -66,11 +66,19 @@ class BuilderEntitySchema(BaseModel):
     parameters: Dict[str, ParameterInfo]
 
 
+class CanvasSize(BaseModel):
+    """Canvas size for the simulation."""
+
+    width: int = Field(..., description="Canvas width in pixels")
+    height: int = Field(..., description="Canvas height in pixels")
+
+
 class SimParams(BaseModel):
     """Simulation-level parameters shared between frontend and engine."""
 
     initialTime: float = 0
     duration: float | None = None
+    canvasSize: CanvasSize | None = None
 
 
 class BlueprintEntity(BaseModel):

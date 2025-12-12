@@ -386,6 +386,23 @@ def add_entity(
 
 
 @blueprint_agent.tool
+def get_canvas_size(
+    ctx: Context,
+) -> Dict[str, Any] | str:
+    """
+    Get the canvas size in the blueprint.
+    """
+    storage = ctx.deps
+    blueprint = storage.get_blueprint()
+    if blueprint.simParams.canvasSize is None:
+        return "No canvas size set"
+    return {
+        "width": blueprint.simParams.canvasSize.width,
+        "height": blueprint.simParams.canvasSize.height
+    }
+
+
+@blueprint_agent.tool
 def update_entity(
     ctx: Context,
     entity_name: str,

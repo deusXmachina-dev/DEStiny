@@ -25,6 +25,7 @@ import {
   updateBlueprintEntityParameters,
   updateBlueprintEntityPosition,
 } from "../utils";
+import { useDebounce } from "@uidotdev/usehooks";
 
 interface BuilderContextValue {
   // State
@@ -111,17 +112,19 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   // Save mutation
   const saveMutation = $api.useMutation("put", "/api/blueprint");
 
-  // Save when debounced blueprint changes (skip initial null)
+
+  const debouncedBlueprint = useDebounce(blueprint, 3000);
+
   useEffect(() => {
-    if (blueprint) {
-      if (justFetchedRef.current) {
-        justFetchedRef.current = false;
-      } else {
-        saveMutation.mutate({ body: blueprint });
-      }
+    if (!debouncedBlueprint) return;
+
+    if (justFetchedRef.current) {
+      justFetchedRef.current = false;
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blueprint]);
+
+    saveMutation.mutate({ body: debouncedBlueprint });
+  }, [debouncedBlueprint]);
 
   const addEntity = (
     entityType: BlueprintEntity["entityType"],

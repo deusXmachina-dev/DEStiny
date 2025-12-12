@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from ninja import Router
 
 from agent.storage import BlueprintStorage
-from destiny_sim.builder.schema import Blueprint
+from destiny_sim.builder.schema import Blueprint, CanvasSize
 
 router = Router()
 
@@ -34,3 +34,17 @@ def put_blueprint(request: HttpRequest, blueprint: Blueprint) -> Blueprint:
     storage = BlueprintStorage(session=request.session)
     storage.save_blueprint(blueprint)
     return blueprint
+
+
+@router.post("/canvas-size", response={200: None}, by_alias=True)
+def post_canvas_size(request: HttpRequest, canvas_size: CanvasSize) -> None:
+    """
+    Update the canvas size in storage.
+    
+    Saves the provided canvas size to the session storage.
+    """ 
+    storage = BlueprintStorage(session=request.session)
+    blueprint = storage.get_blueprint()
+    blueprint.simParams.canvasSize = canvas_size
+    storage.save_blueprint(blueprint)
+    return None

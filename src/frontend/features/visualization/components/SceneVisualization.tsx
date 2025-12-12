@@ -1,13 +1,15 @@
 "use client";
 
 import { Application } from "@pixi/react";
-import { ReactNode, RefObject, useRef } from "react";
+import { ReactNode, RefObject, useEffect, useRef } from "react";
 
 import { useVisualization } from "../hooks/VisualizationContext";
 import { CanvasWheelHandler } from "./CanvasWheelHandler";
 import { Scene } from "./pixi/Scene";
 import { ResizeListener } from "./ResizeListener";
 import { ZoomPanControls } from "./ZoomPanControls";
+import { useDebounce } from "@uidotdev/usehooks";
+import { $api } from "@/lib/api-client";
 
 interface SceneVisualizationProps {
   children?: ReactNode;
@@ -26,7 +28,7 @@ interface SceneVisualizationProps {
  * Must be used within a VisualizationProvider.
  */
 export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
-  const { getInteractionCallbacks, zoom, scrollOffset } = useVisualization();
+  const { getInteractionCallbacks, zoom, scrollOffset, screenSize } = useVisualization();
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {

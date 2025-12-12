@@ -1,6 +1,5 @@
 "use client";
 
-import { useBuilder } from "@features/builder";
 import { formatTime } from "@lib/utils";
 import { FastForward, Pause, Play, Rewind } from "lucide-react";
 
@@ -31,13 +30,9 @@ export function PlaybackControls() {
     hasRecording,
   } = usePlayback();
   const { mode } = useAppState();
-  const { blueprint } = useBuilder();
-  const { runSimulation, isFetchingSimulationResult } = useSimulationControl();
+  const { runSimulation } = useSimulationControl();
 
   const disabled = !hasRecording || mode !== "simulation";
-  const isBlueprintEmpty = !blueprint || blueprint.entities.length === 0;
-  const isPlayButtonDisabled =
-    isFetchingSimulationResult || (mode === "builder" && isBlueprintEmpty);
 
   const handlePlayClick = () => {
     if (mode === "simulation") {
@@ -66,7 +61,6 @@ export function PlaybackControls() {
             size="icon"
             className="size-9"
             title="Play/Pause"
-            disabled={isPlayButtonDisabled}
           >
             {mode === "simulation" && isPlaying ? (
               <Pause className="size-4" />

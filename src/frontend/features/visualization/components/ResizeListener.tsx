@@ -2,15 +2,20 @@ import { useApplication } from "@pixi/react";
 import { useEffect } from "react";
 
 import { useVisualization } from "../hooks/VisualizationContext";
+import { $api } from "@/lib/api-client";
 
 export const ResizeListener = () => {
   const { app } = useApplication();
   const { setScreenSize } = useVisualization();
 
+  // keep updating the blueprint screen size
+  const { mutate: updateCanvasSize } = $api.useMutation("post", "/api/blueprint/canvas-size");
+
   // Initialize screen size and then listen to resize events
   useEffect(() => {
     const updateScreenSize = () => {
       setScreenSize({ width: app.screen.width, height: app.screen.height });
+      updateCanvasSize({ body: { width: app.screen.width, height: app.screen.height } });
     };
 
     // Initial size
