@@ -75,6 +75,18 @@ export function StateProportionChart({
     return metric.data.state[0] || null;
   }, [metric, currentTime, hasData]);
 
+  // Get badge style based on current state color
+  const badgeStyle = useMemo(() => {
+    if (!currentState) return undefined;
+    const color = chartConfig[currentState]?.color;
+    if (!color) return undefined;
+    return {
+      backgroundColor: color,
+      color: "white",
+      borderColor: color,
+    } as React.CSSProperties;
+  }, [currentState, chartConfig]);
+
   // Format data for pie chart (only include states with duration > 0)
   const pieData = useMemo(
     () =>
@@ -92,27 +104,38 @@ export function StateProportionChart({
     <ChartLayout
       title={metric.name}
       badge={currentState}
+      badgeStyle={badgeStyle}
       isEmpty={!hasData || pieData.length === 0}
     >
       <ChartContainer config={chartConfig}>
         <PieChart>
           <ChartTooltip
-            content={
-              <ChartTooltipContent
-                labelFormatter={(value) => `State: ${value}`}
-                formatter={(value, _name, props) => {
-                  const payload = props.payload as
-                    | { duration?: number; value?: number }
-                    | undefined;
-                  const duration = payload?.duration ?? 0;
-                  const percentage = ((payload?.value ?? 0) * 100).toFixed(1);
-                  return [
-                    `${percentage}% (${formatTime(duration)})`,
-                    "Time",
-                  ];
-                }}
-              />
-            }
+            content={({ active, payload }) => {
+              if (!active || !payload || payload.length === 0) {
+                return null;
+              }
+              const data = payload[0];
+              // For PieChart with nameKey="name", the name is directly on the payload
+              // The full data entry (with duration) is in payload
+              const pieDataEntry = data.payload as
+                | { name?: string; duration?: number; value?: number }
+                | undefined;
+              const stateName = data.name || pieDataEntry?.name || "Unknown";
+              const proportion = (data.value as number) || 0;
+              const duration = pieDataEntry?.duration || 0;
+              const percentage = (proportion * 100).toFixed(1);
+
+              return (
+                <ChartTooltipContent>
+                  <div className="grid gap-1.5">
+                    <div className="font-medium">State: {stateName}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {percentage}% ({formatTime(duration)})
+                    </div>
+                  </div>
+                </ChartTooltipContent>
+              );
+            }}
           />
           <Pie
             data={pieData}
