@@ -87,22 +87,45 @@ export const blueprintToEntityStates = (
 
 /**
  * Get the next default name for an entity type based on existing entities.
- * Format: "{EntityType} {count + 1}" (e.g., "Source 1", "Buffer 2")
+ * Format: "{EntityType} {number}" (e.g., "Source 1", "Buffer 2")
+ * Uses gap-aware logic: finds the first available number starting from 1.
  */
 export const getNextEntityName = (
   entityType: string,
   blueprint: SimulationBlueprint,
 ): string => {
-  // Count existing entities of the same type
-  const count = blueprint.entities.filter(
-    (entity) => entity.entityType === entityType,
-  ).length;
-
   // Capitalize first letter of entity type
   const capitalizedType =
     entityType.charAt(0).toUpperCase() + entityType.slice(1);
 
-  return `${capitalizedType} ${count + 1}`;
+  // Get all existing entities of the same type
+  const existingEntities = blueprint.entities.filter(
+    (entity) => entity.entityType === entityType,
+  );
+
+  // Extract numbers from existing names
+  // Pattern: "{Type} {number}" - extract the number part
+  const usedNumbers = new Set<number>();
+  const namePattern = new RegExp(`^${capitalizedType} (\\d+)$`);
+
+  for (const entity of existingEntities) {
+    const match = entity.name.match(namePattern);
+    if (match) {
+      if (!match[1]) {
+        continue;
+      }
+      const num = parseInt(match[1], 10);
+      usedNumbers.add(num);
+    }
+  }
+
+  // Find the first available number starting from 1
+  let nextNumber = 1;
+  while (usedNumbers.has(nextNumber)) {
+    nextNumber++;
+  }
+
+  return `${capitalizedType} ${nextNumber}`;
 };
 
 /**
