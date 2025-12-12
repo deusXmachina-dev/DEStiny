@@ -184,6 +184,39 @@ def get_blueprint(ctx: Context) -> Dict[str, Any]:
     }
 
 
+def _get_next_entity_name(entity_type: SimulationEntityType, blueprint) -> str:
+    """
+    Generate the next default name for an entity type based on existing entities.
+    Format: "{EntityType} {number}" (e.g., "Source 1", "Buffer 2")
+    Uses gap-aware logic: finds the first available number starting from 1.
+    """
+    # Capitalize first letter of entity type
+    entity_type_str = entity_type.value
+    capitalized_type = entity_type_str[0].upper() + entity_type_str[1:] if entity_type_str else ""
+    
+    # Get all existing entities of the same type
+    existing_entities = [e for e in blueprint.entities if e.entityType == entity_type]
+    
+    # Extract numbers from existing names
+    # Pattern: "{Type} {number}" - extract the number part
+    import re
+    used_numbers = set()
+    name_pattern = re.compile(f"^{re.escape(capitalized_type)} (\\d+)$")
+    
+    for entity in existing_entities:
+        match = name_pattern.match(entity.name)
+        if match:
+            num = int(match.group(1))
+            used_numbers.add(num)
+    
+    # Find the first available number starting from 1
+    next_number = 1
+    while next_number in used_numbers:
+        next_number += 1
+    
+    return f"{capitalized_type} {next_number}"
+
+
 @blueprint_agent.tool
 def add_entity(
     ctx: Context,
@@ -331,10 +364,14 @@ def add_entity(
                 value=param_value,
             )
     
+    # Generate entity name
+    entity_name = _get_next_entity_name(entity_type_enum, blueprint)
+    
     # Create the blueprint entity
     blueprint_entity = BlueprintEntity(
         entityType=entity_type_enum,
         uuid=entity_uuid,
+        name=entity_name,
         parameters=blueprint_parameters,
     )
     
