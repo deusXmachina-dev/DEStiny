@@ -166,6 +166,7 @@ def get_blueprint(ctx: Context) -> Dict[str, Any]:
         entity_dict = {
             "uuid": entity.uuid,
             "entityType": entity.entityType.value,
+            "name": entity.name,
             "parameters": {}
         }
         for param_name, param in entity.parameters.items():

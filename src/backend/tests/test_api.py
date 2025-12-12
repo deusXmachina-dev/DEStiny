@@ -463,6 +463,7 @@ class TestBlueprintEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Human 1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -507,6 +508,7 @@ class TestBlueprintEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Human 1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -534,6 +536,7 @@ class TestBlueprintEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Human 1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -544,6 +547,7 @@ class TestBlueprintEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-2",
+                    "name": "Human 2",
                     "parameters": make_parameters(
                         x=200.0,
                         y=200.0,
