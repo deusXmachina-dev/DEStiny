@@ -80,36 +80,14 @@ export const blueprintToEntityStates = (
       y,
       angle,
       children: [],
-      name: entity.name,
     };
   });
-};
-
-/**
- * Get the next default name for an entity type based on existing entities.
- * Format: "{EntityType} {count + 1}" (e.g., "Source 1", "Buffer 2")
- */
-export const getNextEntityName = (
-  entityType: string,
-  blueprint: SimulationBlueprint,
-): string => {
-  // Count existing entities of the same type
-  const count = blueprint.entities.filter(
-    (entity) => entity.entityType === entityType,
-  ).length;
-
-  // Capitalize first letter of entity type
-  const capitalizedType =
-    entityType.charAt(0).toUpperCase() + entityType.slice(1);
-
-  return `${capitalizedType} ${count + 1}`;
 };
 
 /**
  * Create a new blueprint entity from a schema and position.
  */
 export const createBlueprintEntity = (
-  name: string,
   entityType: BlueprintEntity["entityType"],
   parameters: Record<string, ParameterInfo>,
   x: number,
@@ -151,7 +129,6 @@ export const createBlueprintEntity = (
   return {
     entityType,
     uuid,
-    name,
     parameters: entityParameters,
   };
 };
@@ -209,20 +186,6 @@ export const updateBlueprintEntityParameters = (
           },
         }
       : entity,
-  ),
-});
-
-/**
- * Update the name of an entity in the blueprint.
- */
-export const updateBlueprintEntityName = (
-  blueprint: SimulationBlueprint,
-  entityId: string,
-  name: string,
-): SimulationBlueprint => ({
-  ...blueprint,
-  entities: blueprint.entities.map((entity) =>
-    entity.uuid === entityId ? { ...entity, name } : entity,
   ),
 });
 
