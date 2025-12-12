@@ -14,7 +14,7 @@ import type {
   ParameterInfo,
   SimulationBlueprint,
 } from "../../../types";
-import { getAvailableEntitiesForParameter } from "../../../utils";
+import { createEntityParameter, getAvailableEntitiesForParameter } from "../../../utils";
 
 interface EntityParameterInputProps {
   name: string;
@@ -22,7 +22,7 @@ interface EntityParameterInputProps {
   value: BlueprintEntityParameter | undefined;
   blueprint: SimulationBlueprint;
   excludeUuid?: string;
-  onValueChange: (uuid: string) => void;
+  onChange: (param: BlueprintEntityParameter) => void;
 }
 
 export const EntityParameterInput = ({
@@ -31,7 +31,7 @@ export const EntityParameterInput = ({
   value,
   blueprint,
   excludeUuid,
-  onValueChange,
+  onChange,
 }: EntityParameterInputProps) => {
   const currentValue =
     value?.parameterType === "entity" && typeof value.value === "string"
@@ -45,12 +45,16 @@ export const EntityParameterInput = ({
     excludeUuid,
   );
 
+  const handleChange = (uuid: string) => {
+    onChange(createEntityParameter(name, uuid));
+  };
+
   return (
     <div className="grid grid-cols-4 items-center gap-4">
       <Label htmlFor={name} className="text-right capitalize">
         {name}
       </Label>
-      <Select value={currentValue} onValueChange={onValueChange}>
+      <Select value={currentValue} onValueChange={handleChange}>
         <SelectTrigger className="col-span-3">
           <SelectValue placeholder="Select an entity" />
         </SelectTrigger>

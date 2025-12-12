@@ -10,24 +10,25 @@ import {
 } from "@/components/ui/select";
 
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
+import { createPrimitiveParameter } from "../../../utils";
 
 interface BooleanParameterInputProps {
   name: string;
   paramInfo: ParameterInfo;
   value: BlueprintEntityParameter | undefined;
-  onValueChange: (value: string) => void;
+  onChange: (param: BlueprintEntityParameter) => void;
 }
 
 export const BooleanParameterInput = ({
   name,
   value,
-  onValueChange,
+  onChange,
 }: BooleanParameterInputProps) => {
   const currentValue =
     value?.parameterType === "primitive" ? Boolean(value.value) : false;
 
   const handleChange = (selectedValue: string) => {
-    onValueChange(selectedValue);
+    onChange(createPrimitiveParameter(name, selectedValue === "true"));
   };
 
   return (

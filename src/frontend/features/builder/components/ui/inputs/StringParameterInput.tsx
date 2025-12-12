@@ -4,32 +4,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
+import { createPrimitiveParameter } from "../../../utils";
 
 interface StringParameterInputProps {
   name: string;
   paramInfo: ParameterInfo;
   value: BlueprintEntityParameter | undefined;
-  onValueChange: (value: string) => void;
-  onSubmit: () => void;
+  onChange: (param: BlueprintEntityParameter) => void;
+  onSubmit?: () => void;
 }
 
 export const StringParameterInput = ({
   name,
   value,
-  onValueChange,
+  onChange,
   onSubmit,
 }: StringParameterInputProps) => {
   const currentValue =
     value?.parameterType === "primitive" ? String(value.value ?? "") : "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onValueChange(e.target.value);
+    onChange(createPrimitiveParameter(name, e.target.value));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit();
+      onSubmit?.();
     }
   };
 

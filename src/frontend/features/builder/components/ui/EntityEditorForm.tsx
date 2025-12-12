@@ -7,14 +7,7 @@ import type {
   BuilderEntitySchema,
   SimulationBlueprint,
 } from "../../types";
-import {
-  createEntityParameter,
-  createPrimitiveParameter,
-  finalizeNumberValue,
-  findBlueprintEntity,
-  isIntermediateNumberState,
-  parseNumberValue,
-} from "../../utils";
+import { findBlueprintEntity } from "../../utils";
 import {
   BooleanParameterInput,
   EntityParameterInput,
@@ -46,80 +39,15 @@ export const EntityEditorForm = ({
     Record<string, BlueprintEntityParameter>
   >(() => ({ ...entity.parameters }));
 
-  // Input values for primitive parameters (for number input handling)
-  const [inputValues, setInputValues] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    Object.entries(entity.parameters).forEach(([key, param]) => {
-      if (param.parameterType === "primitive") {
-        initial[key] = String(param.value);
-      }
-    });
-    return initial;
-  });
-
-  const handlePrimitiveParameterChange = (key: string, value: string) => {
-    const paramInfo = schema.parameters[key];
-    if (!paramInfo) {
-      return;
-    }
-
-    // Always update the input value to allow typing
-    setInputValues((prev) => ({ ...prev, [key]: value }));
-
-    // Update form value based on type
-    if (paramInfo.type === "number") {
-      // Allow intermediate states, but try to parse valid numbers
-      if (isIntermediateNumberState(value)) {
-        return; // Keep current form value while typing
-      }
-      const parsed = parseNumberValue(value);
-      if (!isNaN(parsed)) {
-        setFormValues((prev) => ({
-          ...prev,
-          [key]: createPrimitiveParameter(key, parsed),
-        }));
-      }
-    } else if (paramInfo.type === "boolean") {
-      setFormValues((prev) => ({
-        ...prev,
-        [key]: createPrimitiveParameter(key, value === "true" || value === "1"),
-      }));
-    } else {
-      setFormValues((prev) => ({
-        ...prev,
-        [key]: createPrimitiveParameter(key, value),
-      }));
-    }
-  };
-
-  const handleEntityParameterChange = (key: string, uuid: string) => {
+  const handleParameterChange = (key: string) => (param: BlueprintEntityParameter) => {
     setFormValues((prev) => ({
       ...prev,
-      [key]: createEntityParameter(key, uuid),
+      [key]: param,
     }));
-  };
-
-  const handleNumberBlur = (key: string) => {
-    const value = inputValues[key] ?? "";
-    const finalValue = finalizeNumberValue(value);
-    setFormValues((prev) => ({
-      ...prev,
-      [key]: createPrimitiveParameter(key, finalValue),
-    }));
-    setInputValues((prev) => ({ ...prev, [key]: String(finalValue) }));
   };
 
   const performSubmit = () => {
-    // Finalize all number values before submit
-    const finalized = { ...formValues };
-    Object.entries(schema.parameters).forEach(([key, paramInfo]) => {
-      if (paramInfo.type === "number") {
-        const value = inputValues[key] ?? "";
-        const finalValue = finalizeNumberValue(value);
-        finalized[key] = createPrimitiveParameter(key, finalValue);
-      }
-    });
-    onSave(finalized);
+    onSave(formValues);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -132,6 +60,7 @@ export const EntityEditorForm = ({
       <div className="grid gap-4 py-4">
         {Object.entries(schema.parameters).map(([key, paramInfo]) => {
           const currentParam = formValues[key];
+          const onChange = handleParameterChange(key);
 
           if (paramInfo.type === "entity") {
             return (
@@ -142,7 +71,7 @@ export const EntityEditorForm = ({
                 value={currentParam}
                 blueprint={blueprint}
                 excludeUuid={entity.uuid}
-                onValueChange={(uuid) => handleEntityParameterChange(key, uuid)}
+                onChange={onChange}
               />
             );
           }
@@ -154,11 +83,7 @@ export const EntityEditorForm = ({
                 name={key}
                 paramInfo={paramInfo}
                 value={currentParam}
-                inputValue={inputValues[key] ?? ""}
-                onInputChange={(value) =>
-                  handlePrimitiveParameterChange(key, value)
-                }
-                onBlur={() => handleNumberBlur(key)}
+                onChange={onChange}
                 onSubmit={performSubmit}
               />
             );
@@ -171,9 +96,7 @@ export const EntityEditorForm = ({
                 name={key}
                 paramInfo={paramInfo}
                 value={currentParam}
-                onValueChange={(value) =>
-                  handlePrimitiveParameterChange(key, value)
-                }
+                onChange={onChange}
               />
             );
           }
@@ -185,9 +108,7 @@ export const EntityEditorForm = ({
               name={key}
               paramInfo={paramInfo}
               value={currentParam}
-              onValueChange={(value) =>
-                handlePrimitiveParameterChange(key, value)
-              }
+              onChange={onChange}
               onSubmit={performSubmit}
             />
           );
