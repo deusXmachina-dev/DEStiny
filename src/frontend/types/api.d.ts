@@ -109,10 +109,17 @@ export interface components {
          * @enum {string}
          */
         SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "manufacturing_cell" | "";
+        /**
+         * MetricType
+         * @description Enumeration of metric types.
+         * @enum {string}
+         */
+        MetricType: "counter" | "gauge" | "sample" | "state";
         /** Metric[StateMetricData] */
         Metric_StateMetricData_: {
             /** Name */
             name: string;
+            type: components["schemas"]["MetricType"];
             /**
              * Labels
              * @default {}
@@ -126,6 +133,7 @@ export interface components {
         Metric_TimeSeriesMetricData_: {
             /** Name */
             name: string;
+            type: components["schemas"]["MetricType"];
             /**
              * Labels
              * @default {}

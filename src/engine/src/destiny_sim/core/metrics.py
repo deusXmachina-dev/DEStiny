@@ -68,6 +68,7 @@ class Metric(BaseModel, Generic[T]):
     """
     
     name: str
+    type: MetricType
     labels: dict[str, str] = {}
     data: T
 
@@ -105,6 +106,7 @@ class MetricsContainer:
         if key not in self._metrics:
             metric = Metric[TimeSeriesMetricData](
                 name=name,
+                type=metric_type,
                 labels=labels or {},
                 data=TimeSeriesMetricData(timestamp=[], value=[])
             )
@@ -119,6 +121,7 @@ class MetricsContainer:
             possible_states = [member.value for member in enum_class]
             metric = Metric[StateMetricData](
                 name=name,
+                type=metric_type,
                 labels=labels or {},
                 data=StateMetricData(timestamp=[], state=[], possible_states=possible_states)
             )

@@ -123,7 +123,6 @@ class TestSimulateEndpoint:
         assert "gauge" in data["metrics"]
         assert "sample" in data["metrics"]
         assert "state" in data["metrics"]
-        assert "generic" in data["metrics"]
 
     def test_simulate_with_multiple_entities(self, api_client):
         """Simulate endpoint should handle multiple entities."""
