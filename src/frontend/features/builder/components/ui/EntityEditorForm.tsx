@@ -7,7 +7,7 @@ import type {
   BuilderEntitySchema,
   SimulationBlueprint,
 } from "../../types";
-import { findBlueprintEntity } from "../../utils";
+import { createPrimitiveParameter, findBlueprintEntity } from "../../utils";
 import {
   BooleanParameterInput,
   EntityParameterInput,
@@ -35,9 +35,13 @@ export const EntityEditorForm = ({
   formId,
 }: EntityEditorFormProps) => {
   // Initialize form values from entity parameters (dict of BlueprintEntityParameter)
+  // Include name as a regular form value
   const [formValues, setFormValues] = useState<
     Record<string, BlueprintEntityParameter>
-  >(() => ({ ...entity.parameters }));
+  >(() => ({
+    ...entity.parameters,
+    name: createPrimitiveParameter("name", entity.name),
+  }));
 
   const handleParameterChange = (key: string) => (param: BlueprintEntityParameter) => {
     setFormValues((prev) => ({
@@ -58,6 +62,15 @@ export const EntityEditorForm = ({
   return (
     <form id={formId} onSubmit={handleSubmit}>
       <div className="grid gap-4 py-4">
+        {/* Name field - always first */}
+        <StringParameterInput
+          name="name"
+          value={formValues.name}
+          onChange={handleParameterChange("name")}
+          onSubmit={performSubmit}
+        />
+
+        {/* Parameter fields */}
         {Object.entries(schema.parameters).map(([key, paramInfo]) => {
           const currentParam = formValues[key];
           const onChange = handleParameterChange(key);
@@ -106,7 +119,6 @@ export const EntityEditorForm = ({
             <StringParameterInput
               key={key}
               name={key}
-              paramInfo={paramInfo}
               value={currentParam}
               onChange={onChange}
               onSubmit={performSubmit}

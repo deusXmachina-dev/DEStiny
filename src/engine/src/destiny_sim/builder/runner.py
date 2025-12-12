@@ -201,4 +201,8 @@ def _resolve_entity_parameters(
 
                     # Resolve to actual entity instance
                     resolved_params[param_name] = uuid_to_entity[referenced_uuid]
+            
+            # Add name from BlueprintEntity
+            resolved_params["name"] = entity.name
+            
             return resolved_params, can_resolve

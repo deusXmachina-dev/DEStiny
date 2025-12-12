@@ -42,6 +42,7 @@ def test_run_blueprint_with_human():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
+                name="Person 1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -81,6 +82,7 @@ def test_run_blueprint_multiple_entities():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
+                name="Person 1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -91,6 +93,7 @@ def test_run_blueprint_multiple_entities():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-2",
+                name="Person 2",
                 parameters={
                     "x": _primitive("x", 300.0),
                     "y": _primitive("y", 300.0),
@@ -115,6 +118,7 @@ def test_run_blueprint_default_initial_time():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
+                name="Person 1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -139,6 +143,7 @@ def test_run_blueprint_without_duration():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
+                name="Person 1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -174,6 +179,7 @@ def test_run_blueprint_unknown_entity_type():
             BlueprintEntity(
                 entityType=SimulationEntityType.COUNTER,  # Not in default registry
                 uuid="test-1",
+                name="Test Counter",
                 parameters={},
             ),
         ],
@@ -191,6 +197,7 @@ def test_run_blueprint_invalid_parameters():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="person-1",
+                name="Person 1",
                 parameters={
                     # Missing required parameters
                 },
@@ -207,8 +214,8 @@ def test_register_entity():
     class TestEntity(BuilderEntity):
         entity_type = SimulationEntityType.BOX  # Use a valid enum value
         
-        def __init__(self, value: float):
-            super().__init__()
+        def __init__(self, name: str, value: float):
+            super().__init__(name=name)
             self.value = value
         
         def get_rendering_info(self):
@@ -234,6 +241,7 @@ def test_register_entity():
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="test-1",
+                name="Test Box",
                 parameters={
                     "value": _primitive("value", 42.0),
                 },
@@ -285,8 +293,8 @@ def test_entity_reference_resolution():
     class EntityWithReference(BuilderEntity):
         entity_type = SimulationEntityType.ROBOT
         
-        def __init__(self, target: Human, x: float, y: float):
-            super().__init__()
+        def __init__(self, name: str, target: Human, x: float, y: float):
+            super().__init__(name=name)
             self.target = target
             self.x = x
             self.y = y
@@ -302,6 +310,7 @@ def test_entity_reference_resolution():
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
                 uuid="human-1",
+                name="Human 1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -312,6 +321,7 @@ def test_entity_reference_resolution():
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="robot-1",
+                name="Robot 1",
                 parameters={
                     "target": _entity("target", "human-1"),
                     "x": _primitive("x", 50.0),
@@ -330,8 +340,8 @@ def test_entity_reference_cycle():
     class EntityA(BuilderEntity):
         entity_type = SimulationEntityType.AGV
         
-        def __init__(self, ref: "EntityB"):
-            super().__init__()
+        def __init__(self, name: str, ref: "EntityB"):
+            super().__init__(name=name)
             self.ref = ref
         
         def process(self, env: RecordingEnvironment):
@@ -340,8 +350,8 @@ def test_entity_reference_cycle():
     class EntityB(BuilderEntity):
         entity_type = SimulationEntityType.BOX
         
-        def __init__(self, ref: EntityA):
-            super().__init__()
+        def __init__(self, name: str, ref: EntityA):
+            super().__init__(name=name)
             self.ref = ref
         
         def process(self, env: RecordingEnvironment):
@@ -356,6 +366,7 @@ def test_entity_reference_cycle():
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
                 uuid="a-1",
+                name="Entity A",
                 parameters={
                     "ref": _entity("ref", "b-1"),
                 },
@@ -363,6 +374,7 @@ def test_entity_reference_cycle():
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="b-1",
+                name="Entity B",
                 parameters={
                     "ref": _entity("ref", "a-1"),
                 },
@@ -379,8 +391,8 @@ def test_entity_reference_invalid_uuid():
     class EntityWithReference(BuilderEntity):
         entity_type = SimulationEntityType.ROBOT
         
-        def __init__(self, target: Human):
-            super().__init__()
+        def __init__(self, name: str, target: Human):
+            super().__init__(name=name)
             self.target = target
         
         def process(self, env: RecordingEnvironment):
@@ -394,6 +406,7 @@ def test_entity_reference_invalid_uuid():
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="robot-1",
+                name="Robot 1",
                 parameters={
                     "target": _entity("target", "non-existent-uuid"),
                 },
@@ -410,8 +423,8 @@ def test_entity_reference_multiple_levels():
     class Level1(BuilderEntity):
         entity_type = SimulationEntityType.AGV
         
-        def __init__(self, value: float):
-            super().__init__()
+        def __init__(self, name: str, value: float):
+            super().__init__(name=name)
             self.value = value
         
         def process(self, env: RecordingEnvironment):
@@ -420,8 +433,8 @@ def test_entity_reference_multiple_levels():
     class Level2(BuilderEntity):
         entity_type = SimulationEntityType.BOX
         
-        def __init__(self, level1: Level1, value: float):
-            super().__init__()
+        def __init__(self, name: str, level1: Level1, value: float):
+            super().__init__(name=name)
             self.level1 = level1
             self.value = value
         
@@ -431,8 +444,8 @@ def test_entity_reference_multiple_levels():
     class Level3(BuilderEntity):
         entity_type = SimulationEntityType.ROBOT
         
-        def __init__(self, level2: Level2, value: float):
-            super().__init__()
+        def __init__(self, name: str, level2: Level2, value: float):
+            super().__init__(name=name)
             self.level2 = level2
             self.value = value
         
@@ -449,6 +462,7 @@ def test_entity_reference_multiple_levels():
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
                 uuid="level3-1",
+                name="Level 3",
                 parameters={
                     "level2": _entity("level2", "level2-1"),
                     "value": _primitive("value", 3.0),
@@ -457,6 +471,7 @@ def test_entity_reference_multiple_levels():
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
                 uuid="level2-1",
+                name="Level 2",
                 parameters={
                     "level1": _entity("level1", "level1-1"),
                     "value": _primitive("value", 2.0),
@@ -465,6 +480,7 @@ def test_entity_reference_multiple_levels():
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
                 uuid="level1-1",
+                name="Level 1",
                 parameters={
                     "value": _primitive("value", 1.0),
                 },

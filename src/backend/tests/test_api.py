@@ -90,6 +90,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -135,6 +136,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -145,6 +147,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-2",
+                    "name": "Person 2",
                     "parameters": make_parameters(
                         x=200.0,
                         y=200.0,
@@ -177,6 +180,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -205,6 +209,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -361,6 +366,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": {
                         # Missing required parameters like x, y, targetX, targetY
                     },
@@ -388,6 +394,7 @@ class TestSimulateEndpoint:
                 {
                     "entityType": "human",
                     "uuid": "person-1",
+                    "name": "Person 1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,

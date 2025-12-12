@@ -34,6 +34,7 @@ class ManufacturingCell(BuilderEntity):
 
     def __init__(
         self,
+        name: str,
         x: float,
         y: float,
         buffer_in: Union[Buffer, Source],
@@ -41,7 +42,7 @@ class ManufacturingCell(BuilderEntity):
         mean: float,
         std_dev: float,
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.x = x
         self.y = y
         self.buffer_in = buffer_in
@@ -57,7 +58,7 @@ class ManufacturingCell(BuilderEntity):
         # Record stay at manufacturing cell position
         env.record_stay(self, x=self.x, y=self.y)
         env.set_state(
-            f"{MANUFACTURING_CELL_STATE_METRIC} {self.id[:8]}",
+            f"{MANUFACTURING_CELL_STATE_METRIC} {self.name}",
             ManufacturingCellState.IDLE,
         )
 
@@ -67,7 +68,7 @@ class ManufacturingCell(BuilderEntity):
 
             # Set state to processing
             env.set_state(
-                f"{MANUFACTURING_CELL_STATE_METRIC} {self.id[:8]}",
+                f"{MANUFACTURING_CELL_STATE_METRIC} {self.name}",
                 ManufacturingCellState.PROCESSING,
             )
 
@@ -84,7 +85,7 @@ class ManufacturingCell(BuilderEntity):
 
             # Set state to idle
             env.set_state(
-                f"{MANUFACTURING_CELL_STATE_METRIC} {self.id[:8]}",
+                f"{MANUFACTURING_CELL_STATE_METRIC} {self.name}",
                 ManufacturingCellState.IDLE,
             )
 

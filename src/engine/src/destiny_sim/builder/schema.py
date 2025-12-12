@@ -78,6 +78,7 @@ class BlueprintEntity(BaseModel):
 
     entityType: SimulationEntityType
     uuid: str
+    name: str = Field(..., description="Entity name")
     parameters: Dict[str, BlueprintEntityParameter]
 
 

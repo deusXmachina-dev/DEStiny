@@ -33,6 +33,7 @@ class MotionSegment(BaseModel):
 
     entity_id: str = Field(alias="entityId")
     entity_type: SimulationEntityType = Field(alias="entityType")
+    name: str | None = Field(default=None, alias="name")
     parent_id: str | None = Field(default=None, alias="parentId")
     start_time: float = Field(alias="startTime")
     end_time: float | None = Field(default=None, alias="endTime")

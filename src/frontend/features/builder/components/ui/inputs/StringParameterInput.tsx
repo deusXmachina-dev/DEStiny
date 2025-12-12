@@ -3,12 +3,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
+import type { BlueprintEntityParameter } from "../../../types";
 import { createPrimitiveParameter } from "../../../utils";
 
 interface StringParameterInputProps {
   name: string;
-  paramInfo: ParameterInfo;
   value: BlueprintEntityParameter | undefined;
   onChange: (param: BlueprintEntityParameter) => void;
   onSubmit?: () => void;

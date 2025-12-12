@@ -80,14 +80,59 @@ export const blueprintToEntityStates = (
       y,
       angle,
       children: [],
+      name: entity.name,
     };
   });
+};
+
+/**
+ * Get the next default name for an entity type based on existing entities.
+ * Format: "{EntityType} {number}" (e.g., "Source 1", "Buffer 2")
+ * Uses gap-aware logic: finds the first available number starting from 1.
+ */
+export const getNextEntityName = (
+  entityType: string,
+  blueprint: SimulationBlueprint,
+): string => {
+  // Capitalize first letter of entity type
+  const capitalizedType =
+    entityType.charAt(0).toUpperCase() + entityType.slice(1);
+
+  // Get all existing entities of the same type
+  const existingEntities = blueprint.entities.filter(
+    (entity) => entity.entityType === entityType,
+  );
+
+  // Extract numbers from existing names
+  // Pattern: "{Type} {number}" - extract the number part
+  const usedNumbers = new Set<number>();
+  const namePattern = new RegExp(`^${capitalizedType} (\\d+)$`);
+
+  for (const entity of existingEntities) {
+    const match = entity.name.match(namePattern);
+    if (match) {
+      if (!match[1]) {
+        continue;
+      }
+      const num = parseInt(match[1], 10);
+      usedNumbers.add(num);
+    }
+  }
+
+  // Find the first available number starting from 1
+  let nextNumber = 1;
+  while (usedNumbers.has(nextNumber)) {
+    nextNumber++;
+  }
+
+  return `${capitalizedType} ${nextNumber}`;
 };
 
 /**
  * Create a new blueprint entity from a schema and position.
  */
 export const createBlueprintEntity = (
+  name: string,
   entityType: BlueprintEntity["entityType"],
   parameters: Record<string, ParameterInfo>,
   x: number,
@@ -129,6 +174,7 @@ export const createBlueprintEntity = (
   return {
     entityType,
     uuid,
+    name,
     parameters: entityParameters,
   };
 };
@@ -186,6 +232,20 @@ export const updateBlueprintEntityParameters = (
           },
         }
       : entity,
+  ),
+});
+
+/**
+ * Update the name of an entity in the blueprint.
+ */
+export const updateBlueprintEntityName = (
+  blueprint: SimulationBlueprint,
+  entityId: string,
+  name: string,
+): SimulationBlueprint => ({
+  ...blueprint,
+  entities: blueprint.entities.map((entity) =>
+    entity.uuid === entityId ? { ...entity, name } : entity,
   ),
 });
 

@@ -3,6 +3,7 @@ Rendering information for simulation entities.
 """
 
 from enum import StrEnum
+from typing import Optional
 
 
 class SimulationEntityType(StrEnum):
@@ -29,11 +30,17 @@ class RenderingInfo:
     Contains information needed to render the entity in the frontend.
     """
 
-    def __init__(self, entity_type: SimulationEntityType = SimulationEntityType.EMPTY):
+    def __init__(
+        self,
+        entity_type: SimulationEntityType = SimulationEntityType.EMPTY,
+        name: Optional[str] = None,
+    ):
         """
         Initialize rendering info.
 
         Args:
             entity_type: The type of entity to use for rendering this entity.
+            name: Optional name of the entity for display purposes.
         """
         self.entity_type: SimulationEntityType = entity_type
+        self.name: Optional[str] = name

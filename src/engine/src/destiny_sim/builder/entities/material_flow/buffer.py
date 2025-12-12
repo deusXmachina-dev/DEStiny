@@ -8,7 +8,7 @@ import simpy
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.core.environment import RecordingEnvironment
-from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
+from destiny_sim.core.rendering import SimulationEntityType
 
 BUFFER_NUMBER_OF_ITEMS_METRIC = "Number of items in buffer"
 
@@ -21,11 +21,12 @@ class Buffer(BuilderEntity):
 
     def __init__(
         self,
+        name: str,
         x: float, 
         y: float, 
         capacity: float,
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.x = x
         self.y = y
         self.capacity = capacity
@@ -40,7 +41,7 @@ class Buffer(BuilderEntity):
         event = self._get_store(env).get()
         
         def _decrement_buffer_gauge(event):
-            env.adjust_gauge(BUFFER_NUMBER_OF_ITEMS_METRIC, -1)
+            env.adjust_gauge(f"{BUFFER_NUMBER_OF_ITEMS_METRIC} {self.name}", -1)
         
         event.callbacks.append(_decrement_buffer_gauge)
         return event
@@ -50,7 +51,7 @@ class Buffer(BuilderEntity):
         event = self._get_store(env).put(item)
 
         def _increment_buffer_gauge(event):
-            env.adjust_gauge(BUFFER_NUMBER_OF_ITEMS_METRIC, 1)
+            env.adjust_gauge(f"{BUFFER_NUMBER_OF_ITEMS_METRIC} {self.name}", 1)
         
         event.callbacks.append(_increment_buffer_gauge)
         return event

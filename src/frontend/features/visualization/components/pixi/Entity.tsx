@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useAssets } from "../../hooks/useAssets";
 import { useEntityInteractions } from "../../hooks/useEntityInteractions";
 import { SimulationEntityState } from "../../types";
+import { EntityName } from "./EntityName";
 
 // Extend Pixi.js components for @pixi/react
 extend({
@@ -21,6 +22,7 @@ export const Entity = ({
   angle,
   children,
   entityId,
+  name,
 }: SimulationEntityState) => {
   const { getTexture } = useAssets();
   const texture = getTexture(entityType);
@@ -32,6 +34,7 @@ export const Entity = ({
   return (
     <pixiContainer ref={containerRef} x={x} y={y} rotation={angle}>
       <pixiSprite texture={texture} anchor={0.5} x={0} y={0} rotation={0} />
+      <EntityName name={name || ""} />
       {children?.map((child) => (
         <Entity key={child.entityId} {...child} />
       ))}

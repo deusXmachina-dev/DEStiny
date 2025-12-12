@@ -10,7 +10,9 @@ import type {
 } from "../types";
 import {
   createBlueprintEntity,
+  getNextEntityName,
   removeBlueprintEntity,
+  updateBlueprintEntityName,
   updateBlueprintEntityParameters,
   updateBlueprintEntityPosition,
 } from "../utils";
@@ -31,9 +33,10 @@ interface BuilderContextValue {
   removeEntity: (entityId: string) => void;
   updateEntity: (
     entityId: string,
-    parameters: Record<string, BlueprintEntityParameter>,
+    formValues: Record<string, BlueprintEntityParameter>,
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
+  updateEntityName: (entityId: string, name: string) => void;
 
   // Selection actions
   selectEntity: (entityId: string) => void;
@@ -45,7 +48,7 @@ interface BuilderContextValue {
   isJustClosed: () => boolean;
 }
 
-const BuilderContext = createContext<BuilderContextValue | undefined>(
+export const BuilderContext = createContext<BuilderContextValue | undefined>(
   undefined,
 );
 
@@ -75,13 +78,14 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     x: number,
     y: number,
   ) => {
-    const newEntity = createBlueprintEntity(entityType, parameters, x, y);
     const currentBlueprint = blueprint || {
       simParams: {
         initialTime: 0,
       },
       entities: [],
     };
+    const name = getNextEntityName(entityType, currentBlueprint);
+    const newEntity = createBlueprintEntity(name, entityType, parameters, x, y);
     setBlueprint({
       ...currentBlueprint,
       entities: [...currentBlueprint.entities, newEntity],
@@ -101,14 +105,34 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const updateEntity = (
     entityId: string,
-    parameters: Record<string, BlueprintEntityParameter>,
+    formValues: Record<string, BlueprintEntityParameter>,
   ) => {
     if (!blueprint) {
       return;
     }
-    setBlueprint(
-      updateBlueprintEntityParameters(blueprint, entityId, parameters),
+    // Extract name from formValues if present
+    const nameParam = formValues.name;
+    const name =
+      nameParam?.parameterType === "primitive"
+        ? String(nameParam.value ?? "")
+        : undefined;
+
+    // Remove name from formValues before updating parameters
+    const { name: _, ...parameters } = formValues;
+
+    let updatedBlueprint = updateBlueprintEntityParameters(
+      blueprint,
+      entityId,
+      parameters,
     );
+    if (name !== undefined) {
+      updatedBlueprint = updateBlueprintEntityName(
+        updatedBlueprint,
+        entityId,
+        name,
+      );
+    }
+    setBlueprint(updatedBlueprint);
   };
 
   const moveEntity = (entityId: string, x: number, y: number) => {
@@ -116,6 +140,13 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
       return;
     }
     setBlueprint(updateBlueprintEntityPosition(blueprint, entityId, x, y));
+  };
+
+  const updateEntityName = (entityId: string, name: string) => {
+    if (!blueprint) {
+      return;
+    }
+    setBlueprint(updateBlueprintEntityName(blueprint, entityId, name));
   };
 
   const selectEntity = (entityId: string) => {
@@ -156,6 +187,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     removeEntity,
     updateEntity,
     moveEntity,
+    updateEntityName,
     selectEntity,
     clearSelection,
     openEditor,
