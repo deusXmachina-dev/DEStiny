@@ -101,6 +101,7 @@ export class SimulationEngine {
             y: lerp(segment.startY, segment.endY, t),
             angle: lerp(segment.startAngle, segment.endAngle, t),
             children: [],
+            name: segment.name ?? null,
             parentId: segment.parentId ?? null,
           });
         }
