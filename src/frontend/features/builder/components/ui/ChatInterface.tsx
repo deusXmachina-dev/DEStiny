@@ -1,10 +1,9 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { TextStreamChatTransport } from "ai";
+import { DefaultChatTransport } from "ai";
 import { nanoid } from "nanoid";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import {
   Conversation,
@@ -34,43 +33,9 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const [input, setInput] = useState<string>("");
   const chatId = useMemo(() => nanoid(), []);
 
-  const transport = useMemo(
-    () =>
-      new TextStreamChatTransport({
-        api: `${BACKEND_URL}/api/chat?protocol=text`,
-        prepareSendMessagesRequest: ({ id, messages, trigger }) => ({
-          body: {
-            id,
-            messages: messages.map((msg) => {
-              const textParts = msg.parts.filter(
-                (part): part is { type: "text"; text: string } =>
-                  part.type === "text",
-              );
-              const content = textParts.map((part) => part.text).join("");
-              return {
-                role: msg.role,
-                content,
-              };
-            }),
-            trigger: trigger === "submit-message" ? "submit" : "regenerate",
-          },
-        }),
-      }),
-    [],
-  );
+  const transport = new DefaultChatTransport({api: `${BACKEND_URL}/api/chat`});
 
-  const {
-    messages,
-    sendMessage,
-    status,
-    error: _error,
-  } = useChat({
-    id: chatId,
-    transport,
-    onError: (error) => {
-      toast.error("Chat error", { description: error.message });
-    },
-  });
+  const { messages, sendMessage, status, error: _error } = useChat({ id: chatId, transport });
 
   const handleSubmit = (
     message: { text: string; files: unknown[] },

@@ -1,134 +1,39 @@
-import os
 import json
-from typing import List
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from ninja import Router, Query
-from django.http import StreamingHttpResponse
-from openai import OpenAI
-from utils.prompt import ClientMessage, convert_to_openai_messages
+from http import HTTPStatus
 
+from django.http import JsonResponse, StreamingHttpResponse, HttpRequest
+from ninja import Router
+from pydantic import ValidationError
 
-load_dotenv(".env.local")
-import logging
-logger = logging.getLogger(__name__)
+from pydantic_ai import Agent
+from pydantic_ai.ui import SSE_CONTENT_TYPE
+from pydantic_ai.ui.vercel_ai import VercelAIAdapter
+
+agent = Agent("openai:gpt-4o-mini")
 router = Router()
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
-
-
-class Request(BaseModel):
-    messages: List[ClientMessage]
-
-
-def stream_text(messages: List[ClientMessage], protocol: str = 'data'):
-    stream = client.chat.completions.create(
-        messages=messages,
-        model="gpt-4o",
-        stream=True,
-        tools=[{
-            "type": "function",
-            "function": {
-                "name": "get_current_weather",
-                "description": "Get the current weather in a given location",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "location": {
-                            "type": "string",
-                            "description": "The city and state, e.g. San Francisco, CA",
-                        },
-                        "unit": {
-                            "type": "string",
-                            "enum": ["celsius", "fahrenheit"]},
-                    },
-                    "required": ["location", "unit"],
-                },
-            },
-        }]
-    )
-
-    # When protocol is set to "text", you will send a stream of plain text chunks
-    # https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol#text-stream-protocol
-
-    if (protocol == 'text'):
-        for chunk in stream:
-            for choice in chunk.choices:
-                if choice.finish_reason == "stop":
-                    break
-                else:
-                    yield "{text}".format(text=choice.delta.content)
-
-    # When protocol is set to "data", you will send a stream data part chunks
-    # https://ai-sdk.dev/docs/ai-sdk-ui/stream-protocol#data-stream-protocol
-
-    elif (protocol == 'data'):
-        draft_tool_calls = []
-        draft_tool_calls_index = -1
-
-        for chunk in stream:
-            for choice in chunk.choices:
-                if choice.finish_reason == "stop":
-                    continue
-
-                elif choice.finish_reason == "tool_calls":
-                    for tool_call in draft_tool_calls:
-                        yield '9:{{"toolCallId":"{id}","toolName":"{name}","args":{args}}}\n'.format(
-                            id=tool_call["id"],
-                            name=tool_call["name"],
-                            args=tool_call["arguments"])
-
-                    for tool_call in draft_tool_calls:
-                        tool_result = available_tools[tool_call["name"]](
-                            **json.loads(tool_call["arguments"]))
-
-                        yield 'a:{{"toolCallId":"{id}","toolName":"{name}","args":{args},"result":{result}}}\n'.format(
-                            id=tool_call["id"],
-                            name=tool_call["name"],
-                            args=tool_call["arguments"],
-                            result=json.dumps(tool_result))
-
-                elif choice.delta.tool_calls:
-                    for tool_call in choice.delta.tool_calls:
-                        id = tool_call.id
-                        name = tool_call.function.name
-                        arguments = tool_call.function.arguments
-
-                        if (id is not None):
-                            draft_tool_calls_index += 1
-                            draft_tool_calls.append(
-                                {"id": id, "name": name, "arguments": ""})
-
-                        else:
-                            draft_tool_calls[draft_tool_calls_index]["arguments"] += arguments
-
-                else:
-                    yield '0:{text}\n'.format(text=json.dumps(choice.delta.content))
-
-            if chunk.choices == []:
-                usage = chunk.usage
-                prompt_tokens = usage.prompt_tokens
-                completion_tokens = usage.completion_tokens
-
-                yield 'd:{{"finishReason":"{reason}","usage":{{"promptTokens":{prompt},"completionTokens":{completion}}}}}\n'.format(
-                    reason="tool-calls" if len(
-                        draft_tool_calls) > 0 else "stop",
-                    prompt=prompt_tokens,
-                    completion=completion_tokens
-                )
-
-class ChatPayload(BaseModel):
-    id: str
-    messages: List[ClientMessage]
-    trigger: str
 
 @router.post("")
-async def handle_chat_data(request, chat_payload: ChatPayload, protocol: str = Query('data')):
-    logger.info(f"Chat payload: {chat_payload}")
-    openai_messages = convert_to_openai_messages(chat_payload.messages)
+async def chat(request: HttpRequest):
+    accept = request.headers.get("accept", SSE_CONTENT_TYPE)
 
-    response = StreamingHttpResponse(stream_text(openai_messages, protocol))
-    response.headers['x-vercel-ai-data-stream'] = 'v1'
-    return response
+    try:
+        # Django gives you raw bytes in request.body (same thing you used in FastAPI)
+        run_input = VercelAIAdapter.build_run_input(request.body)
+    except ValidationError as e:
+        # e.json() is a JSON string; return it as proper JSON with status 422
+        return JsonResponse(
+            data=json.loads(e.json()),
+            status=HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+
+    adapter = VercelAIAdapter(agent=agent, run_input=run_input, accept=accept)
+
+    # adapter.run_stream() produces events; adapter.encode_stream(...) yields SSE bytes/chunks
+    event_stream = adapter.run_stream()
+    sse_event_stream = adapter.encode_stream(event_stream)
+
+    resp = StreamingHttpResponse(sse_event_stream, content_type=accept)
+    # SSE generally wants this to prevent buffering by proxies
+    resp["Cache-Control"] = "no-cache"
+    return resp
