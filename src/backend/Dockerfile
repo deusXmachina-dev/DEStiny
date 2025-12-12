@@ -29,6 +29,6 @@ RUN cd /backend && uv sync --all-groups --frozen
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# Start Django with Gunicorn when the container launches
+# Start Django with Uvicorn (ASGI) when the container launches
 # Use uv run to execute commands within the virtual environment created by uv sync
-CMD ["sh", "-c", "cd /backend && uv run python manage.py collectstatic --noinput && uv run gunicorn --bind 0.0.0.0:8080 --workers 4 --timeout 120 wsgi:application"]
+CMD ["sh", "-c", "cd /backend && uv run python manage.py collectstatic --noinput && uv run uvicorn asgi:application --host 0.0.0.0 --port 8080 --workers 4 --timeout-keep-alive 120"]
