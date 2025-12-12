@@ -6,6 +6,7 @@ import { createContext, useContext, useEffect, useMemo } from "react";
 
 import type {
   MetricsSchema,
+  StateMetric,
   TimeSeriesMetric,
 } from "../index";
 
@@ -57,6 +58,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
       ...metrics.counter.map((m) => m.name),
       ...metrics.gauge.map((m) => m.name),
       ...metrics.sample.map((m) => m.name),
+      ...metrics.state.map((m) => m.name),
     ];
     if (metricNames.length === 0) {
       return;
@@ -130,17 +132,23 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
 
   // Filter and sort metrics based on visibility and order
   const displayedMetrics = useMemo(() => {
-    const filterMetrics = (metricArray: TimeSeriesMetric[]) =>
+    const filterTimeSeriesMetrics = (metricArray: TimeSeriesMetric[]) =>
       config.metricOrder
         .filter((name) => visibleMetrics.has(name))
         .map((name) => metricArray.find((m) => m.name === name))
         .filter((m): m is TimeSeriesMetric => m !== undefined);
 
+    const filterStateMetrics = (metricArray: StateMetric[]) =>
+      config.metricOrder
+        .filter((name) => visibleMetrics.has(name))
+        .map((name) => metricArray.find((m) => m.name === name))
+        .filter((m): m is StateMetric => m !== undefined);
+
     return {
-      counter: filterMetrics(metrics.counter),
-      gauge: filterMetrics(metrics.gauge),
-      sample: filterMetrics(metrics.sample),
-      state: [], // Ignore state metrics
+      counter: filterTimeSeriesMetrics(metrics.counter),
+      gauge: filterTimeSeriesMetrics(metrics.gauge),
+      sample: filterTimeSeriesMetrics(metrics.sample),
+      state: filterStateMetrics(metrics.state),
     };
   }, [metrics, config.metricOrder, visibleMetrics]);
 

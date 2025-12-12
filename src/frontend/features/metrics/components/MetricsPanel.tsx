@@ -8,6 +8,7 @@ import { SidePanel } from "@/components/common/SidePanel";
 import { MetricsProvider, useMetrics } from "../hooks";
 import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { HistogramChart } from "./charts/HistogramChart";
+import { StateProportionChart } from "./charts/StateProportionChart";
 import { MetricsSelector } from "./MetricsSelector";
 
 function MetricsPanelContent() {
@@ -64,6 +65,14 @@ function MetricsPanelContent() {
             ))}
             {displayedMetrics.gauge.map((metric, index) => (
               <AreaChartWithSteps
+                key={`${metric.name}-${index}`}
+                metric={metric}
+                currentTime={currentTime}
+                maxDuration={duration}
+              />
+            ))}
+            {displayedMetrics.state.map((metric, index) => (
+              <StateProportionChart
                 key={`${metric.name}-${index}`}
                 metric={metric}
                 currentTime={currentTime}
