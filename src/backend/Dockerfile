@@ -31,4 +31,5 @@ EXPOSE 8080
 
 # Start Django with Uvicorn (ASGI) when the container launches
 # Use uv run to execute commands within the virtual environment created by uv sync
-CMD ["sh", "-c", "cd /backend && uv run python manage.py collectstatic --noinput && uv run uvicorn asgi:application --host 0.0.0.0 --port 8080 --workers 4 --timeout-keep-alive 120"]
+# Run migrations, collect static files, then start the server
+CMD ["sh", "-c", "cd /backend && uv run python manage.py migrate --noinput && uv run python manage.py collectstatic --noinput && uv run uvicorn asgi:application --host 0.0.0.0 --port 8080 --workers 4 --timeout-keep-alive 120"]
