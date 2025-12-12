@@ -119,7 +119,6 @@ export const EntityEditorForm = ({
             <StringParameterInput
               key={key}
               name={key}
-              paramInfo={paramInfo}
               value={currentParam}
               onChange={onChange}
               onSubmit={performSubmit}
