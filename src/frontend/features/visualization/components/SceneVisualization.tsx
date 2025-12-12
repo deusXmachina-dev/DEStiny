@@ -3,6 +3,7 @@
 import { Application } from "@pixi/react";
 import { ReactNode, RefObject, useRef } from "react";
 
+import { EntityNameOverlay } from "@features/builder/components/EntityNameOverlay";
 import { useVisualization } from "../hooks/VisualizationContext";
 import { CanvasWheelHandler } from "./CanvasWheelHandler";
 import { Scene } from "./pixi/Scene";
@@ -78,6 +79,7 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
         <Scene />
         {children}
       </Application>
+      {EntityNameOverlay && <EntityNameOverlay />}
       <ZoomPanControls />
     </div>
   );

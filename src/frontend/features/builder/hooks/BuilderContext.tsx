@@ -10,7 +10,9 @@ import type {
 } from "../types";
 import {
   createBlueprintEntity,
+  getNextEntityName,
   removeBlueprintEntity,
+  updateBlueprintEntityName,
   updateBlueprintEntityParameters,
   updateBlueprintEntityPosition,
 } from "../utils";
@@ -34,6 +36,7 @@ interface BuilderContextValue {
     parameters: Record<string, BlueprintEntityParameter>,
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
+  updateEntityName: (entityId: string, name: string) => void;
 
   // Selection actions
   selectEntity: (entityId: string) => void;
@@ -45,7 +48,7 @@ interface BuilderContextValue {
   isJustClosed: () => boolean;
 }
 
-const BuilderContext = createContext<BuilderContextValue | undefined>(
+export const BuilderContext = createContext<BuilderContextValue | undefined>(
   undefined,
 );
 
@@ -75,13 +78,14 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     x: number,
     y: number,
   ) => {
-    const newEntity = createBlueprintEntity(entityType, parameters, x, y);
     const currentBlueprint = blueprint || {
       simParams: {
         initialTime: 0,
       },
       entities: [],
     };
+    const name = getNextEntityName(entityType, currentBlueprint);
+    const newEntity = createBlueprintEntity(name, entityType, parameters, x, y);
     setBlueprint({
       ...currentBlueprint,
       entities: [...currentBlueprint.entities, newEntity],
@@ -116,6 +120,13 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
       return;
     }
     setBlueprint(updateBlueprintEntityPosition(blueprint, entityId, x, y));
+  };
+
+  const updateEntityName = (entityId: string, name: string) => {
+    if (!blueprint) {
+      return;
+    }
+    setBlueprint(updateBlueprintEntityName(blueprint, entityId, name));
   };
 
   const selectEntity = (entityId: string) => {
@@ -156,6 +167,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     removeEntity,
     updateEntity,
     moveEntity,
+    updateEntityName,
     selectEntity,
     clearSelection,
     openEditor,
