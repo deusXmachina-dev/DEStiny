@@ -1,9 +1,9 @@
-from ninja import Router
 from typing import List
 
 from destiny_sim.builder.runner import get_registered_entities, run_blueprint
-from destiny_sim.builder.schema import BuilderEntitySchema, Blueprint
+from destiny_sim.builder.schema import Blueprint, BuilderEntitySchema
 from destiny_sim.core.timeline import SimulationRecording
+from ninja import Router
 
 router = Router()
 

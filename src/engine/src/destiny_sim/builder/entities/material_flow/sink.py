@@ -8,8 +8,7 @@ import simpy
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.core.environment import RecordingEnvironment
-from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
-
+from destiny_sim.core.rendering import SimulationEntityType
 
 SINK_ITEM_DELIVERED_METRIC = "Items delivered to sink"
 
@@ -22,10 +21,11 @@ class Sink(BuilderEntity):
 
     def __init__(
         self,
+        name: str,
         x: float, 
         y: float, 
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.x = x
         self.y = y
         
@@ -34,5 +34,5 @@ class Sink(BuilderEntity):
 
     def put_item(self, env: RecordingEnvironment, item: Any) -> simpy.events.Event:
         """Put an item into the sink."""
-        env.incr_counter(SINK_ITEM_DELIVERED_METRIC)
+        env.incr_counter(f"{SINK_ITEM_DELIVERED_METRIC} {self.name}")
         return env.timeout(0)

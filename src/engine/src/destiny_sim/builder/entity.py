@@ -5,10 +5,10 @@ Base classes for builder entities.
 import inspect
 from typing import get_args
 
+from destiny_sim.builder.schema import BuilderEntitySchema, ParameterInfo, ParameterType
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
 from destiny_sim.core.simulation_entity import SimulationEntity
-from destiny_sim.builder.schema import BuilderEntitySchema, ParameterInfo, ParameterType
 
 
 class BuilderEntity(SimulationEntity):
@@ -19,11 +19,12 @@ class BuilderEntity(SimulationEntity):
     # The unique type identifier matching the frontend entityType
     entity_type: SimulationEntityType = SimulationEntityType.EMPTY
 
-    def __init__(self, **kwargs):
+    def __init__(self, name: str, **kwargs):
         super().__init__()
-        
+        self.name: str = name
+
     def get_rendering_info(self) -> RenderingInfo:
-        return RenderingInfo(self.entity_type)
+        return RenderingInfo(self.entity_type, name=self.name)
 
     def process(self, env: RecordingEnvironment):
         """
@@ -38,7 +39,7 @@ class BuilderEntity(SimulationEntity):
         sig = inspect.signature(cls.__init__)
         params = {}
         for name, param in sig.parameters.items():
-            if name in ("self", "env", "args", "kwargs"):
+            if name in ("self", "env", "args", "kwargs", "name"):
                 continue
 
             annotation = param.annotation
@@ -47,11 +48,11 @@ class BuilderEntity(SimulationEntity):
 
             if annotation == inspect.Parameter.empty:
                 pass  # Already defaulted to STRING
-            elif annotation == int or annotation == float:
+            elif annotation is int or annotation is float:
                 param_type = ParameterType.NUMBER
-            elif annotation == str:
+            elif annotation is str:
                 param_type = ParameterType.STRING
-            elif annotation == bool:
+            elif annotation is bool:
                 param_type = ParameterType.BOOLEAN
             else:
                 # Check if it's an entity parameter
@@ -65,14 +66,15 @@ class BuilderEntity(SimulationEntity):
                 allowedEntityTypes=allowed_entity_types,
             )
 
-        return BuilderEntitySchema(
-            entityType=cls.entity_type,
-            parameters=params
-        )
+        return BuilderEntitySchema(entityType=cls.entity_type, parameters=params)
 
 
-def _extract_entity_info(annotation) -> tuple[ParameterType, list[SimulationEntityType] | None] | None:
-    """Extract entity parameter info from type annotation. Returns None if not an entity."""
+def _extract_entity_info(
+    annotation,
+) -> tuple[ParameterType, list[SimulationEntityType] | None] | None:
+    """
+    Extract entity parameter info from type annotation. Returns None if not an entity.
+    """
     # Check if annotation is BuilderEntity or a subclass
     if isinstance(annotation, type) and issubclass(annotation, BuilderEntity):
         if annotation != BuilderEntity:
@@ -80,8 +82,10 @@ def _extract_entity_info(annotation) -> tuple[ParameterType, list[SimulationEnti
             if entity_type is not None:
                 return ParameterType.ENTITY, [entity_type]
         else:
-            raise ValueError(f"Annotation {annotation} is not a subclass of BuilderEntity")
-    
+            raise ValueError(
+                f"Annotation {annotation} is not a subclass of BuilderEntity"
+            )
+
     # Handle typing annotations like Optional[BuilderEntity] or Union types
     if hasattr(annotation, "__origin__"):
         entity_types = []
@@ -93,8 +97,8 @@ def _extract_entity_info(annotation) -> tuple[ParameterType, list[SimulationEnti
                 entity_type = getattr(arg, "entity_type", None)
                 if entity_type is not None:
                     entity_types.append(entity_type)
-        
+
         if entity_types:
             return ParameterType.ENTITY, entity_types
-    
+
     return None

@@ -6,8 +6,7 @@ import simpy
 
 from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.core.environment import RecordingEnvironment
-from destiny_sim.core.rendering import RenderingInfo, SimulationEntityType
-
+from destiny_sim.core.rendering import SimulationEntityType
 
 SOURCE_ITEM_PRODUCED_METRIC = "Items produced by source"
 
@@ -20,10 +19,11 @@ class Source(BuilderEntity):
 
     def __init__(
         self,
+        name: str,
         x: float, 
         y: float, 
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.x = x
         self.y = y
         
@@ -34,5 +34,5 @@ class Source(BuilderEntity):
         """Request an item from the source."""
         event = env.event()
         event.succeed("foo")  # todo: add some actual item
-        env.incr_counter(SOURCE_ITEM_PRODUCED_METRIC)
+        env.incr_counter(f"{SOURCE_ITEM_PRODUCED_METRIC} {self.name}")
         return event

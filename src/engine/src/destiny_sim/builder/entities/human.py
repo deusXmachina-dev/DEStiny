@@ -15,13 +15,14 @@ class Human(BuilderEntity):
     entity_type = SimulationEntityType.HUMAN
 
     def __init__(
-        self, 
+        self,
+        name: str,
         x: float, 
         y: float, 
         targetX: float, 
         targetY: float
     ):
-        super().__init__()
+        super().__init__(name=name)
         self.x = x
         self.y = y
         self.target_x = targetX

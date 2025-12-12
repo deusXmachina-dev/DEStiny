@@ -203,6 +203,7 @@ class RecordingEnvironment(Environment):
         segment = MotionSegment(
             entity_id=entity.id,
             entity_type=rendering_info.entity_type,  # Already SimulationEntityType enum
+            name=rendering_info.name,
             parent_id=parent.id if parent else None,
             start_time=start_time,
             end_time=end_time,
