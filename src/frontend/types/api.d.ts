@@ -53,8 +53,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Handle Chat Data */
-        post: operations["simulation_api_chat_handle_chat_data"];
+        /** Chat */
+        post: operations["simulation_api_chat_chat"];
         delete?: never;
         options?: never;
         head?: never;
@@ -188,6 +188,8 @@ export interface components {
             /** Entityid */
             entityId: string;
             entityType: components["schemas"]["SimulationEntityType"];
+            /** Name */
+            name?: string | null;
             /** Parentid */
             parentId?: string | null;
             /** Starttime */
@@ -301,6 +303,11 @@ export interface components {
             entityType: components["schemas"]["SimulationEntityType"];
             /** Uuid */
             uuid: string;
+            /**
+             * Name
+             * @description Entity name
+             */
+            name: string;
             /** Parameters */
             parameters: {
                 [key: string]: components["schemas"]["BlueprintEntityParameter"];
@@ -340,81 +347,6 @@ export interface components {
             /** Duration */
             duration?: number | null;
         };
-        /** ChatPayload */
-        ChatPayload: {
-            /** Id */
-            id: string;
-            /** Messages */
-            messages: components["schemas"]["ClientMessage"][];
-            /** Trigger */
-            trigger: string;
-        };
-        /** ClientAttachment */
-        ClientAttachment: {
-            /** Name */
-            name: string;
-            /** Contenttype */
-            contentType: string;
-            /** Url */
-            url: string;
-        };
-        /** ClientMessage */
-        ClientMessage: {
-            /** Role */
-            role: string;
-            /** Content */
-            content?: string | null;
-            /** Parts */
-            parts?: components["schemas"]["ClientMessagePart"][] | null;
-            /** Experimental Attachments */
-            experimental_attachments?: components["schemas"]["ClientAttachment"][] | null;
-            /** Toolinvocations */
-            toolInvocations?: components["schemas"]["ToolInvocation"][] | null;
-        };
-        /** ClientMessagePart */
-        ClientMessagePart: {
-            /** Type */
-            type: string;
-            /** Text */
-            text?: string | null;
-            /** Contenttype */
-            contentType?: string | null;
-            /** Url */
-            url?: string | null;
-            /** Data */
-            data?: unknown | null;
-            /** Toolcallid */
-            toolCallId?: string | null;
-            /** Toolname */
-            toolName?: string | null;
-            /** State */
-            state?: string | null;
-            /** Input */
-            input?: unknown | null;
-            /** Output */
-            output?: unknown | null;
-            /** Args */
-            args?: unknown | null;
-        } & {
-            [key: string]: unknown;
-        };
-        /** ToolInvocation */
-        ToolInvocation: {
-            state: components["schemas"]["ToolInvocationState"];
-            /** Toolcallid */
-            toolCallId: string;
-            /** Toolname */
-            toolName: string;
-            /** Args */
-            args: unknown;
-            /** Result */
-            result: unknown;
-        };
-        /**
-         * ToolInvocationState
-         * @enum {string}
-         */
-        ToolInvocationState: "call" | "partial-call" | "result";
     };
     responses: never;
     parameters: never;
@@ -468,20 +400,14 @@ export interface operations {
             };
         };
     };
-    simulation_api_chat_handle_chat_data: {
+    simulation_api_chat_chat: {
         parameters: {
-            query?: {
-                protocol?: string;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ChatPayload"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {
