@@ -47,38 +47,37 @@ function MetricsPanelContent() {
           </div>
         ) : (
           <>
-            {displayedMetrics.sample.map((metric, index) => (
-              <HistogramChart
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ))}
-            {displayedMetrics.counter.map((metric, index) => (
-              <AreaChartWithSteps
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ))}
-            {displayedMetrics.gauge.map((metric, index) => (
-              <AreaChartWithSteps
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ))}
-            {displayedMetrics.state.map((metric, index) => (
-              <StateProportionChart
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ))}
+            {displayedMetrics.map((metric, index) => {
+              if (metric.type === "sample") {
+                return (
+                  <HistogramChart
+                    key={`${metric.name}-${index}`}
+                    metric={metric}
+                    currentTime={currentTime}
+                    maxDuration={duration}
+                  />
+                );
+              } if (metric.type === "state") {
+                return (
+                  <StateProportionChart
+                    key={`${metric.name}-${index}`}
+                    metric={metric}
+                    currentTime={currentTime}
+                    maxDuration={duration}
+                  />
+                );
+              } 
+                // counter or gauge
+                return (
+                  <AreaChartWithSteps
+                    key={`${metric.name}-${index}`}
+                    metric={metric}
+                    currentTime={currentTime}
+                    maxDuration={duration}
+                  />
+                );
+              
+            })}
           </>
         )}
       </SidePanel.Content>

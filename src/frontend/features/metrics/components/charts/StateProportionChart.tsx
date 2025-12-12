@@ -115,25 +115,27 @@ export function StateProportionChart({
                 return null;
               }
               const data = payload[0];
-              // For PieChart with nameKey="name", the name is directly on the payload
-              // The full data entry (with duration) is in payload
-              const pieDataEntry = data.payload as
-                | { name?: string; duration?: number; value?: number }
-                | undefined;
-              const stateName = data.name || pieDataEntry?.name || "Unknown";
+              // For PieChart, the name is set via nameKey="name", so it's on data.name
+              // The original pieData entry is in data.payload
+              const pieDataEntry = (data.payload || {}) as {
+                name?: string;
+                duration?: number;
+                value?: number;
+              };
+              const stateName = data.name || pieDataEntry.name || "Unknown";
               const proportion = (data.value as number) || 0;
-              const duration = pieDataEntry?.duration || 0;
+              const duration = pieDataEntry.duration || 0;
               const percentage = (proportion * 100).toFixed(1);
 
               return (
-                <ChartTooltipContent>
+                <div className="rounded-lg border bg-background p-2 shadow-sm">
                   <div className="grid gap-1.5">
                     <div className="font-medium">State: {stateName}</div>
                     <div className="text-sm text-muted-foreground">
                       {percentage}% ({formatTime(duration)})
                     </div>
                   </div>
-                </ChartTooltipContent>
+                </div>
               );
             }}
           />

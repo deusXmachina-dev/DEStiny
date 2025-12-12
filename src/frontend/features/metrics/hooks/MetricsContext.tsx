@@ -5,9 +5,8 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { createContext, useContext, useEffect, useMemo } from "react";
 
 import type {
+  Metric,
   MetricsSchema,
-  StateMetric,
-  TimeSeriesMetric,
 } from "../index";
 
 interface MetricsConfig {
@@ -17,7 +16,7 @@ interface MetricsConfig {
 
 interface MetricsContextValue {
   metrics: MetricsSchema;
-  displayedMetrics: MetricsSchema;
+  displayedMetrics: Metric[];
   visibleMetrics: Set<string>;
   metricOrder: string[];
   handleToggleVisibility: (metricName: string) => void;
@@ -132,24 +131,19 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
 
   // Filter and sort metrics based on visibility and order
   const displayedMetrics = useMemo(() => {
-    const filterTimeSeriesMetrics = (metricArray: TimeSeriesMetric[]) =>
-      config.metricOrder
-        .filter((name) => visibleMetrics.has(name))
-        .map((name) => metricArray.find((m) => m.name === name))
-        .filter((m): m is TimeSeriesMetric => m !== undefined);
+    // Flatten all metrics into a single array
+    const allMetrics: Metric[] = [
+      ...metrics.counter,
+      ...metrics.gauge,
+      ...metrics.sample,
+      ...metrics.state,
+    ];
 
-    const filterStateMetrics = (metricArray: StateMetric[]) =>
-      config.metricOrder
-        .filter((name) => visibleMetrics.has(name))
-        .map((name) => metricArray.find((m) => m.name === name))
-        .filter((m): m is StateMetric => m !== undefined);
-
-    return {
-      counter: filterTimeSeriesMetrics(metrics.counter),
-      gauge: filterTimeSeriesMetrics(metrics.gauge),
-      sample: filterTimeSeriesMetrics(metrics.sample),
-      state: filterStateMetrics(metrics.state),
-    };
+    // Filter by visibility and sort by metricOrder
+    return config.metricOrder
+      .filter((name) => visibleMetrics.has(name))
+      .map((name) => allMetrics.find((m) => m.name === name))
+      .filter((m): m is Metric => m !== undefined);
   }, [metrics, config.metricOrder, visibleMetrics]);
 
   const value: MetricsContextValue = {
