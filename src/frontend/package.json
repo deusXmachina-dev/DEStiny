@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:backend": "cd ../backend && DEBUG=True uv run uvicorn asgi:application --reload",
+    "dev:backend": "cd ../backend && DEBUG=True uv run uvicorn asgi:application --reload --reload-dir ../backend --reload-dir ../engine",
     "dev:all": "concurrently -n \"NEXT,DJANGO\" -c \"cyan,magenta\" \"bun:dev\" \"bun:dev:backend\"",
     "build": "next build",
     "start": "next start",
