@@ -33,7 +33,7 @@ interface BuilderContextValue {
   removeEntity: (entityId: string) => void;
   updateEntity: (
     entityId: string,
-    parameters: Record<string, BlueprintEntityParameter>,
+    formValues: Record<string, BlueprintEntityParameter>,
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
   updateEntityName: (entityId: string, name: string) => void;
@@ -105,14 +105,34 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const updateEntity = (
     entityId: string,
-    parameters: Record<string, BlueprintEntityParameter>,
+    formValues: Record<string, BlueprintEntityParameter>,
   ) => {
     if (!blueprint) {
       return;
     }
-    setBlueprint(
-      updateBlueprintEntityParameters(blueprint, entityId, parameters),
+    // Extract name from formValues if present
+    const nameParam = formValues.name;
+    const name =
+      nameParam?.parameterType === "primitive"
+        ? String(nameParam.value ?? "")
+        : undefined;
+
+    // Remove name from formValues before updating parameters
+    const { name: _, ...parameters } = formValues;
+
+    let updatedBlueprint = updateBlueprintEntityParameters(
+      blueprint,
+      entityId,
+      parameters,
     );
+    if (name !== undefined) {
+      updatedBlueprint = updateBlueprintEntityName(
+        updatedBlueprint,
+        entityId,
+        name,
+      );
+    }
+    setBlueprint(updatedBlueprint);
   };
 
   const moveEntity = (entityId: string, x: number, y: number) => {
