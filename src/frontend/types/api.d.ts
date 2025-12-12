@@ -161,11 +161,6 @@ export interface components {
              * @default []
              */
             state: components["schemas"]["Metric_StateMetricData_"][];
-            /**
-             * Generic
-             * @default []
-             */
-            generic: components["schemas"]["Metric_TimeSeriesMetricData_"][];
         };
         /**
          * MotionSegment
@@ -239,8 +234,7 @@ export interface components {
              *       "counter": [],
              *       "gauge": [],
              *       "sample": [],
-             *       "state": [],
-             *       "generic": []
+             *       "state": []
              *     }
              */
             metrics: components["schemas"]["MetricsSchema"];
@@ -261,7 +255,7 @@ export interface components {
         };
         /**
          * TimeSeriesMetricData
-         * @description Data for time-series metrics (counter, gauge, sample, generic).
+         * @description Data for time-series metrics (counter, gauge, sample).
          *     Timestamp and value are parallel arrays.
          */
         TimeSeriesMetricData: {

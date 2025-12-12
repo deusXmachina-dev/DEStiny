@@ -20,12 +20,10 @@ class MetricType(str, Enum):
     GAUGE = "gauge"
     SAMPLE = "sample"
     STATE = "state"
-    GENERIC = "generic"
-
 
 class TimeSeriesMetricData(BaseModel):
     """
-    Data for time-series metrics (counter, gauge, sample, generic).
+    Data for time-series metrics (counter, gauge, sample).
     Timestamp and value are parallel arrays.
     """
     
@@ -84,7 +82,6 @@ class MetricsSchema(BaseModel):
     gauge: list[Metric[TimeSeriesMetricData]] = []
     sample: list[Metric[TimeSeriesMetricData]] = []
     state: list[Metric[StateMetricData]] = []
-    generic: list[Metric[TimeSeriesMetricData]] = []
 
 
 class MetricsContainer:
@@ -233,7 +230,5 @@ class MetricsContainer:
                 schema.sample.append(metric)
             elif metric_type == MetricType.STATE:
                 schema.state.append(metric)
-            elif metric_type == MetricType.GENERIC:
-                schema.generic.append(metric)
         
         return schema
