@@ -120,7 +120,8 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
         saveMutation.mutate({ body: blueprint });
       }
     }
-  }, [blueprint, saveMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blueprint]);
 
   const addEntity = (
     entityType: BlueprintEntity["entityType"],
