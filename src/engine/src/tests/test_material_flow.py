@@ -11,7 +11,7 @@ from destiny_sim.core.metrics import MetricType
 def test_source_produces_item():
     """Test that Source can produce items and increments counter."""
     env = RecordingEnvironment()
-    source = Source(x=0.0, y=0.0)
+    source = Source(name="Test Source", x=0.0, y=0.0)
     
     items_received = []
     
@@ -30,7 +30,7 @@ def test_source_produces_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    source_metric = next((m for m in metrics.counter if m.name == SOURCE_ITEM_PRODUCED_METRIC), None)
+    source_metric = next((m for m in metrics.counter if m.name == f"{SOURCE_ITEM_PRODUCED_METRIC} {source.name}"), None)
     assert source_metric is not None
     assert source_metric.data.value[-1] == 1
 
@@ -38,7 +38,7 @@ def test_source_produces_item():
 def test_sink_consumes_item():
     """Test that Sink can consume items and increments counter."""
     env = RecordingEnvironment()
-    sink = Sink(x=0.0, y=0.0)
+    sink = Sink(name="Test Sink", x=0.0, y=0.0)
     
     def producer():
         # Put an item into the sink
@@ -50,7 +50,7 @@ def test_sink_consumes_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    sink_metric = next((m for m in metrics.counter if m.name == SINK_ITEM_DELIVERED_METRIC), None)
+    sink_metric = next((m for m in metrics.counter if m.name == f"{SINK_ITEM_DELIVERED_METRIC} {sink.name}"), None)
     assert sink_metric is not None
     assert sink_metric.data.value[-1] == 1
 
@@ -58,7 +58,7 @@ def test_sink_consumes_item():
 def test_buffer_stores_and_retrieves_item():
     """Test that Buffer can store and retrieve items."""
     env = RecordingEnvironment()
-    buffer = Buffer(x=0.0, y=0.0, capacity=10.0)
+    buffer = Buffer(name="Test Buffer", x=0.0, y=0.0, capacity=10.0)
     
     items_received = []
     
@@ -87,7 +87,7 @@ def test_buffer_stores_and_retrieves_item():
     # Check that gauge was adjusted correctly (should end at 0)
     recording = env.get_recording()
     metrics = recording.metrics
-    buffer_metric = next((m for m in metrics.gauge if m.name == BUFFER_NUMBER_OF_ITEMS_METRIC), None)
+    buffer_metric = next((m for m in metrics.gauge if m.name == f"{BUFFER_NUMBER_OF_ITEMS_METRIC} {buffer.name}"), None)
     assert buffer_metric is not None
     assert buffer_metric.data.value == [1, 2, 1, 0]
 
@@ -95,7 +95,7 @@ def test_buffer_stores_and_retrieves_item():
 def test_buffer_respects_capacity():
     """Test that Buffer respects its capacity limit."""
     env = RecordingEnvironment()
-    buffer = Buffer(x=0.0, y=0.0, capacity=2.0)
+    buffer = Buffer(name="Test Buffer", x=0.0, y=0.0, capacity=2.0)
     
     items_put = []
     
@@ -121,9 +121,10 @@ def test_manufacturing_cell_processes_items():
     env = RecordingEnvironment()
     
     # Create buffers and manufacturing cell
-    buffer_in = Buffer(x=0.0, y=0.0, capacity=10.0)
-    buffer_out = Buffer(x=100.0, y=100.0, capacity=10.0)
+    buffer_in = Buffer(name="Input Buffer", x=0.0, y=0.0, capacity=10.0)
+    buffer_out = Buffer(name="Output Buffer", x=100.0, y=100.0, capacity=10.0)
     cell = ManufacturingCell(
+        name="Manufacturing Cell",
         x=50.0,
         y=50.0,
         buffer_in=buffer_in,
