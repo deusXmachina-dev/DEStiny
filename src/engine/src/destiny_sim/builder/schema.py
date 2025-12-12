@@ -69,7 +69,7 @@ class BuilderEntitySchema(BaseModel):
 class SimParams(BaseModel):
     """Simulation-level parameters shared between frontend and engine."""
 
-    initialTime: float | None = None
+    initialTime: float = 0
     duration: float | None = None
 
 

@@ -1,7 +1,8 @@
 from ninja import NinjaAPI
 
-from .simulation import router as simulation_router
+from .blueprint import router as blueprint_router
 from .chat import router as chat_router
+from .simulation import router as simulation_router
 
 
 api = NinjaAPI(
@@ -15,3 +16,4 @@ api = NinjaAPI(
 
 api.add_router("/", simulation_router)
 api.add_router("/chat", chat_router)
+api.add_router("/blueprint", blueprint_router)

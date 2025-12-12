@@ -434,3 +434,144 @@ class TestSimulateEndpoint:
             assert "startY" in segment
             assert "endX" in segment
             assert "endY" in segment
+
+
+class TestBlueprintEndpoint:
+    """Tests for GET /api/blueprint and PUT /api/blueprint endpoints."""
+
+    @pytest.mark.django_db
+    def test_get_blueprint_returns_empty_initially(self, api_client):
+        """GET blueprint should return empty blueprint if none exists."""
+        response = api_client.get("/api/blueprint")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert "simParams" in data
+        assert "entities" in data
+        assert isinstance(data["entities"], list)
+        assert len(data["entities"]) == 0
+
+    @pytest.mark.django_db
+    def test_put_blueprint_saves_and_persists(self, api_client):
+        """PUT blueprint should save and persist across requests."""
+        blueprint = {
+            "simParams": {
+                "initialTime": 0,
+                "duration": 10,
+            },
+            "entities": [
+                {
+                    "entityType": "human",
+                    "uuid": "person-1",
+                    "parameters": make_parameters(
+                        x=100.0,
+                        y=100.0,
+                        targetX=500.0,
+                        targetY=300.0,
+                    ),
+                },
+            ],
+        }
+        
+        # Save blueprint
+        response = api_client.put(
+            "/api/blueprint",
+            data=blueprint,
+            content_type="application/json",
+        )
+        
+        assert response.status_code == 200
+        saved_data = response.json()
+        assert len(saved_data["entities"]) == 1
+        assert saved_data["entities"][0]["uuid"] == "person-1"
+        
+        # Retrieve blueprint in a new request (same session)
+        response = api_client.get("/api/blueprint")
+        
+        assert response.status_code == 200
+        retrieved_data = response.json()
+        assert len(retrieved_data["entities"]) == 1
+        assert retrieved_data["entities"][0]["uuid"] == "person-1"
+        assert retrieved_data["entities"][0]["entityType"] == "human"
+        assert retrieved_data["simParams"]["duration"] == 10
+
+    @pytest.mark.django_db
+    def test_put_blueprint_updates_existing(self, api_client):
+        """PUT blueprint should update existing blueprint."""
+        initial_blueprint = {
+            "simParams": {
+                "initialTime": 0,
+                "duration": 5,
+            },
+            "entities": [
+                {
+                    "entityType": "human",
+                    "uuid": "person-1",
+                    "parameters": make_parameters(
+                        x=100.0,
+                        y=100.0,
+                        targetX=500.0,
+                        targetY=300.0,
+                    ),
+                },
+            ],
+        }
+        
+        # Save initial blueprint
+        api_client.put(
+            "/api/blueprint",
+            data=initial_blueprint,
+            content_type="application/json",
+        )
+        
+        # Update blueprint with new entity
+        updated_blueprint = {
+            "simParams": {
+                "initialTime": 0,
+                "duration": 10,
+            },
+            "entities": [
+                {
+                    "entityType": "human",
+                    "uuid": "person-1",
+                    "parameters": make_parameters(
+                        x=100.0,
+                        y=100.0,
+                        targetX=500.0,
+                        targetY=300.0,
+                    ),
+                },
+                {
+                    "entityType": "human",
+                    "uuid": "person-2",
+                    "parameters": make_parameters(
+                        x=200.0,
+                        y=200.0,
+                        targetX=600.0,
+                        targetY=400.0,
+                    ),
+                },
+            ],
+        }
+        
+        # Update blueprint
+        response = api_client.put(
+            "/api/blueprint",
+            data=updated_blueprint,
+            content_type="application/json",
+        )
+        
+        assert response.status_code == 200
+        updated_data = response.json()
+        assert len(updated_data["entities"]) == 2
+        assert updated_data["simParams"]["duration"] == 10
+        
+        # Verify update persists
+        response = api_client.get("/api/blueprint")
+        
+        assert response.status_code == 200
+        retrieved_data = response.json()
+        assert len(retrieved_data["entities"]) == 2
+        uuids = [e["uuid"] for e in retrieved_data["entities"]]
+        assert "person-1" in uuids
+        assert "person-2" in uuids

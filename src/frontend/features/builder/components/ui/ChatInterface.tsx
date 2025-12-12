@@ -1,9 +1,10 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import type { ToolUIPart, UIMessage } from "ai";
 import { DefaultChatTransport } from "ai";
 import { nanoid } from "nanoid";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Conversation,
@@ -22,36 +23,120 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
 import { BACKEND_URL } from "@/config/api";
 import { cn } from "@/lib/utils";
+
+import { useBuilder } from "../../hooks/BuilderContext";
 
 interface ChatInterfaceProps {
   className?: string;
 }
 
+const isToolPart = (part: { type: string }): part is ToolUIPart =>
+  part.type.startsWith("tool-");
+
+// Sync blueprint when any tool completes
+function useBlueprintSyncOnToolComplete(
+  messages: UIMessage[],
+  fetchBlueprint: () => void,
+) {
+  const processedToolsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    for (const message of messages) {
+      if (message.role !== "assistant") {continue;}
+
+      for (const part of message.parts) {
+        if (
+          isToolPart(part) &&
+          part.state === "output-available" &&
+          part.toolCallId
+        ) {
+          // Use toolCallId to uniquely identify each tool call
+          // Only fetch once per completed tool call
+          if (!processedToolsRef.current.has(part.toolCallId)) {
+            processedToolsRef.current.add(part.toolCallId);
+            fetchBlueprint();
+          }
+        }
+      }
+    }
+  }, [messages, fetchBlueprint]);
+}
+
+const ChatMessage = ({ message }: { message: UIMessage }) => {
+  const textContent = message.parts
+    .filter((part) => part.type === "text")
+    .map((part) => part.text)
+    .join("");
+
+  const toolParts = message.parts.filter(isToolPart);
+
+  return (
+    <Message from={message.role} key={message.id}>
+      <MessageContent>
+        {textContent && <MessageResponse>{textContent}</MessageResponse>}
+        {toolParts.map((toolPart, index) => {
+          const toolName = toolPart.type
+            .replace("tool-", "")
+            .replace(/_/g, " ");
+          return (
+            <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
+              <ToolHeader
+                title={toolName}
+                type={toolPart.type}
+                state={toolPart.state}
+              />
+              <ToolContent>
+                {toolPart.input != null && <ToolInput input={toolPart.input} />}
+                <ToolOutput
+                  output={toolPart.output}
+                  errorText={toolPart.errorText}
+                />
+              </ToolContent>
+            </Tool>
+          );
+        })}
+      </MessageContent>
+    </Message>
+  );
+};
+
 const ChatInterface = ({ className }: ChatInterfaceProps) => {
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState("");
   const chatId = useMemo(() => nanoid(), []);
+  const { fetchBlueprint } = useBuilder();
 
-  const transport = new DefaultChatTransport({api: `${BACKEND_URL}/api/chat`});
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: `${BACKEND_URL}/api/chat`,
+        fetch: (url, options) =>
+          // this is here to ensure the session cookie is sent to the backend
+          fetch(url, { ...options, credentials: "include" }),
+      }),
+    [],
+  );
 
-  const { messages, sendMessage, status, error: _error } = useChat({ id: chatId, transport });
+  const { messages, sendMessage, status } = useChat({ id: chatId, transport });
+
+  useBlueprintSyncOnToolComplete(messages, fetchBlueprint);
 
   const handleSubmit = (
-    message: { text: string; files: unknown[] },
+    { text }: { text: string },
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    if (!message.text.trim()) {
-      return;
-    }
-
-    sendMessage({ text: message.text });
+    if (!text.trim()) {return;}
+    sendMessage({ text });
     setInput("");
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
   };
 
   const isLoading = status === "submitted" || status === "streaming";
@@ -65,28 +150,19 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
     >
       <Conversation>
         <ConversationContent>
-          {messages.map((message) => {
-            const textParts = message.parts.filter(
-              (part): part is { type: "text"; text: string } =>
-                part.type === "text",
-            );
-            const content = textParts.map((part) => part.text).join("");
-
-            return (
-              <Message from={message.role} key={message.id}>
-                <MessageContent>
-                  <MessageResponse>{content}</MessageResponse>
-                </MessageContent>
-              </Message>
-            );
-          })}
+          {messages.map((message) => (
+            <ChatMessage key={message.id} message={message} />
+          ))}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
       <div className="w-full px-4 pb-4 pt-4">
         <PromptInput onSubmit={handleSubmit}>
           <PromptInputBody>
-            <PromptInputTextarea onChange={handleInputChange} value={input} />
+            <PromptInputTextarea
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+            />
           </PromptInputBody>
           <PromptInputFooter className="flex justify-end">
             <PromptInputSubmit

@@ -43,12 +43,13 @@ export const EntityEditorForm = ({
     name: createPrimitiveParameter("name", entity.name),
   }));
 
-  const handleParameterChange = (key: string) => (param: BlueprintEntityParameter) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [key]: param,
-    }));
-  };
+  const handleParameterChange =
+    (key: string) => (param: BlueprintEntityParameter) => {
+      setFormValues((prev) => ({
+        ...prev,
+        [key]: param,
+      }));
+    };
 
   const performSubmit = () => {
     onSave(formValues);

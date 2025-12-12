@@ -33,7 +33,10 @@ export function HistogramChart({
   currentTime = maxDuration,
 }: HistogramChartProps) {
   // Transform data and calculate visible data
-  const { chartData, visibleData } = useTimeSeriesMetricData({ metric, currentTime });
+  const { chartData, visibleData } = useTimeSeriesMetricData({
+    metric,
+    currentTime,
+  });
 
   // Calculate histogram bins from visible data
   const histogramData = useMemo(() => {

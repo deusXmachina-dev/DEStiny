@@ -58,7 +58,8 @@ function MetricsPanelContent() {
                     maxDuration={duration}
                   />
                 );
-              } if (metric.type === "state") {
+              }
+              if (metric.type === "state") {
                 return (
                   <StateProportionChart
                     key={`${metric.name}-${index}`}
@@ -66,17 +67,16 @@ function MetricsPanelContent() {
                     currentTime={currentTime}
                   />
                 );
-              } 
-                // counter or gauge
-                return (
-                  <AreaChartWithSteps
-                    key={`${metric.name}-${index}`}
-                    metric={metric as TimeSeriesMetric}
-                    currentTime={currentTime}
-                    maxDuration={duration}
-                  />
-                );
-              
+              }
+              // counter or gauge
+              return (
+                <AreaChartWithSteps
+                  key={`${metric.name}-${index}`}
+                  metric={metric as TimeSeriesMetric}
+                  currentTime={currentTime}
+                  maxDuration={duration}
+                />
+              );
             })}
           </>
         )}

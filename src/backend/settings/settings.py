@@ -67,6 +67,7 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     "django.contrib.staticfiles",
+    "django.contrib.sessions",
     
     "corsheaders",
     
@@ -76,6 +77,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -108,8 +110,13 @@ WSGI_APPLICATION = "wsgi.application"
 ASGI_APPLICATION = "asgi.application"
 
 
-# Database - not needed for stateless API
-DATABASES = {}
+# Database - SQLite for session storage
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
@@ -160,6 +167,11 @@ LOGGING = {
     },
     "loggers": {
         "simulation": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "agent": {
             "handlers": ["console", "file"],
             "level": "INFO",
             "propagate": False,

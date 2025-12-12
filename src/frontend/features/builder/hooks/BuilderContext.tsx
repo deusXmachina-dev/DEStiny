@@ -1,6 +1,15 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useRef, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import { $api } from "@/lib/api-client";
 
 import type {
   BlueprintEntity,
@@ -37,6 +46,8 @@ interface BuilderContextValue {
   ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
   updateEntityName: (entityId: string, name: string) => void;
+  setBlueprint: (blueprint: SimulationBlueprint) => void;
+  fetchBlueprint: () => void;
 
   // Selection actions
   selectEntity: (entityId: string) => void;
@@ -59,18 +70,57 @@ interface BuilderProviderProps {
 /**
  * BuilderProvider - Manages the "editing session" state for the builder.
  *
- * This provider holds:
- * - The blueprint (source of truth for entities)
- * - Selected entity state
- * - Editor open/close state
- *
- * All blueprint mutations go through this context to ensure consistency.
+ * Uses local state as the source of truth:
+ * - Fetches blueprint from API on mount
+ * - Local changes update state immediately
+ * - Changes are debounced and saved to backend
  */
 export const BuilderProvider = ({ children }: BuilderProviderProps) => {
-  const [blueprint, setBlueprint] = useState<SimulationBlueprint | null>(null);
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const justClosedRef = useRef(false);
+
+  const [blueprint, setBlueprintState] = useState<SimulationBlueprint | null>(
+    null,
+  );
+
+  // Fetch blueprint from API
+  const { refetch } = $api.useQuery("get", "/api/blueprint", {
+    enabled: false,
+  });
+  const justFetchedRef = useRef(false);
+
+  const fetchBlueprint = () => {
+    refetch().then((result) => {
+      if (result.data) {
+        setBlueprintState(result.data);
+        justFetchedRef.current = true;
+      }
+    });
+  };
+
+  // Only run this effect on mount
+  useEffect(() => {
+    // add some timeout to prevent race condition with the initial render
+    setTimeout(() => {
+      fetchBlueprint();
+    }, 300);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Save mutation
+  const saveMutation = $api.useMutation("put", "/api/blueprint");
+
+  // Save when debounced blueprint changes (skip initial null)
+  useEffect(() => {
+    if (blueprint) {
+      if (justFetchedRef.current) {
+        justFetchedRef.current = false;
+      } else {
+        saveMutation.mutate({ body: blueprint });
+      }
+    }
+  }, [blueprint, saveMutation]);
 
   const addEntity = (
     entityType: BlueprintEntity["entityType"],
@@ -86,17 +136,17 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     };
     const name = getNextEntityName(entityType, currentBlueprint);
     const newEntity = createBlueprintEntity(name, entityType, parameters, x, y);
-    setBlueprint({
+    setBlueprintState({
       ...currentBlueprint,
       entities: [...currentBlueprint.entities, newEntity],
     });
   };
 
   const removeEntity = (entityId: string) => {
-    if (!blueprint) {
-      return;
-    }
-    setBlueprint(removeBlueprintEntity(blueprint, entityId));
+    setBlueprintState((current) => {
+      if (!current) {return null;}
+      return removeBlueprintEntity(current, entityId);
+    });
     if (selectedEntityId === entityId) {
       setSelectedEntityId(null);
       setIsEditorOpen(false);
@@ -132,21 +182,25 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
         name,
       );
     }
-    setBlueprint(updatedBlueprint);
+    setBlueprintState(updatedBlueprint);
   };
 
   const moveEntity = (entityId: string, x: number, y: number) => {
-    if (!blueprint) {
-      return;
-    }
-    setBlueprint(updateBlueprintEntityPosition(blueprint, entityId, x, y));
+    setBlueprintState((current) => {
+      if (!current) {return null;}
+      return updateBlueprintEntityPosition(current, entityId, x, y);
+    });
+  };
+
+  const handleSetBlueprint = (newBlueprint: SimulationBlueprint) => {
+    setBlueprintState(newBlueprint);
   };
 
   const updateEntityName = (entityId: string, name: string) => {
     if (!blueprint) {
       return;
     }
-    setBlueprint(updateBlueprintEntityName(blueprint, entityId, name));
+    setBlueprintState(updateBlueprintEntityName(blueprint, entityId, name));
   };
 
   const selectEntity = (entityId: string) => {
@@ -158,7 +212,6 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   };
 
   const openEditor = (entityId: string) => {
-    // Prevent opening if we just closed the dialog (to avoid reopening from overlay click)
     if (justClosedRef.current) {
       return;
     }
@@ -169,9 +222,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   const closeEditor = () => {
     setIsEditorOpen(false);
     setSelectedEntityId(null);
-    // Set flag to prevent immediate reopening from the same click
     justClosedRef.current = true;
-    // Clear flag after a short delay
     setTimeout(() => {
       justClosedRef.current = false;
     }, 150);
@@ -188,6 +239,8 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     updateEntity,
     moveEntity,
     updateEntityName,
+    setBlueprint: handleSetBlueprint,
+    fetchBlueprint,
     selectEntity,
     clearSelection,
     openEditor,

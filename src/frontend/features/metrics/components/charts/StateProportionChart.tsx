@@ -75,9 +75,13 @@ export function StateProportionChart({
 
   // Get badge style based on current state color
   const badgeStyle = useMemo(() => {
-    if (!currentState) {return undefined;}
+    if (!currentState) {
+      return undefined;
+    }
     const color = chartConfig[currentState]?.color;
-    if (!color) {return undefined;}
+    if (!color) {
+      return undefined;
+    }
     return {
       backgroundColor: color,
       color: "white",
@@ -164,14 +168,10 @@ export function StateProportionChart({
       {hasData && (
         <div className="mt-4 flex flex-wrap gap-2 justify-center">
           {proportions.map((p) => {
-            const color =
-              chartConfig[p.state]?.color || "var(--chart-1)";
+            const color = chartConfig[p.state]?.color || "var(--chart-1)";
             const percentage = (p.proportion * 100).toFixed(1);
             return (
-              <div
-                key={p.state}
-                className="flex items-center gap-1.5 text-xs"
-              >
+              <div key={p.state} className="flex items-center gap-1.5 text-xs">
                 <div
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: color }}

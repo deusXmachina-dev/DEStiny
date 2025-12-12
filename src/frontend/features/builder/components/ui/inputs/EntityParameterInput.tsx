@@ -14,7 +14,10 @@ import type {
   ParameterInfo,
   SimulationBlueprint,
 } from "../../../types";
-import { createEntityParameter, getAvailableEntitiesForParameter } from "../../../utils";
+import {
+  createEntityParameter,
+  getAvailableEntitiesForParameter,
+} from "../../../utils";
 
 interface EntityParameterInputProps {
   name: string;

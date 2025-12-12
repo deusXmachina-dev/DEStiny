@@ -5,11 +5,11 @@ from django.http import JsonResponse, StreamingHttpResponse, HttpRequest
 from ninja import Router
 from pydantic import ValidationError
 
-from pydantic_ai import Agent
+from agent import blueprint_agent
+from agent.storage import BlueprintStorage
 from pydantic_ai.ui import SSE_CONTENT_TYPE
 from pydantic_ai.ui.vercel_ai import VercelAIAdapter
 
-agent = Agent("openai:gpt-4o-mini")
 router = Router()
 
 
@@ -27,10 +27,14 @@ async def chat(request: HttpRequest):
             status=HTTPStatus.UNPROCESSABLE_ENTITY,
         )
 
-    adapter = VercelAIAdapter(agent=agent, run_input=run_input, accept=accept)
+    # Create storage instance with Django session
+    storage = BlueprintStorage(session=request.session)
+
+    adapter = VercelAIAdapter(agent=blueprint_agent, run_input=run_input, accept=accept)
 
     # adapter.run_stream() produces events; adapter.encode_stream(...) yields SSE bytes/chunks
-    event_stream = adapter.run_stream()
+    # Pass storage as dependency
+    event_stream = adapter.run_stream(deps=storage)
     sse_event_stream = adapter.encode_stream(event_stream)
 
     resp = StreamingHttpResponse(sse_event_stream, content_type=accept)

@@ -23,7 +23,10 @@ export function useTimeSeriesMetricData({
   currentTime,
 }: UseMetricDataProps): UseMetricDataReturn {
   // Transform data from parallel arrays to Recharts format
-  const chartData = useMemo(() => transformTimeSeriesMetricData(metric), [metric]);
+  const chartData = useMemo(
+    () => transformTimeSeriesMetricData(metric),
+    [metric],
+  );
 
   // Calculate visible data based on current time
   const visibleData = useMemo(() => {
