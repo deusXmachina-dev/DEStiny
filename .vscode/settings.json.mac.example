@@ -22,5 +22,10 @@
     "**/test_*.py": "python",
     "**/*_test.py": "python",
     "**/tests/**/*.py": "python"
-  }
+  },
+  "vitest.workspaceConfig": "${workspaceFolder}/src/frontend/vitest.config.ts",
+  "vitest.commandLine": "cd src/frontend && bun test",
+  "vitest.nodeEnv": {},
+  "vitest.include": ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+  "vitest.exclude": ["**/node_modules/**", "**/dist/**", "**/.{idea,git,cache,output,temp}/**"]
 }
