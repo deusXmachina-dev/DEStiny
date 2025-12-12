@@ -4,6 +4,24 @@ import { describe, expect, it } from "vitest";
 
 import { SimulationEngine } from "./SimulationEngine";
 
+// Helper to create empty metrics object
+const createEmptyMetrics = () => ({
+  counter: [],
+  gauge: [],
+  sample: [],
+  state: [],
+});
+
+// Helper to create a recording with defaults
+const createRecording = (
+  overrides: Partial<SimulationRecording> &
+    Pick<SimulationRecording, "duration">,
+): SimulationRecording => ({
+  segments_by_entity: {},
+  metrics: createEmptyMetrics(),
+  ...overrides,
+});
+
 // Helper to create a motion segment with defaults
 const createSegment = (
   overrides: Partial<SimulationMotionSegment> &
@@ -24,11 +42,7 @@ const createSegment = (
 describe("SimulationEngine", () => {
   describe("duration", () => {
     it("returns the recording duration", () => {
-      const recording: SimulationRecording = {
-        duration: 30,
-        segments_by_entity: {},
-        metrics: [],
-      };
+      const recording = createRecording({ duration: 30 });
       const engine = new SimulationEngine(recording);
       expect(engine.duration).toBe(30);
     });
@@ -36,29 +50,24 @@ describe("SimulationEngine", () => {
 
   describe("getEntitiesAtTime", () => {
     it("returns empty array when no segments exist", () => {
-      const recording: SimulationRecording = {
-        duration: 10,
-        segments_by_entity: {},
-        metrics: [],
-      };
+      const recording = createRecording({ duration: 10 });
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
     });
 
     it("returns empty array when entity has empty segments", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           "entity-1": [],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
     });
 
     it("interpolates position at midpoint of segment", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -74,8 +83,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
@@ -86,7 +94,7 @@ describe("SimulationEngine", () => {
     });
 
     it("returns start position at time 0", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -102,8 +110,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(0);
 
@@ -112,7 +119,7 @@ describe("SimulationEngine", () => {
     });
 
     it("returns end position at end time", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -128,8 +135,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(10);
 
@@ -138,7 +144,7 @@ describe("SimulationEngine", () => {
     });
 
     it("does not return entity before its segment starts", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -150,8 +156,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(2);
 
@@ -159,7 +164,7 @@ describe("SimulationEngine", () => {
     });
 
     it("does not return entity after its segment ends", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -171,8 +176,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(15);
 
@@ -180,7 +184,7 @@ describe("SimulationEngine", () => {
     });
 
     it("handles null endTime as indefinite (uses recording duration)", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 100,
         segments_by_entity: {
           agv1: [
@@ -194,8 +198,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
 
       // Should still be visible at time 50
@@ -206,7 +209,7 @@ describe("SimulationEngine", () => {
     });
 
     it("interpolates angle correctly", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -220,8 +223,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
@@ -231,7 +233,7 @@ describe("SimulationEngine", () => {
 
   describe("multiple segments", () => {
     it("transitions between segments correctly", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -253,8 +255,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
 
       // In first segment
@@ -271,7 +272,7 @@ describe("SimulationEngine", () => {
     });
 
     it("handles backward seeking (rewind)", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -293,8 +294,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
 
       // Go forward first
@@ -308,7 +308,7 @@ describe("SimulationEngine", () => {
 
   describe("hierarchy", () => {
     it("builds parent-child relationships", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -330,8 +330,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 
@@ -345,7 +344,7 @@ describe("SimulationEngine", () => {
     });
 
     it("treats entity as root when parent is not rendered", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -366,8 +365,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
 
       // At time 3, both are visible, box is child of agv
@@ -386,7 +384,7 @@ describe("SimulationEngine", () => {
 
   describe("resetCache", () => {
     it("allows correct calculation after cache reset", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 20,
         segments_by_entity: {
           agv1: [
@@ -408,8 +406,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
 
       // Go to second segment
@@ -426,7 +423,7 @@ describe("SimulationEngine", () => {
 
   describe("multiple entities", () => {
     it("handles multiple independent entities", () => {
-      const recording: SimulationRecording = {
+      const recording = createRecording({
         duration: 10,
         segments_by_entity: {
           agv1: [
@@ -446,8 +443,7 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
-      };
+      });
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
 

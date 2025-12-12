@@ -10,7 +10,7 @@ To record segments use env helper methods.
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from destiny_sim.core.metrics import Metric
+from destiny_sim.core.metrics import MetricsSchema
 from destiny_sim.core.rendering import SimulationEntityType
 
 
@@ -62,4 +62,4 @@ class SimulationRecording(BaseModel):
 
     duration: float
     segments_by_entity: dict[str, list[MotionSegment]] = {}
-    metrics: list[Metric] = []
+    metrics: MetricsSchema = MetricsSchema()

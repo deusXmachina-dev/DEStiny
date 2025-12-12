@@ -6,8 +6,10 @@ import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
 
 import { MetricsProvider, useMetrics } from "../hooks";
+import type { StateMetric, TimeSeriesMetric } from "../index";
 import { AreaChartWithSteps } from "./charts/AreaChartWithSteps";
 import { HistogramChart } from "./charts/HistogramChart";
+import { StateProportionChart } from "./charts/StateProportionChart";
 import { MetricsSelector } from "./MetricsSelector";
 
 function MetricsPanelContent() {
@@ -45,23 +47,38 @@ function MetricsPanelContent() {
             No metrics available in this recording
           </div>
         ) : (
-          displayedMetrics.map((metric, index) =>
-            metric.type === "sample" ? (
-              <HistogramChart
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ) : (
-              <AreaChartWithSteps
-                key={`${metric.name}-${index}`}
-                metric={metric}
-                currentTime={currentTime}
-                maxDuration={duration}
-              />
-            ),
-          )
+          <>
+            {displayedMetrics.map((metric, index) => {
+              if (metric.type === "sample") {
+                return (
+                  <HistogramChart
+                    key={`${metric.name}-${index}`}
+                    metric={metric as TimeSeriesMetric}
+                    currentTime={currentTime}
+                    maxDuration={duration}
+                  />
+                );
+              } if (metric.type === "state") {
+                return (
+                  <StateProportionChart
+                    key={`${metric.name}-${index}`}
+                    metric={metric as StateMetric}
+                    currentTime={currentTime}
+                  />
+                );
+              } 
+                // counter or gauge
+                return (
+                  <AreaChartWithSteps
+                    key={`${metric.name}-${index}`}
+                    metric={metric as TimeSeriesMetric}
+                    currentTime={currentTime}
+                    maxDuration={duration}
+                  />
+                );
+              
+            })}
+          </>
         )}
       </SidePanel.Content>
     </SidePanel>

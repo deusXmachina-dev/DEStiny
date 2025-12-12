@@ -2,6 +2,7 @@
 Simulation environment with motion recording.
 """
 
+from enum import StrEnum
 import json
 import math
 from collections import defaultdict
@@ -82,6 +83,17 @@ class RecordingEnvironment(Environment):
             labels: Optional filtering labels
         """
         self._metrics_container.record_sample(name, self.now, value, labels)
+
+    def set_state(self, name: str, state: StrEnum, labels: dict[str, str] | None = None) -> None:
+        """
+        Set a state metric value.
+        
+        Args:
+            name: Metric name
+            state: State value (must be a StrEnum member)
+            labels: Optional filtering labels
+        """
+        self._metrics_container.set_state(name, self.now, state, labels)
 
     def record_disappearance(self, entity: Any, time: float | None = None) -> None:
         """

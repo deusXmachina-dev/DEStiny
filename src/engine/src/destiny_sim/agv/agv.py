@@ -3,6 +3,7 @@ AGV (Automated Guided Vehicle) simulation entity.
 """
 
 from collections import deque
+from enum import StrEnum
 from typing import Any, Generator
 
 from simpy import Timeout
@@ -16,7 +17,12 @@ from destiny_sim.core.simulation_entity import SimulationEntity
 
 
 AGV_ACTIVE_METRIC = "Active AGVs"
+AGV_STATE_METRIC = "AGV State"
 DELIVERY_TIME_METRIC = "package_delivery_time"
+
+class AGVState(StrEnum):
+    IDLE = "Idle"
+    BUSY = "Busy"
 
 class AGV(SimulationEntity):
     """
@@ -50,6 +56,7 @@ class AGV(SimulationEntity):
 
         if self._is_available:
             self._is_available = False
+            env.set_state(f"{AGV_STATE_METRIC} {self.id}", AGVState.BUSY)
             env.adjust_gauge(AGV_ACTIVE_METRIC, 1)
             env.process(self._process_queue(env))
 
@@ -62,6 +69,7 @@ class AGV(SimulationEntity):
             yield from self._execute_plan(env, plan)
         self._is_available = True
         env.adjust_gauge(AGV_ACTIVE_METRIC, -1)
+        env.set_state(f"{AGV_STATE_METRIC} {self.id}", AGVState.IDLE)
 
     def _execute_plan(
         self, env: RecordingEnvironment, plan: TripPlan

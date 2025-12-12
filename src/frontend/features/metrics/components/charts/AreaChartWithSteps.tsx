@@ -11,8 +11,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-import { useMetricData } from "../../hooks";
-import type { Metric } from "../../index";
+import { useTimeSeriesMetricData } from "../../hooks";
+import type { TimeSeriesMetric } from "../../index";
 import { ChartLayout } from "./ChartLayout";
 
 const chartConfig = {
@@ -23,7 +23,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 interface AreaChartWithStepsProps {
-  metric: Metric;
+  metric: TimeSeriesMetric;
   maxDuration?: number;
   currentTime?: number;
 }
@@ -34,7 +34,7 @@ export function AreaChartWithSteps({
   currentTime = maxDuration,
 }: AreaChartWithStepsProps) {
   // Transform data and calculate visible data
-  const { chartData, visibleData } = useMetricData({ metric, currentTime });
+  const { chartData, visibleData } = useTimeSeriesMetricData({ metric, currentTime });
 
   // Get the current value at the playback time
   const currentValue = useMemo(() => {

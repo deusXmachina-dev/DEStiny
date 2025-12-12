@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface ChartLayoutProps {
   title: string;
   badge?: string | number | null;
+  badgeStyle?: React.CSSProperties;
   isEmpty: boolean;
   children: ReactNode;
 }
@@ -17,6 +18,7 @@ interface ChartLayoutProps {
 export function ChartLayout({
   title,
   badge,
+  badgeStyle,
   isEmpty,
   children,
 }: ChartLayoutProps) {
@@ -41,7 +43,9 @@ export function ChartLayout({
         <div className="flex items-center justify-between">
           <CardTitle>{title}</CardTitle>
           {badge !== null && badge !== undefined && (
-            <Badge className="text-lg tabular-nums">{badge}</Badge>
+            <Badge className="text-lg tabular-nums" style={badgeStyle}>
+              {badge}
+            </Badge>
           )}
         </div>
       </CardHeader>
