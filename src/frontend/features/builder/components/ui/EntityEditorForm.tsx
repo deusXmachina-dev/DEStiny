@@ -84,7 +84,7 @@ export const EntityEditorForm = ({
                 paramInfo={paramInfo}
                 value={currentParam}
                 blueprint={blueprint}
-                excludeUuid={entity.uuid}
+                excludeName={entity.name}
                 onChange={onChange}
               />
             );

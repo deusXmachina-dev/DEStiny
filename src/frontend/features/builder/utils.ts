@@ -50,11 +50,11 @@ export const createPrimitiveParameter = (
  */
 export const createEntityParameter = (
   name: string,
-  uuid: string,
+  entityName: string,
 ): BlueprintEntityParameter => ({
   name,
   parameterType: "entity" as BlueprintParameterType,
-  value: uuid,
+  value: entityName,
 });
 
 /**
@@ -74,7 +74,7 @@ export const blueprintToEntityStates = (
     const angle = extractNumericParameter(entity.parameters, "angle");
 
     return {
-      entityId: entity.uuid,
+      entityId: entity.name,
       entityType: entity.entityType as SimulationEntityState["entityType"],
       x,
       y,
@@ -138,9 +138,6 @@ export const createBlueprintEntity = (
   x: number,
   y: number,
 ): BlueprintEntity => {
-  // Generate UUID
-  const uuid = `${entityType}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
   // Create parameters dict with default values based on schema
   const entityParameters: Record<string, BlueprintEntityParameter> = {
     ...createPositionParameters(x, y),
@@ -173,7 +170,6 @@ export const createBlueprintEntity = (
 
   return {
     entityType,
-    uuid,
     name,
     parameters: entityParameters,
   };
@@ -184,13 +180,13 @@ export const createBlueprintEntity = (
  */
 export const updateBlueprintEntityPosition = (
   blueprint: SimulationBlueprint,
-  entityId: string,
+  entityName: string,
   x: number,
   y: number,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
-    entity.uuid === entityId
+    entity.name === entityName
       ? {
           ...entity,
           parameters: {
@@ -203,14 +199,14 @@ export const updateBlueprintEntityPosition = (
 });
 
 /**
- * Remove an entity from the blueprint by its UUID.
+ * Remove an entity from the blueprint by its name.
  */
 export const removeBlueprintEntity = (
   blueprint: SimulationBlueprint,
-  entityId: string,
+  entityName: string,
 ): SimulationBlueprint => ({
   ...blueprint,
-  entities: blueprint.entities.filter((entity) => entity.uuid !== entityId),
+  entities: blueprint.entities.filter((entity) => entity.name !== entityName),
 });
 
 /**
@@ -218,12 +214,12 @@ export const removeBlueprintEntity = (
  */
 export const updateBlueprintEntityParameters = (
   blueprint: SimulationBlueprint,
-  entityId: string,
+  entityName: string,
   parameters: Record<string, BlueprintEntityParameter>,
 ): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.map((entity) =>
-    entity.uuid === entityId
+    entity.name === entityName
       ? {
           ...entity,
           parameters: {
@@ -237,29 +233,58 @@ export const updateBlueprintEntityParameters = (
 
 /**
  * Update the name of an entity in the blueprint.
+ * Also updates all entity parameter references that point to the old name.
  */
 export const updateBlueprintEntityName = (
   blueprint: SimulationBlueprint,
-  entityId: string,
-  name: string,
+  oldName: string,
+  newName: string,
 ): SimulationBlueprint => ({
   ...blueprint,
-  entities: blueprint.entities.map((entity) =>
-    entity.uuid === entityId ? { ...entity, name } : entity,
-  ),
+  entities: blueprint.entities.map((entity) => {
+    // Update the entity's own name if it matches
+    if (entity.name === oldName) {
+      return { ...entity, name: newName };
+    }
+    
+    // Update any entity parameter references to the old name
+    const updatedParameters: Record<string, BlueprintEntityParameter> = {};
+    let hasChanges = false;
+    
+    for (const [paramName, param] of Object.entries(entity.parameters)) {
+      if (
+        param.parameterType === "entity" &&
+        typeof param.value === "string" &&
+        param.value === oldName
+      ) {
+        // Update the reference to point to the new name
+        updatedParameters[paramName] = {
+          ...param,
+          value: newName,
+        };
+        hasChanges = true;
+      } else {
+        updatedParameters[paramName] = param;
+      }
+    }
+    
+    return hasChanges
+      ? { ...entity, parameters: updatedParameters }
+      : entity;
+  }),
 });
 
 /**
- * Find a blueprint entity by its UUID.
+ * Find a blueprint entity by its name.
  */
 export const findBlueprintEntity = (
   blueprint: SimulationBlueprint | null,
-  entityId: string,
+  entityName: string,
 ): BlueprintEntity | undefined => {
   if (!blueprint) {
     return undefined;
   }
-  return blueprint.entities.find((entity) => entity.uuid === entityId);
+  return blueprint.entities.find((entity) => entity.name === entityName);
 };
 
 /**
@@ -268,11 +293,11 @@ export const findBlueprintEntity = (
 export const getAvailableEntitiesForParameter = (
   blueprint: SimulationBlueprint,
   allowedEntityTypes: string[] | null | undefined,
-  excludeUuid?: string,
+  excludeName?: string,
 ): BlueprintEntity[] =>
   blueprint.entities.filter((entity) => {
     // Exclude the current entity being edited
-    if (excludeUuid && entity.uuid === excludeUuid) {
+    if (excludeName && entity.name === excludeName) {
       return false;
     }
 

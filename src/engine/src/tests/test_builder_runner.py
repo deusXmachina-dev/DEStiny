@@ -2,13 +2,13 @@
 
 import pytest
 
-from destiny_sim.builder.runner import (
-    run_blueprint,
-    register_entity,
-    get_registered_entities,
-)
-from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities.human import Human
+from destiny_sim.builder.entity import BuilderEntity
+from destiny_sim.builder.runner import (
+    get_registered_entities,
+    register_entity,
+    run_blueprint,
+)
 from destiny_sim.builder.schema import (
     Blueprint,
     BlueprintEntity,
@@ -27,10 +27,10 @@ def _primitive(name: str, value: float | int | str | bool) -> BlueprintEntityPar
     )
 
 
-def _entity(name: str, uuid: str) -> BlueprintEntityParameter:
+def _entity(name: str, entity_name: str) -> BlueprintEntityParameter:
     """Helper to create an entity parameter."""
     return BlueprintEntityParameter(
-        name=name, parameterType=BlueprintParameterType.ENTITY, value=uuid
+        name=name, parameterType=BlueprintParameterType.ENTITY, value=entity_name
     )
 
 
@@ -41,8 +41,7 @@ def test_run_blueprint_with_human():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-1",
-                name="Person 1",
+                name="person-1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -65,7 +64,7 @@ def test_run_blueprint_with_human():
     
     # Find the human entity's segments
     human_segments = None
-    for entity_id, segments in recording.segments_by_entity.items():
+    for _, segments in recording.segments_by_entity.items():
         if segments and segments[0].entity_type == "human":
             human_segments = segments
             break
@@ -81,8 +80,7 @@ def test_run_blueprint_multiple_entities():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-1",
-                name="Person 1",
+                name="person-1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -92,8 +90,7 @@ def test_run_blueprint_multiple_entities():
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-2",
-                name="Person 2",
+                name="person-2",
                 parameters={
                     "x": _primitive("x", 300.0),
                     "y": _primitive("y", 300.0),
@@ -117,8 +114,7 @@ def test_run_blueprint_default_initial_time():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-1",
-                name="Person 1",
+                name="person-1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -142,8 +138,7 @@ def test_run_blueprint_without_duration():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-1",
-                name="Person 1",
+                name="person-1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -178,8 +173,7 @@ def test_run_blueprint_unknown_entity_type():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.COUNTER,  # Not in default registry
-                uuid="test-1",
-                name="Test Counter",
+                name="test-1",
                 parameters={},
             ),
         ],
@@ -196,8 +190,7 @@ def test_run_blueprint_invalid_parameters():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="person-1",
-                name="Person 1",
+                name="person-1",
                 parameters={
                     # Missing required parameters
                 },
@@ -240,8 +233,7 @@ def test_register_entity():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
-                uuid="test-1",
-                name="Test Box",
+                name="test-1",
                 parameters={
                     "value": _primitive("value", 42.0),
                 },
@@ -309,8 +301,7 @@ def test_entity_reference_resolution():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.HUMAN,
-                uuid="human-1",
-                name="Human 1",
+                name="human-1",
                 parameters={
                     "x": _primitive("x", 100.0),
                     "y": _primitive("y", 100.0),
@@ -320,8 +311,7 @@ def test_entity_reference_resolution():
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
-                uuid="robot-1",
-                name="Robot 1",
+                name="robot-1",
                 parameters={
                     "target": _entity("target", "human-1"),
                     "x": _primitive("x", 50.0),
@@ -365,16 +355,14 @@ def test_entity_reference_cycle():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
-                uuid="a-1",
-                name="Entity A",
+                name="a-1",
                 parameters={
                     "ref": _entity("ref", "b-1"),
                 },
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
-                uuid="b-1",
-                name="Entity B",
+                name="b-1",
                 parameters={
                     "ref": _entity("ref", "a-1"),
                 },
@@ -386,8 +374,8 @@ def test_entity_reference_cycle():
         run_blueprint(blueprint)
 
 
-def test_entity_reference_invalid_uuid():
-    """Test that invalid entity reference UUIDs are detected."""
+def test_entity_reference_invalid_name():
+    """Test that invalid entity reference names are detected."""
     class EntityWithReference(BuilderEntity):
         entity_type = SimulationEntityType.ROBOT
         
@@ -405,10 +393,9 @@ def test_entity_reference_invalid_uuid():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
-                uuid="robot-1",
-                name="Robot 1",
+                name="robot-1",
                 parameters={
-                    "target": _entity("target", "non-existent-uuid"),
+                    "target": _entity("target", "non-existent-name"),
                 },
             ),
         ],
@@ -461,8 +448,7 @@ def test_entity_reference_multiple_levels():
         entities=[
             BlueprintEntity(
                 entityType=SimulationEntityType.ROBOT,
-                uuid="level3-1",
-                name="Level 3",
+                name="level3-1",
                 parameters={
                     "level2": _entity("level2", "level2-1"),
                     "value": _primitive("value", 3.0),
@@ -470,8 +456,7 @@ def test_entity_reference_multiple_levels():
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.BOX,
-                uuid="level2-1",
-                name="Level 2",
+                name="level2-1",
                 parameters={
                     "level1": _entity("level1", "level1-1"),
                     "value": _primitive("value", 2.0),
@@ -479,8 +464,7 @@ def test_entity_reference_multiple_levels():
             ),
             BlueprintEntity(
                 entityType=SimulationEntityType.AGV,
-                uuid="level1-1",
-                name="Level 1",
+                name="level1-1",
                 parameters={
                     "value": _primitive("value", 1.0),
                 },

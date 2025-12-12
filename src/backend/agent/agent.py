@@ -1,4 +1,3 @@
-import uuid as uuid_lib
 from typing import Dict, Any
 
 from pydantic_ai import Agent, RunContext
@@ -164,7 +163,6 @@ def get_blueprint(ctx: Context) -> Dict[str, Any]:
     entities_list = []
     for entity in blueprint.entities:
         entity_dict = {
-            "uuid": entity.uuid,
             "entityType": entity.entityType.value,
             "name": entity.name,
             "parameters": {}
@@ -222,7 +220,7 @@ def _get_next_entity_name(entity_type: SimulationEntityType, blueprint) -> str:
 def add_entity(
     ctx: Context,
     entity_type: str,
-    entity_uuid: str | None = None,
+    entity_name: str | None = None,
     parameters: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """
@@ -234,13 +232,13 @@ def add_entity(
     Args:
         entity_type: Type of entity (e.g., 'human', 'source', 'sink', 'buffer', 'manufacturing_cell').
                     Case-insensitive.
-        entity_uuid: Optional UUID for the entity. If not provided, a new UUID will be generated.
+        entity_name: Optional name for the entity. If not provided, a name will be generated.
         parameters: Dictionary of parameter names to values. 
-                   For entity references (like buffer_in, buffer_out), use the UUID string of the referenced entity.
+                   For entity references (like buffer_in, buffer_out), use the name string of the referenced entity.
                    For primitive values, use the appropriate type (number, string, boolean).
     
     Returns:
-        Dictionary with success message and the UUID of the created entity
+        Dictionary with success message and the name of the created entity
     """
     # Get blueprint from storage
     storage = ctx.deps
@@ -272,17 +270,17 @@ def add_entity(
     # Get parameter schema for this entity type
     param_schema = entity_class.get_parameters_schema()
     
-    # Generate UUID if not provided
-    if entity_uuid is None:
-        entity_uuid = str(uuid_lib.uuid4())
-    
-    # Check if UUID already exists
-    existing_uuids = {e.uuid for e in blueprint.entities}
-    if entity_uuid in existing_uuids:
-        raise ValueError(
-            f"Entity with UUID '{entity_uuid}' already exists in blueprint. "
-            f"Use get_blueprint() to see existing entities, or use a different UUID."
-        )
+    # Generate name if not provided
+    if entity_name is None:
+        entity_name = _get_next_entity_name(entity_type_enum, blueprint)
+    else:
+        # Check if name already exists
+        existing_names = {e.name for e in blueprint.entities}
+        if entity_name in existing_names:
+            raise ValueError(
+                f"Entity with name '{entity_name}' already exists in blueprint. "
+                f"Use get_blueprint() to see existing entities, or use a different name."
+            )
     
     # Build parameters dict
     blueprint_parameters: Dict[str, BlueprintEntityParameter] = {}
@@ -313,24 +311,25 @@ def add_entity(
             
             # Determine parameter type
             if param_info.type.value == "entity":
-                # Entity reference - value should be a UUID string
+                # Entity reference - value should be a name string
                 if not isinstance(param_value, str):
                     raise ValueError(
-                        f"Parameter '{param_name}' is an entity reference and must be a UUID string, "
+                        f"Parameter '{param_name}' is an entity reference and must be a name string, "
                         f"got {type(param_value).__name__}. "
-                        f"Use get_blueprint() to find UUIDs of existing entities."
+                        f"Use get_blueprint() to find names of existing entities."
                     )
                 
                 # Validate referenced entity exists
-                if param_value not in existing_uuids:
+                existing_names = {e.name for e in blueprint.entities}
+                if param_value not in existing_names:
                     raise ValueError(
                         f"Entity reference '{param_value}' for parameter '{param_name}' does not exist. "
-                        f"Use get_blueprint() to see all existing entity UUIDs."
+                        f"Use get_blueprint() to see all existing entity names."
                     )
                 
                 # Validate entity type if restricted
                 if param_info.allowedEntityTypes:
-                    referenced_entity = next((e for e in blueprint.entities if e.uuid == param_value), None)
+                    referenced_entity = next((e for e in blueprint.entities if e.name == param_value), None)
                     if referenced_entity:
                         allowed_types = [et.value for et in param_info.allowedEntityTypes]
                         if referenced_entity.entityType not in param_info.allowedEntityTypes:
@@ -365,13 +364,9 @@ def add_entity(
                 value=param_value,
             )
     
-    # Generate entity name
-    entity_name = _get_next_entity_name(entity_type_enum, blueprint)
-    
     # Create the blueprint entity
     blueprint_entity = BlueprintEntity(
         entityType=entity_type_enum,
-        uuid=entity_uuid,
         name=entity_name,
         parameters=blueprint_parameters,
     )
@@ -385,7 +380,7 @@ def add_entity(
     return {
         "success": True,
         "message": f"Successfully added {entity_type} entity",
-        "uuid": entity_uuid,
+        "name": entity_name,
         "entityType": entity_type_enum.value
     }
 
@@ -393,7 +388,7 @@ def add_entity(
 @blueprint_agent.tool
 def update_entity(
     ctx: Context,
-    entity_uuid: str,
+    entity_name: str,
     parameters: Dict[str, Any],
 ) -> Dict[str, Any]:
     """
@@ -403,9 +398,9 @@ def update_entity(
     Use get_blueprint() to see current entity state before updating.
     
     Args:
-        entity_uuid: UUID of the entity to update
+        entity_name: Name of the entity to update
         parameters: Dictionary of parameter names to new values.
-                   For entity references, use UUID strings.
+                   For entity references, use name strings.
                    For primitive values, use appropriate types.
     
     Returns:
@@ -415,13 +410,13 @@ def update_entity(
     blueprint = storage.get_blueprint()
     
     # Find the entity
-    entity = next((e for e in blueprint.entities if e.uuid == entity_uuid), None)
+    entity = next((e for e in blueprint.entities if e.name == entity_name), None)
     if entity is None:
-        existing_uuids = [e.uuid for e in blueprint.entities]
+        existing_names = [e.name for e in blueprint.entities]
         raise ValueError(
-            f"Entity with UUID '{entity_uuid}' not found. "
+            f"Entity with name '{entity_name}' not found. "
             f"Use get_blueprint() to see existing entities. "
-            f"Available UUIDs: {existing_uuids[:10]}{'...' if len(existing_uuids) > 10 else ''}"
+            f"Available names: {existing_names[:10]}{'...' if len(existing_names) > 10 else ''}"
         )
     
     # Get entity class and schema
@@ -436,7 +431,7 @@ def update_entity(
         )
     
     param_schema = entity_class.get_parameters_schema()
-    existing_uuids = {e.uuid for e in blueprint.entities}
+    existing_names = {e.name for e in blueprint.entities}
     
     # Update parameters
     for param_name, param_value in parameters.items():
@@ -455,19 +450,19 @@ def update_entity(
             # Entity reference validation
             if not isinstance(param_value, str):
                 raise ValueError(
-                    f"Parameter '{param_name}' is an entity reference and must be a UUID string, "
+                    f"Parameter '{param_name}' is an entity reference and must be a name string, "
                     f"got {type(param_value).__name__}"
                 )
             
-            if param_value not in existing_uuids:
+            if param_value not in existing_names:
                 raise ValueError(
                     f"Entity reference '{param_value}' for parameter '{param_name}' does not exist. "
-                    f"Use get_blueprint() to see all existing entity UUIDs."
+                    f"Use get_blueprint() to see all existing entity names."
                 )
             
             # Validate entity type if restricted
             if param_info.allowedEntityTypes:
-                referenced_entity = next((e for e in blueprint.entities if e.uuid == param_value), None)
+                referenced_entity = next((e for e in blueprint.entities if e.name == param_value), None)
                 if referenced_entity:
                     allowed_types = [et.value for et in param_info.allowedEntityTypes]
                     if referenced_entity.entityType not in param_info.allowedEntityTypes:
@@ -507,8 +502,8 @@ def update_entity(
     
     return {
         "success": True,
-        "message": f"Successfully updated entity {entity_uuid}",
-        "uuid": entity_uuid,
+        "message": f"Successfully updated entity {entity_name}",
+        "name": entity_name,
         "entityType": entity.entityType.value,
         "updatedParameters": list(parameters.keys())
     }
@@ -517,17 +512,17 @@ def update_entity(
 @blueprint_agent.tool
 def remove_entity(
     ctx: Context,
-    entity_uuid: str,
+    entity_name: str,
 ) -> Dict[str, Any]:
     """
-    Remove an entity from the blueprint by UUID.
+    Remove an entity from the blueprint by name.
     
     WARNING: This will remove the entity even if other entities reference it.
     Make sure to update or remove dependent entities first.
     Use get_blueprint() to check for dependencies.
     
     Args:
-        entity_uuid: UUID of the entity to remove
+        entity_name: Name of the entity to remove
     
     Returns:
         Dictionary with success message
@@ -536,13 +531,13 @@ def remove_entity(
     blueprint = storage.get_blueprint()
     
     # Find and remove the entity
-    entity = next((e for e in blueprint.entities if e.uuid == entity_uuid), None)
+    entity = next((e for e in blueprint.entities if e.name == entity_name), None)
     if entity is None:
-        existing_uuids = [e.uuid for e in blueprint.entities]
+        existing_names = [e.name for e in blueprint.entities]
         raise ValueError(
-            f"Entity with UUID '{entity_uuid}' not found. "
+            f"Entity with name '{entity_name}' not found. "
             f"Use get_blueprint() to see existing entities. "
-            f"Available UUIDs: {existing_uuids[:10]}{'...' if len(existing_uuids) > 10 else ''}"
+            f"Available names: {existing_names[:10]}{'...' if len(existing_names) > 10 else ''}"
         )
     
     entity_type = entity.entityType.value
@@ -553,8 +548,8 @@ def remove_entity(
     
     return {
         "success": True,
-        "message": f"Successfully removed {entity_type} entity {entity_uuid}",
-        "uuid": entity_uuid,
+        "message": f"Successfully removed {entity_type} entity {entity_name}",
+        "name": entity_name,
         "entityType": entity_type
     }
 

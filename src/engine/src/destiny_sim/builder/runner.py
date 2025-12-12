@@ -4,17 +4,22 @@ Blueprint runner - executes simulations from blueprint definitions.
 
 from typing import Any, Dict, Type
 
-from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.builder.entities import Human
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
-from destiny_sim.builder.entities.material_flow.manufacturing_cell import ManufacturingCell
+from destiny_sim.builder.entities.material_flow.manufacturing_cell import (
+    ManufacturingCell,
+)
 from destiny_sim.builder.entities.material_flow.sink import Sink
 from destiny_sim.builder.entities.material_flow.source import Source
-from destiny_sim.builder.schema import Blueprint, BlueprintEntity, BlueprintParameterType
+from destiny_sim.builder.entity import BuilderEntity
+from destiny_sim.builder.schema import (
+    Blueprint,
+    BlueprintEntity,
+    BlueprintParameterType,
+)
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 from destiny_sim.core.timeline import SimulationRecording
-
 
 # Registry of available builder entities by their entity_type
 _ENTITY_REGISTRY: Dict[SimulationEntityType, Type[BuilderEntity]] = {
@@ -104,15 +109,15 @@ def _instantiate_entities(
         env: RecordingEnvironment for the simulation
     
     Returns:
-        Dictionary mapping UUID to BuilderEntity instances
+        Dictionary mapping name to BuilderEntity instances
     
     Raises:
         KeyError: If entity_type is not registered or entity reference is invalid
         ValueError: If there's a cycle or missing dependencies
         TypeError: If entity instantiation fails
     """
-    all_uuids = {e.uuid for e in blueprint.entities}
-    uuid_to_entity: Dict[str, BuilderEntity] = {}
+    all_names = {e.name for e in blueprint.entities}
+    name_to_entity: Dict[str, BuilderEntity] = {}
     remaining: list[BlueprintEntity] = list(blueprint.entities)
     skipped_count = 0
     
@@ -129,7 +134,7 @@ def _instantiate_entities(
             )
 
         resolved_params, can_resolve = _resolve_entity_parameters(
-            entity, all_uuids, uuid_to_entity
+            entity, all_names, name_to_entity
         )
         
         if can_resolve:
@@ -138,11 +143,11 @@ def _instantiate_entities(
                 entity_instance = entity_class(**resolved_params)
             except Exception as e:
                 raise TypeError(
-                    f"Failed to instantiate {entity_type} (uuid: {entity.uuid}) "
+                    f"Failed to instantiate {entity_type} (name: {entity.name}) "
                     f"with parameters {resolved_params}: {e}"
                 ) from e
             
-            uuid_to_entity[entity.uuid] = entity_instance
+            name_to_entity[entity.name] = entity_instance
             skipped_count = 0
         else:
             # Can't resolve yet - append back to end
@@ -154,16 +159,16 @@ def _instantiate_entities(
             raise ValueError(f"Circular dependency or missing entity references detected.")
     
     # Start all entity processes
-    for entity_instance in uuid_to_entity.values():
+    for entity_instance in name_to_entity.values():
         env.process(entity_instance.process(env))
     
-    return uuid_to_entity
+    return name_to_entity
 
 
 def _resolve_entity_parameters(
             entity: BlueprintEntity,
-            all_uuids: set[str],
-            uuid_to_entity: Dict[str, Any],
+            all_names: set[str],
+            name_to_entity: Dict[str, Any],
         ) -> tuple[Dict[str, Any], bool]:
             """
             Try to resolve the parameters of an entity from blueprint.
@@ -178,29 +183,29 @@ def _resolve_entity_parameters(
                 if param.parameterType == BlueprintParameterType.PRIMITIVE:
                     resolved_params[param_name] = param.value
                 elif param.parameterType == BlueprintParameterType.ENTITY:
-                    # Entity parameter - value should be a UUID string
-                    referenced_uuid = param.value
-                    if not isinstance(referenced_uuid, str):
+                    # Entity parameter - value should be a name string
+                    referenced_name = param.value
+                    if not isinstance(referenced_name, str):
                         raise ValueError(
-                            f"Entity parameter '{param_name}' must have string UUID value, "
-                            f"got {type(referenced_uuid).__name__}"
+                            f"Entity parameter '{param_name}' must have string name value, "
+                            f"got {type(referenced_name).__name__}"
                         )
 
-                    # Validate UUID exists in blueprint
-                    if referenced_uuid not in all_uuids:
+                    # Validate name exists in blueprint
+                    if referenced_name not in all_names:
                         raise ValueError(
-                            f"Entity reference '{referenced_uuid}' in parameter '{param_name}' "
+                            f"Entity reference '{referenced_name}' in parameter '{param_name}' "
                             f"does not exist in blueprint"
                         )
 
                     # Check if referenced entity is already instantiated
-                    if referenced_uuid not in uuid_to_entity:
+                    if referenced_name not in name_to_entity:
                         # Can't resolve yet - append back and break
                         can_resolve = False
                         break
 
                     # Resolve to actual entity instance
-                    resolved_params[param_name] = uuid_to_entity[referenced_uuid]
+                    resolved_params[param_name] = name_to_entity[referenced_name]
             
             # Add name from BlueprintEntity
             resolved_params["name"] = entity.name

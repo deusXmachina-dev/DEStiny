@@ -24,7 +24,7 @@ interface EntityParameterInputProps {
   paramInfo: ParameterInfo;
   value: BlueprintEntityParameter | undefined;
   blueprint: SimulationBlueprint;
-  excludeUuid?: string;
+  excludeName?: string;
   onChange: (param: BlueprintEntityParameter) => void;
 }
 
@@ -33,7 +33,7 @@ export const EntityParameterInput = ({
   paramInfo,
   value,
   blueprint,
-  excludeUuid,
+  excludeName,
   onChange,
 }: EntityParameterInputProps) => {
   const currentValue =
@@ -45,11 +45,11 @@ export const EntityParameterInput = ({
   const availableEntities = getAvailableEntitiesForParameter(
     blueprint,
     paramInfo.allowedEntityTypes,
-    excludeUuid,
+    excludeName,
   );
 
-  const handleChange = (uuid: string) => {
-    onChange(createEntityParameter(name, uuid));
+  const handleChange = (entityName: string) => {
+    onChange(createEntityParameter(name, entityName));
   };
 
   return (
@@ -68,8 +68,8 @@ export const EntityParameterInput = ({
             </div>
           ) : (
             availableEntities.map((entity) => (
-              <SelectItem key={entity.uuid} value={entity.uuid}>
-                {entity.entityType} ({entity.uuid.slice(0, 8)}...)
+              <SelectItem key={entity.name} value={entity.name}>
+                {entity.name} ({entity.entityType})
               </SelectItem>
             ))
           )}

@@ -89,8 +89,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -135,8 +134,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -146,8 +144,7 @@ class TestSimulateEndpoint:
                 },
                 {
                     "entityType": "human",
-                    "uuid": "person-2",
-                    "name": "Person 2",
+                    "name": "person-2",
                     "parameters": make_parameters(
                         x=200.0,
                         y=200.0,
@@ -179,8 +176,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -208,8 +204,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=0.0,
                         y=0.0,
@@ -258,7 +253,8 @@ class TestSimulateEndpoint:
             },
             "entities": [
                 {
-                    "uuid": "person-1",
+                    "entityType": "human",
+                    "name": "person-1",
                     "parameters": {
                         "x": 0.0,
                         "y": 0.0,
@@ -285,7 +281,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "unknown_entity",
-                    "uuid": "entity-1",
+                    "name": "entity-1",
                     "parameters": {},
                 },
             ],
@@ -341,7 +337,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
+                    "name": "person-1",
                     "parameters": "not a dict",
                 },
             ],
@@ -365,8 +361,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": {
                         # Missing required parameters like x, y, targetX, targetY
                     },
@@ -393,8 +388,7 @@ class TestSimulateEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Person 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -462,8 +456,7 @@ class TestBlueprintEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Human 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -484,7 +477,7 @@ class TestBlueprintEndpoint:
         assert response.status_code == 200
         saved_data = response.json()
         assert len(saved_data["entities"]) == 1
-        assert saved_data["entities"][0]["uuid"] == "person-1"
+        assert saved_data["entities"][0]["name"] == "person-1"
         
         # Retrieve blueprint in a new request (same session)
         response = api_client.get("/api/blueprint")
@@ -492,7 +485,7 @@ class TestBlueprintEndpoint:
         assert response.status_code == 200
         retrieved_data = response.json()
         assert len(retrieved_data["entities"]) == 1
-        assert retrieved_data["entities"][0]["uuid"] == "person-1"
+        assert retrieved_data["entities"][0]["name"] == "person-1"
         assert retrieved_data["entities"][0]["entityType"] == "human"
         assert retrieved_data["simParams"]["duration"] == 10
 
@@ -507,8 +500,7 @@ class TestBlueprintEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Human 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -535,8 +527,7 @@ class TestBlueprintEndpoint:
             "entities": [
                 {
                     "entityType": "human",
-                    "uuid": "person-1",
-                    "name": "Human 1",
+                    "name": "person-1",
                     "parameters": make_parameters(
                         x=100.0,
                         y=100.0,
@@ -546,8 +537,7 @@ class TestBlueprintEndpoint:
                 },
                 {
                     "entityType": "human",
-                    "uuid": "person-2",
-                    "name": "Human 2",
+                    "name": "person-2",
                     "parameters": make_parameters(
                         x=200.0,
                         y=200.0,
@@ -576,6 +566,6 @@ class TestBlueprintEndpoint:
         assert response.status_code == 200
         retrieved_data = response.json()
         assert len(retrieved_data["entities"]) == 2
-        uuids = [e["uuid"] for e in retrieved_data["entities"]]
-        assert "person-1" in uuids
-        assert "person-2" in uuids
+        names = [e["name"] for e in retrieved_data["entities"]]
+        assert "person-1" in names
+        assert "person-2" in names

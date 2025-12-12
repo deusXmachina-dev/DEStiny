@@ -18,7 +18,6 @@ describe("getNextEntityName", () => {
     const blueprint: SimulationBlueprint = {
       entities: [
         {
-          uuid: "1",
           entityType: "source",
           name: "Source 1",
           parameters: {},
@@ -35,13 +34,11 @@ describe("getNextEntityName", () => {
     const blueprint: SimulationBlueprint = {
       entities: [
         {
-          uuid: "1",
           entityType: "source",
           name: "Source 1",
           parameters: {},
         },
         {
-          uuid: "2",
           entityType: "source",
           name: "Source 3",
           parameters: {},
@@ -58,13 +55,11 @@ describe("getNextEntityName", () => {
     const blueprint: SimulationBlueprint = {
       entities: [
         {
-          uuid: "1",
           entityType: "source",
           name: "Source 1",
           parameters: {},
         },
         {
-          uuid: "2",
           entityType: "buffer",
           name: "Buffer 1",
           parameters: {},
@@ -81,19 +76,16 @@ describe("getNextEntityName", () => {
     const blueprint: SimulationBlueprint = {
       entities: [
         {
-          uuid: "1",
           entityType: "source",
           name: "Source 1",
           parameters: {},
         },
         {
-          uuid: "2",
           entityType: "source",
           name: "Custom Name",
           parameters: {},
         },
         {
-          uuid: "3",
           entityType: "source",
           name: "Source Custom",
           parameters: {},
