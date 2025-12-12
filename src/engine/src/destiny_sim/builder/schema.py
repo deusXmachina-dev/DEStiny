@@ -5,7 +5,7 @@ Schema definitions for builder entities and blueprints.
 from enum import StrEnum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from destiny_sim.core.rendering import SimulationEntityType
 
@@ -36,7 +36,7 @@ class BlueprintEntityParameter(BaseModel):
     parameterType: BlueprintParameterType = Field(..., description="PRIMITIVE or ENTITY")
     value: ParameterValue = Field(
         ...,
-        description="The parameter value (primitive value or UUID string for entities)",
+        description="The parameter value (primitive value or name string for entities)",
     )
 
 
@@ -77,8 +77,7 @@ class BlueprintEntity(BaseModel):
     """Single entity instance in a simulation blueprint."""
 
     entityType: SimulationEntityType
-    uuid: str
-    name: str = Field(..., description="Entity name")
+    name: str = Field(..., description="Entity name (must be unique within blueprint)")
     parameters: Dict[str, BlueprintEntityParameter]
 
 
@@ -92,3 +91,12 @@ class Blueprint(BaseModel):
 
     simParams: SimParams = SimParams()
     entities: List[BlueprintEntity] = []
+
+    @model_validator(mode='after')
+    def validate_unique_names(self):
+        """Ensure all entity names are unique within the blueprint."""
+        names = [e.name for e in self.entities]
+        if len(names) != len(set(names)):
+            duplicates = [n for n in names if names.count(n) > 1]
+            raise ValueError(f"Duplicate entity names found: {set(duplicates)}")
+        return self
