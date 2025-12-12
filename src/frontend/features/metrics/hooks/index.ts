@@ -1,2 +1,2 @@
 export { MetricsProvider, useMetrics } from "./MetricsContext";
-export { useMetricData } from "./useMetricData";
+export { useTimeSeriesMetricData } from "./useMetricData";

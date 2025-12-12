@@ -4,7 +4,10 @@ import { usePlayback } from "@features/playback";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { createContext, useContext, useEffect, useMemo } from "react";
 
-import type { Metric } from "../index";
+import type {
+  MetricsSchema,
+  TimeSeriesMetric,
+} from "../index";
 
 interface MetricsConfig {
   visibleMetrics: string[];
@@ -12,8 +15,8 @@ interface MetricsConfig {
 }
 
 interface MetricsContextValue {
-  metrics: Metric[];
-  displayedMetrics: Metric[];
+  metrics: MetricsSchema;
+  displayedMetrics: MetricsSchema;
   visibleMetrics: Set<string>;
   metricOrder: string[];
   handleToggleVisibility: (metricName: string) => void;
@@ -30,7 +33,16 @@ interface MetricsProviderProps {
 export function MetricsProvider({ children }: MetricsProviderProps) {
   const { recording, simulationName } = usePlayback();
   // Memoize metrics to prevent dependency issues in useEffect and useMemo
-  const metrics = useMemo(() => recording?.metrics || [], [recording?.metrics]);
+  const metrics = useMemo(
+    () =>
+      recording?.metrics || {
+        counter: [],
+        gauge: [],
+        sample: [],
+        state: [],
+      },
+    [recording?.metrics],
+  );
   const [config, setConfig] = useLocalStorage<MetricsConfig>(
     `destiny-metrics-config-${simulationName}`,
     {
@@ -41,7 +53,11 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
 
   // Initialize config when metrics change
   useEffect(() => {
-    const metricNames = metrics.map((m) => m.name);
+    const metricNames = [
+      ...metrics.counter.map((m) => m.name),
+      ...metrics.gauge.map((m) => m.name),
+      ...metrics.sample.map((m) => m.name),
+    ];
     if (metricNames.length === 0) {
       return;
     }
@@ -113,14 +129,20 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
   };
 
   // Filter and sort metrics based on visibility and order
-  const displayedMetrics = useMemo(
-    () =>
+  const displayedMetrics = useMemo(() => {
+    const filterMetrics = (metricArray: TimeSeriesMetric[]) =>
       config.metricOrder
-        .filter((metricName) => visibleMetrics.has(metricName))
-        .map((metricName) => metrics.find((m) => m.name === metricName))
-        .filter((metric): metric is Metric => metric !== undefined),
-    [config.metricOrder, visibleMetrics, metrics],
-  );
+        .filter((name) => visibleMetrics.has(name))
+        .map((name) => metricArray.find((m) => m.name === name))
+        .filter((m): m is TimeSeriesMetric => m !== undefined);
+
+    return {
+      counter: filterMetrics(metrics.counter),
+      gauge: filterMetrics(metrics.gauge),
+      sample: filterMetrics(metrics.sample),
+      state: [], // Ignore state metrics
+    };
+  }, [metrics, config.metricOrder, visibleMetrics]);
 
   const value: MetricsContextValue = {
     metrics,

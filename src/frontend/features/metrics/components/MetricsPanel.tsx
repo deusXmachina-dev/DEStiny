@@ -45,23 +45,32 @@ function MetricsPanelContent() {
             No metrics available in this recording
           </div>
         ) : (
-          displayedMetrics.map((metric, index) =>
-            metric.type === "sample" ? (
+          <>
+            {displayedMetrics.sample.map((metric, index) => (
               <HistogramChart
                 key={`${metric.name}-${index}`}
                 metric={metric}
                 currentTime={currentTime}
                 maxDuration={duration}
               />
-            ) : (
+            ))}
+            {displayedMetrics.counter.map((metric, index) => (
               <AreaChartWithSteps
                 key={`${metric.name}-${index}`}
                 metric={metric}
                 currentTime={currentTime}
                 maxDuration={duration}
               />
-            ),
-          )
+            ))}
+            {displayedMetrics.gauge.map((metric, index) => (
+              <AreaChartWithSteps
+                key={`${metric.name}-${index}`}
+                metric={metric}
+                currentTime={currentTime}
+                maxDuration={duration}
+              />
+            ))}
+          </>
         )}
       </SidePanel.Content>
     </SidePanel>

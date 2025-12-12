@@ -1,12 +1,12 @@
-import type { MetricData } from "./index";
+import type { TimeSeriesMetricData } from "./index";
 
 /**
- * Transform metric data from parallel arrays to Recharts format.
+ * Transform time-series metric data from parallel arrays to Recharts format.
  * @param metric - The metric with timestamp and value arrays
  * @returns Array of objects with timestamp and value properties
  */
-export function transformMetricData(metric: {
-  data: MetricData;
+export function transformTimeSeriesMetricData(metric: {
+  data: TimeSeriesMetricData;
 }): Array<{ timestamp: number; value: number }> {
   const { timestamp, value } = metric.data;
   return timestamp

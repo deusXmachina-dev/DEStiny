@@ -2,6 +2,6 @@ export { MetricsPanel } from "./components/MetricsPanel";
 export { MetricsProvider, useMetrics } from "./hooks";
 import type { components } from "@/types/api";
 
-export type Metric = components["schemas"]["Metric"];
-export type MetricData = components["schemas"]["MetricData"];
-export type MetricType = Metric["type"];
+export type TimeSeriesMetric = components["schemas"]["Metric_TimeSeriesMetricData_"];
+export type TimeSeriesMetricData = components["schemas"]["TimeSeriesMetricData"];
+export type MetricsSchema = components["schemas"]["MetricsSchema"];

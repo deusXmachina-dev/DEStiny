@@ -27,7 +27,12 @@ describe("SimulationEngine", () => {
       const recording: SimulationRecording = {
         duration: 30,
         segments_by_entity: {},
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       expect(engine.duration).toBe(30);
@@ -39,7 +44,12 @@ describe("SimulationEngine", () => {
       const recording: SimulationRecording = {
         duration: 10,
         segments_by_entity: {},
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
@@ -51,7 +61,12 @@ describe("SimulationEngine", () => {
         segments_by_entity: {
           "entity-1": [],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       expect(engine.getEntitiesAtTime(5)).toEqual([]);
@@ -74,7 +89,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
@@ -102,7 +122,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(0);
@@ -128,7 +153,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(10);
@@ -150,7 +180,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(2);
@@ -171,7 +206,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(15);
@@ -194,7 +234,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
 
@@ -220,7 +265,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
@@ -253,7 +303,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
 
@@ -293,7 +348,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
 
@@ -330,7 +390,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
@@ -366,7 +431,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
 
@@ -408,7 +478,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
 
@@ -446,7 +521,12 @@ describe("SimulationEngine", () => {
             }),
           ],
         },
-        metrics: [],
+        metrics: {
+          counter: [],
+          gauge: [],
+          sample: [],
+          state: [],
+        },
       };
       const engine = new SimulationEngine(recording);
       const entities = engine.getEntitiesAtTime(5);
