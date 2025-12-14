@@ -12,11 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useAppState } from "@/hooks/AppStateContext";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
-import { useSimulationControl } from "../hooks/useSimulationControl";
 
 export function PlaybackControls() {
   const {
@@ -29,18 +27,8 @@ export function PlaybackControls() {
     duration,
     hasRecording,
   } = usePlayback();
-  const { mode } = useAppState();
-  const { runSimulation } = useSimulationControl();
 
-  const disabled = !hasRecording || mode !== "simulation";
-
-  const handlePlayClick = () => {
-    if (mode === "simulation") {
-      togglePlay();
-    } else if (mode === "builder") {
-      runSimulation();
-    }
-  };
+  const disabled = !hasRecording;
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -57,12 +45,12 @@ export function PlaybackControls() {
             <Rewind className="size-4" />
           </Button>
           <Button
-            onClick={handlePlayClick}
+            onClick={togglePlay}
             size="icon"
             className="size-9"
             title="Play/Pause"
           >
-            {mode === "simulation" && isPlaying ? (
+            {isPlaying ? (
               <Pause className="size-4" />
             ) : (
               <Play className="size-4" />
@@ -98,11 +86,9 @@ export function PlaybackControls() {
             }}
             className="flex-1"
           />
-          {mode === "simulation" && (
-            <span className="text-sm min-w-[45px] font-mono">
-              {formatTime(duration)}
-            </span>
-          )}
+          <span className="text-sm min-w-[45px] font-mono">
+            {formatTime(duration)}
+          </span>
         </div>
 
         {/* Right: Speed Select */}

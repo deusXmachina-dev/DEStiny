@@ -7,7 +7,6 @@ import {
 } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, usePlayback } from "@features/playback";
-import { useSimulationControl } from "@features/playback/hooks/useSimulationControl";
 import {
   SimulationControls,
   SimulationEntityUpdater,
@@ -16,23 +15,13 @@ import { SceneVisualization } from "@features/visualization/components/SceneVisu
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppState } from "@/hooks/AppStateContext";
+import { useAppState, AppMode } from "@/hooks/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();
-  const { mode } = useAppState();
-  const { stopAndSwitchToBuilder, loadSimulation } = useSimulationControl();
+  const { mode, setMode } = useAppState();
 
-  const handleModeChange = (value: string): void => {
-    if (value !== "simulation" && value !== "builder") {
-      return;
-    }
-    if (value === "simulation") {
-      loadSimulation();
-    } else {
-      stopAndSwitchToBuilder();
-    }
-  };
+  console.debug("HomeContent rerender");
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -56,7 +45,7 @@ function HomeContent() {
         <div className="w-[30%] h-full border-l flex flex-col">
           <Tabs
             value={mode}
-            onValueChange={handleModeChange}
+            onValueChange={(value) => setMode(value as AppMode)}
             className="flex flex-col h-full gap-0"
           >
             <div className="border-l border-b border-border p-4 flex justify-center">

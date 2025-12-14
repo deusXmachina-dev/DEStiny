@@ -1,10 +1,8 @@
 "use client";
 
-import { usePlayback } from "@features/playback";
 import {
   createContext,
   ReactNode,
-  useCallback,
   useContext,
   useState,
 } from "react";
@@ -14,8 +12,6 @@ export type AppMode = "simulation" | "builder";
 interface AppStateContextValue {
   mode: AppMode;
   setMode: (mode: AppMode) => void;
-  switchToSimulation: () => void;
-  switchToBuilder: () => void;
 }
 
 const AppStateContext = createContext<AppStateContextValue | undefined>(
@@ -35,34 +31,11 @@ interface AppStateProviderProps {
  * state like user information, theme preferences, etc.
  */
 export function AppStateProvider({ children }: AppStateProviderProps) {
-  const { pause, seek } = usePlayback();
-  const [mode, setModeState] = useState<AppMode>("builder");
-
-  const setMode = useCallback(
-    (nextMode: AppMode) => {
-      setModeState(nextMode);
-
-      if (nextMode === "builder") {
-        // When returning to the builder, pause playback and reset time
-        pause();
-        seek(0);
-      }
-    },
-    [pause, seek],
-  );
-
-  const switchToSimulation = useCallback(
-    () => setMode("simulation"),
-    [setMode],
-  );
-
-  const switchToBuilder = useCallback(() => setMode("builder"), [setMode]);
+  const [mode, setMode] = useState<AppMode>("builder");
 
   const value: AppStateContextValue = {
     mode,
     setMode,
-    switchToSimulation,
-    switchToBuilder,
   };
 
   return (
