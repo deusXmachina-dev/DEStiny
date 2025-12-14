@@ -275,7 +275,7 @@ class RecordingEnvironment(Environment):
             min_value=min_value,
             max_value=max_value,
         )
-        self._progress_segments_by_entityt[entity.id].append(segment)
+        self._progress_segments_by_entity[entity.id].append(segment)
 
 
     def record_progress_value(
@@ -320,7 +320,7 @@ class RecordingEnvironment(Environment):
         return SimulationRecording(
             duration=self.now,
             motion_segments_by_entity=self._motion_segments_by_entity,
-            progress_segments_by_entity=self._progress_segments_by_entityt,
+            progress_segments_by_entity=self._progress_segments_by_entity,
             metrics=self._metrics_container.get_all(),
         )
 
