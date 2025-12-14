@@ -155,4 +155,39 @@ describe("calculateStateProportions", () => {
       { state: "loading", duration: 15, proportion: 0.25 },
     ]);
   });
+
+  it("normalizes proportions to sum to 100% when there are gaps", () => {
+    const metric: StateMetric = {
+      name: "test",
+      type: "state",
+      labels: {},
+      data: {
+        // First timestamp is at 10, creating a gap from 0-10 that's not accounted for
+        // Total time is 100, but only 90 is accounted for (10-100)
+        timestamp: [10, 30, 50],
+        state: ["idle", "loading", "idle"],
+        possible_states: ["idle", "moving", "loading"],
+      },
+    };
+
+    const result = calculateStateProportions(metric, 100);
+
+    // idle: 10-30 (20) + 50-100 (50) = 70
+    // loading: 30-50 (20) = 20
+    // moving: 0
+    // Total accounted time: 90 (gap from 0-10 is not accounted for)
+    // Proportions should normalize to sum to 100% based on accounted time
+    expect(result).toEqual([
+      { state: "idle", duration: 70, proportion: 70 / 90 },
+      { state: "moving", duration: 0, proportion: 0 },
+      { state: "loading", duration: 20, proportion: 20 / 90 },
+    ]);
+
+    // Assert that proportions sum to 1.0 (100%)
+    const sumOfProportions = result.reduce(
+      (sum, r) => sum + r.proportion,
+      0,
+    );
+    expect(sumOfProportions).toBeCloseTo(1.0, 10);
+  });
 });

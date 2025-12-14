@@ -80,9 +80,11 @@ export function calculateStateProportions(
       stateDurations.set(currentState, currentDuration + duration);
     }
   }
-
-  // Total time is currentTime (the time we're calculating up to)
-  const totalTime = currentTime;
+  
+  let totalTime = 0;
+  for (const duration of stateDurations.values()) {
+    totalTime += duration;
+  }
 
   // Convert to array with proportions
   return possible_states.map((s) => {
