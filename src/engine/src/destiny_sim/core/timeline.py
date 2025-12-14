@@ -54,15 +54,13 @@ class ProgressSegment(BaseModel):
     for visualization (e.g., 0-100 for percentage, 0-capacity for buffer counts).
     """
 
-    model_config = ConfigDict(populate_by_name=True)
-
-    entity_id: str = Field(alias="entityId")
-    start_time: float = Field(alias="startTime")
-    end_time: float | None = Field(default=None, alias="endTime")
-    start_value: float = Field(alias="startValue")
-    end_value: float = Field(alias="endValue")
-    min_value: float = Field(alias="minValue")
-    max_value: float = Field(alias="maxValue")
+    entity_id: str
+    start_time: float
+    end_time: float | None
+    start_value: float
+    end_value: float
+    min_value: float
+    max_value: float
 
 
 class SimulationRecording(BaseModel):
