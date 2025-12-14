@@ -238,7 +238,7 @@ class RecordingEnvironment(Environment):
         end_time: float | None = None,
         duration: float | None = None,
         start_value: float = 0.0,
-        end_value: float = 0.0,
+        end_value: float = 1.0,
         min_value: float = 0.0,
         max_value: float = 1.0,
     ):
