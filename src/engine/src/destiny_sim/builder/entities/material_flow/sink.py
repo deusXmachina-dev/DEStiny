@@ -28,11 +28,13 @@ class Sink(BuilderEntity):
         super().__init__(name=name)
         self.x = x
         self.y = y
+        self.items_delivered = 0
         
     def process(self, env: RecordingEnvironment):
         yield env.record_stay(self, x=self.x, y=self.y)
 
     def put_item(self, env: RecordingEnvironment, item: Any) -> simpy.events.Event:
         """Put an item into the sink."""
+        self.items_delivered += 1
         env.incr_counter(f"{SINK_ITEM_DELIVERED_METRIC} {self.name}")
         return env.timeout(0)
