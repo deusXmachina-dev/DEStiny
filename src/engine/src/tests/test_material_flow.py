@@ -163,8 +163,8 @@ def test_manufacturing_cell_processes_items():
         name="Manufacturing Cell",
         x=50.0,
         y=50.0,
-        buffer_in=buffer_in,
-        buffer_out=buffer_out,
+        input=buffer_in,
+        output=buffer_out,
         mean=1.0,  # Mean processing time
         std_dev=0.5,  # Standard deviation
     )
