@@ -126,19 +126,7 @@ export class SimulationEngine {
     entityId: string,
     timeSeconds: number,
   ): ProgressData | null {
-    // Type assertion needed until backend schema is updated with progress_segments_by_entity
-    const recording = this.recording as any;
-    const segments = recording.progress_segments_by_entity?.[entityId] as
-      | Array<{
-          entity_id: string;
-          start_time: number;
-          end_time: number | null;
-          start_value: number;
-          end_value: number;
-          min_value: number;
-          max_value: number;
-        }>
-      | undefined;
+    const segments = this.recording.progress_segments_by_entity?.[entityId];
     if (!segments || segments.length === 0) {
       return null;
     }

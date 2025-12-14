@@ -279,6 +279,30 @@ export interface components {
             endAngle: number;
         };
         /**
+         * ProgressSegment
+         * @description Describes an entity's progress/value during a time interval.
+         *
+         *     Value at time t is computed via linear interpolation between
+         *     start_value and end_value. min_value and max_value define the bounds
+         *     for visualization (e.g., 0-100 for percentage, 0-capacity for buffer counts).
+         */
+        ProgressSegment: {
+            /** Entity Id */
+            entity_id: string;
+            /** Start Time */
+            start_time: number;
+            /** End Time */
+            end_time: number | null;
+            /** Start Value */
+            start_value: number;
+            /** End Value */
+            end_value: number;
+            /** Min Value */
+            min_value: number;
+            /** Max Value */
+            max_value: number;
+        };
+        /**
          * SimulationRecording
          * @description Complete recording of a simulation run.
          *
@@ -296,11 +320,18 @@ export interface components {
             /** Duration */
             duration: number;
             /**
-             * Segments By Entity
+             * Motion Segments By Entity
              * @default {}
              */
             motion_segments_by_entity: {
                 [key: string]: components["schemas"]["MotionSegment"][];
+            };
+            /**
+             * Progress Segments By Entity
+             * @default {}
+             */
+            progress_segments_by_entity: {
+                [key: string]: components["schemas"]["ProgressSegment"][];
             };
             /**
              * @default {
