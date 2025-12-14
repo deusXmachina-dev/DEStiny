@@ -45,6 +45,26 @@ class MotionSegment(BaseModel):
     end_angle: float = Field(default=0.0, alias="endAngle")
 
 
+class ProgressSegment(BaseModel):
+    """
+    Describes an entity's progress/value during a time interval.
+    
+    Value at time t is computed via linear interpolation between
+    start_value and end_value. min_value and max_value define the bounds
+    for visualization (e.g., 0-100 for percentage, 0-capacity for buffer counts).
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    entity_id: str = Field(alias="entityId")
+    start_time: float = Field(alias="startTime")
+    end_time: float | None = Field(default=None, alias="endTime")
+    start_value: float = Field(alias="startValue")
+    end_value: float = Field(alias="endValue")
+    min_value: float = Field(alias="minValue")
+    max_value: float = Field(alias="maxValue")
+
+
 class SimulationRecording(BaseModel):
     """
     Complete recording of a simulation run.
@@ -62,5 +82,6 @@ class SimulationRecording(BaseModel):
     """
 
     duration: float
-    segments_by_entity: dict[str, list[MotionSegment]] = {}
+    motion_segments_by_entity: dict[str, list[MotionSegment]] = {}
+    progress_segments_by_entity: dict[str, list[ProgressSegment]] = {}
     metrics: MetricsSchema = MetricsSchema()

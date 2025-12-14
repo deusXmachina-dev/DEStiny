@@ -60,11 +60,11 @@ def test_run_blueprint_with_human():
     
     # Check that entity motion was recorded
     # Should have at least one entity with segments
-    assert len(recording.segments_by_entity) > 0
+    assert len(recording.motion_segments_by_entity) > 0
     
     # Find the human entity's segments
     human_segments = None
-    for _, segments in recording.segments_by_entity.items():
+    for _, segments in recording.motion_segments_by_entity.items():
         if segments and segments[0].entity_type == "human":
             human_segments = segments
             break
@@ -104,7 +104,7 @@ def test_run_blueprint_multiple_entities():
     recording = run_blueprint(blueprint)
     
     # Should have segments for multiple entities
-    assert len(recording.segments_by_entity) >= 2
+    assert len(recording.motion_segments_by_entity) >= 2
 
 
 def test_run_blueprint_default_initial_time():

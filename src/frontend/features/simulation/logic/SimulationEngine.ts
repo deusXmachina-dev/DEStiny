@@ -42,7 +42,7 @@ export class SimulationEngine {
     >();
 
     // Calculate state for each entity
-    Object.entries(this.recording.segments_by_entity).forEach(
+    Object.entries(this.recording.motion_segments_by_entity).forEach(
       ([id, segments]) => {
         if (!segments || segments.length === 0) {
           return;

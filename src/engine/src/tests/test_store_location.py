@@ -22,7 +22,7 @@ def test_store_location_records_motion(env):
     loc = StoreLocation(env, x=10.0, y=20.0)
 
     recording = env.get_recording()
-    segments = recording.segments_by_entity.get(loc.id, [])
+    segments = recording.motion_segments_by_entity.get(loc.id, [])
 
     assert len(segments) == 1
     seg = segments[0]

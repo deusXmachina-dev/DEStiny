@@ -2,17 +2,21 @@
 Simulation environment with motion recording.
 """
 
-from enum import StrEnum
 import json
 import math
 from collections import defaultdict
+from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from simpy import Environment, Timeout
 
-from destiny_sim.core.timeline import MotionSegment, SimulationRecording
 from destiny_sim.core.metrics import MetricsContainer
+from destiny_sim.core.timeline import (
+    MotionSegment,
+    ProgressSegment,
+    SimulationRecording,
+)
 
 if TYPE_CHECKING:
     from destiny_sim.core.simulation_entity import SimulationEntity
@@ -33,7 +37,8 @@ class RecordingEnvironment(Environment):
             initial_time: The starting simulation time.
         """
         super().__init__(initial_time=initial_time)
-        self._segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
+        self._motion_segments_by_entity: dict[str, list[MotionSegment]] = defaultdict(list)
+        self._progress_segments_by_entity: dict[str, list[ProgressSegment]] = defaultdict(list)
         self._metrics_container = MetricsContainer()
 
     def incr_counter(self, name: str, amount: int | float = 1, labels: dict[str, str] | None = None) -> None:
@@ -214,7 +219,7 @@ class RecordingEnvironment(Environment):
             start_angle=start_angle,
             end_angle=end_angle,
         )
-        self._segments_by_entity[entity.id].append(segment)
+        self._motion_segments_by_entity[entity.id].append(segment)
 
         # Return timeout event for finite motion, timeout(0) for infinite or zero duration
         if end_time is None:
@@ -226,13 +231,96 @@ class RecordingEnvironment(Environment):
         
         return self.timeout(calculated_duration)
 
+    def record_progress(
+        self,
+        entity: Any,
+        start_time: float | None = None,
+        end_time: float | None = None,
+        duration: float | None = None,
+        start_value: float = 0.0,
+        end_value: float = 0.0,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+    ):
+        """
+        Record a progress segment for an entity.
+
+        Args:
+            entity: The entity whose progress is being tracked
+            start_time: When the progress change begins (defaults to env.now)
+            end_time: When the progress change ends (None = until simulation end)
+            duration: How long the progress change takes (alternative to end_time)
+            start_value: Starting progress value
+            end_value: Ending progress value
+            min_value: Minimum bound for the value
+            max_value: Maximum bound for the value
+        """
+        from destiny_sim.core.simulation_entity import SimulationEntity
+
+        if not isinstance(entity, SimulationEntity):
+            return self.timeout(0)
+
+        start_time = start_time if start_time is not None else self.now
+
+        # Calculate end_time from duration if provided
+        if end_time is None and duration is not None:
+            end_time = start_time + duration
+
+        segment = ProgressSegment(
+            entity_id=entity.id,
+            start_time=start_time,
+            end_time=end_time,
+            start_value=start_value,
+            end_value=end_value,
+            min_value=min_value,
+            max_value=max_value,
+        )
+        self._progress_segments_by_entityt[entity.id].append(segment)
+
+
+    def record_progress_value(
+        self,
+        entity: Any,
+        start_time: float | None = None,
+        end_time: float | None = None,
+        duration: float | None = None,
+        value: float = 0.0,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+    ):
+        """
+        Record a constant progress value for an entity.
+
+        Convenience wrapper around record_progress() with start_value == end_value.
+
+        Args:
+            entity: The entity whose progress is being tracked
+            start_time: When the value change begins (defaults to env.now)
+            end_time: When the value change ends (None = until simulation end)
+            duration: How long the value change lasts (alternative to end_time)
+            value: Constant progress value
+            min_value: Minimum bound for the value
+            max_value: Maximum bound for the value
+        """
+        self.record_progress(
+            entity,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration,
+            start_value=value,
+            end_value=value,
+            min_value=min_value,
+            max_value=max_value,
+        )
+
     def get_recording(self) -> SimulationRecording:
         """
         Get the complete recording of all motion segments.
         """
         return SimulationRecording(
             duration=self.now,
-            segments_by_entity=self._segments_by_entity,
+            motion_segments_by_entity=self._motion_segments_by_entity,
+            progress_segments_by_entity=self._progress_segments_by_entityt,
             metrics=self._metrics_container.get_all(),
         )
 
