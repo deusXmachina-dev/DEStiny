@@ -34,40 +34,6 @@ const PlaybackContext = createContext<PlaybackContextValue | undefined>(
 );
 
 /**
- * Get initial recording from dummy data if in development mode.
- * Uses dynamic require to avoid bundling dummy data in production.
- * Controlled by NEXT_PUBLIC_DEV_RECORDING env variable.
- */
-function getInitialRecording(): {
-  recording: SimulationRecording | null;
-  name: string;
-} {
-  if (process.env.NODE_ENV !== "development") {
-    return { recording: null, name: "Upload Simulation" };
-  }
-
-  const devRecording = process.env.NEXT_PUBLIC_DEV_RECORDING;
-  if (!devRecording) {
-    return { recording: null, name: "Upload Simulation" };
-  }
-
-  // Only import dummy data in development to keep it out of production bundle
-  try {
-    // Dynamic import for development-only data
-
-    const recordingData = require(`@/${devRecording}`);
-    return {
-      recording: recordingData as SimulationRecording,
-      name: "Dummy Recording",
-    };
-  } catch (error) {
-    // Fallback if dummy data is not available
-    console.warn(`Failed to load dev recording: ${devRecording}`, error);
-    return { recording: null, name: "Upload Simulation" };
-  }
-}
-
-/**
  * PlaybackProvider - Core simulation playback state and controls.
  *
  * This provider manages recording state and exposes a memoized PlaybackClock
@@ -75,12 +41,8 @@ function getInitialRecording(): {
  * React re-renders on every frame.
  */
 export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
-  const [simulationName, setSimulationName] = useState(
-    () => getInitialRecording().name,
-  );
-  const [recording, setRecording] = useState<SimulationRecording | null>(
-    () => getInitialRecording().recording,
-  );
+  const [simulationName, setSimulationName] = useState("Upload Simulation");
+  const [recording, setRecording] = useState<SimulationRecording | null>(null);
 
   // Compute duration from recording
   const duration = recording?.duration || 0;

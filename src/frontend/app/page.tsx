@@ -5,21 +5,53 @@ import {
   BuilderPanel,
   EntityEditor,
 } from "@features/builder";
-import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, usePlayback } from "@features/playback";
-import {
-  SimulationControls,
-  SimulationEntityUpdater,
-} from "@features/simulation";
+import { SimulationEntityUpdater } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
+import { useEffect, useRef } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppMode, useAppState } from "@/hooks/AppStateContext";
+import { $api } from "@/lib/api-client";
 
 function HomeContent() {
-  const { hasRecording } = usePlayback();
+  const { clock, setRecording, setSimulationName } = usePlayback();
   const { mode, setMode } = useAppState();
+  const prevModeRef = useRef<AppMode>(mode);
+
+  const simulateMutation = $api.useMutation("post", "/api/simulate");
+
+  // Pause and reset time when switching from simulation to builder
+  useEffect(() => {
+    if (mode === "builder") {
+      clock.pause();
+      clock.reset();
+    }
+  }, [mode, clock]);
+
+  // Call simulate endpoint when switching from builder to simulation
+  useEffect(() => {
+    const prevMode = prevModeRef.current;
+    prevModeRef.current = mode;
+
+    if (prevMode === "builder" && mode === "simulation") {
+      // Note: API types need to be regenerated after backend changes
+      // The blueprint parameter is now optional - no body needed (uses session blueprint)
+      simulateMutation.mutate(
+        {} as any, // No body needed - uses session blueprint
+        {
+          onSuccess: (data) => {
+            setRecording(data);
+            setSimulationName("Simulation");
+          },
+          onError: (error) => {
+            console.error("Failed to simulate:", error);
+          },
+        },
+      );
+    }
+  }, [mode, simulateMutation, setRecording, setSimulationName]);
 
   console.debug("HomeContent rerender");
 
@@ -35,9 +67,6 @@ function HomeContent() {
               {mode === "builder" && <BuilderInteractionHandler />}
             </SceneVisualization>
             {mode === "builder" && <EntityEditor />}
-            {mode === "simulation" && (
-              <SimulationControls position={hasRecording ? "top" : "center"} />
-            )}
           </VisualizationProvider>
         </div>
 
@@ -62,7 +91,7 @@ function HomeContent() {
               </TabsList>
             </div>
             <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
-             {/*  <MetricsPanel /> */}
+              {/*  <MetricsPanel /> */}
             </TabsContent>
             <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
               <BuilderPanel />

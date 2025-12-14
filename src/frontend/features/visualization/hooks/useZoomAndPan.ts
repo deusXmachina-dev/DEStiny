@@ -20,8 +20,14 @@ import { useVisualization } from "./VisualizationContext";
  */
 export const useZoomAndPan = () => {
   const { app } = useApplication();
-  const { zoom, scrollOffset, setZoom, setScrollOffset, interactive, getEntityManager } =
-    useVisualization();
+  const {
+    zoom,
+    scrollOffset,
+    setZoom,
+    setScrollOffset,
+    interactive,
+    getEntityManager,
+  } = useVisualization();
   const stageRef = useRef(app.stage);
 
   // Refs for zoom and scrollOffset to avoid recreating listeners on every state change

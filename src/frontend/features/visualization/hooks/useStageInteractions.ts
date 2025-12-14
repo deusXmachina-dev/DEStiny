@@ -47,7 +47,7 @@ export const useStageInteractions = () => {
 
     const onDragMove = (event: FederatedPointerEvent) => {
       const entityManager = getEntityManager();
-      if (!entityManager) return;
+      if (!entityManager) {return;}
 
       const dndState = entityManager.getDndState();
       if (!dndState.target || !dndState.target.parent || !dndState.isDragging) {
@@ -66,7 +66,7 @@ export const useStageInteractions = () => {
 
     const onDragEnd = () => {
       const entityManager = getEntityManager();
-      if (!entityManager) return;
+      if (!entityManager) {return;}
 
       const dndState = entityManager.getDndState();
       if (!dndState.target || !dndState.entityId || !dndState.isDragging) {

@@ -69,7 +69,13 @@ export const Scene = () => {
         entityManagerRef.current = null;
       }
     };
-  }, [isLoaded, getTexture, getInteractionCallbacks, interactive, registerEntityManager]);
+  }, [
+    isLoaded,
+    getTexture,
+    getInteractionCallbacks,
+    interactive,
+    registerEntityManager,
+  ]);
 
   if (!isLoaded) {
     return null;

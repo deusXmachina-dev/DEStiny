@@ -35,7 +35,14 @@ export interface paths {
     put?: never;
     /**
      * Run Simulation
-     * @description Runs a simulation blueprint and returns the recording.
+     * @description Runs a simulation using the provided blueprint or the one stored in session.
+     *
+     *     Args:
+     *         request: Django HTTP request
+     *         blueprint: Optional blueprint to use. If not provided, uses session-stored blueprint.
+     *
+     *     Returns:
+     *         SimulationRecording with the simulation results
      */
     post: operations["simulation_api_simulation_run_simulation"];
     delete?: never;
@@ -473,9 +480,9 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
-        "application/json": components["schemas"]["Blueprint"];
+        "application/json": components["schemas"]["Blueprint"] | null;
       };
     };
     responses: {
