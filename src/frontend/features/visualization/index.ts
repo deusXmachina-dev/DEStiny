@@ -5,5 +5,5 @@ export { useVisualization } from "./hooks/VisualizationContext";
 export { VisualizationProvider } from "./hooks/VisualizationContext";
 
 // export types
-export type { SimulationEntityState } from "./types";
+export type { ProgressData, SimulationEntityState } from "./types";
 export type { SimulationEntityType } from "./types";
