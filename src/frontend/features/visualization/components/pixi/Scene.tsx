@@ -2,7 +2,7 @@
 
 import { extend } from "@pixi/react";
 import { Container as PixiContainer, Sprite } from "pixi.js";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useAssets } from "../../hooks/useAssets";
 import { useStageInteractions } from "../../hooks/useStageInteractions";
@@ -40,6 +40,12 @@ export const Scene = () => {
   // Set up zoom and pan handlers
   useZoomAndPan();
 
+  // Memoize Background to only update when theme changes
+  const memoizedBackground = useMemo(
+    () => <Background theme={theme} />,
+    [theme],
+  );
+
   // Initialize EntityManager when assets are loaded and container is ready
   useEffect(() => {
     if (!isLoaded || !entityContainerRef.current) {
@@ -71,7 +77,7 @@ export const Scene = () => {
 
   return (
     <pixiContainer scale={zoom} x={scrollOffset.x} y={scrollOffset.y}>
-      <Background theme={theme} />
+      {memoizedBackground}
       <pixiContainer ref={entityContainerRef} />
     </pixiContainer>
   );
