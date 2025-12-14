@@ -1,13 +1,14 @@
 import {
   Container,
   FederatedPointerEvent,
+  Graphics,
   Sprite,
   Text,
   Texture,
 } from "pixi.js";
 
 import type { InteractionCallbacks } from "../hooks/VisualizationContext";
-import type { SimulationEntityState } from "../types";
+import type { ProgressData, SimulationEntityState } from "../types";
 
 export type GetTextureFn = (entityType: string) => Texture;
 export type GetInteractionCallbacksFn = () => InteractionCallbacks;
@@ -39,6 +40,13 @@ const NAME_TEXT_STYLE = {
   letterSpacing: 0.5,
   align: "center" as const,
 };
+
+const PROGRESS_BAR_CONFIG = {
+  width: 70,
+  height: 8,
+  cornerRadius: 4,
+  y: -52, // Position above entity
+} as const;
 
 /**
  * EntityManager - Imperatively manages PixiJS entities without React.
@@ -155,6 +163,9 @@ export class EntityManager {
 
         // Update name text if it changed
         this.updateNameText(container, entity.name);
+
+        // Update progress bar if it changed
+        this.updateProgressBar(container, entity.progress);
       }
 
       // Recursively update children (they parent to this container)
@@ -193,6 +204,9 @@ export class EntityManager {
       container.addChild(text);
     }
 
+    // Create progress bar if present
+    this.updateProgressBar(container, entity.progress);
+
     // Set up interactions if enabled
     if (this.interactive) {
       this.setupInteractions(container, entity.entityId);
@@ -224,6 +238,81 @@ export class EntityManager {
       }
     } else if (existingText) {
       existingText.destroy();
+    }
+  }
+
+  private updateProgressBar(
+    container: Container,
+    progress: ProgressData | null,
+  ): void {
+    const existingProgressBar = container.children.find(
+      (child) => child.label === "progressBar",
+    ) as Graphics | undefined;
+
+    if (progress) {
+      const { value, minValue, maxValue } = progress;
+      const normalized = (value - minValue) / (maxValue - minValue);
+      const clamped = Math.max(0, Math.min(1, normalized));
+
+      const { width, height, cornerRadius, y } = PROGRESS_BAR_CONFIG;
+      const x = -width / 2;
+
+      const graphics = existingProgressBar ?? new Graphics();
+      graphics.label = "progressBar";
+
+      // Clear and redraw
+      graphics.clear();
+
+      // Draw drop shadow (offset background)
+      graphics.roundRect(x + 1, y + 1, width, height, cornerRadius);
+      graphics.fill({ color: 0x000000, alpha: 0.3 });
+
+      // Draw background with rounded corners
+      graphics.roundRect(x, y, width, height, cornerRadius);
+      graphics.fill({ color: 0x1a1a1a, alpha: 0.95 });
+
+      // Draw subtle inner border
+      graphics.roundRect(
+        x + 0.5,
+        y + 0.5,
+        width - 1,
+        height - 1,
+        cornerRadius - 0.5,
+      );
+      graphics.stroke({ color: 0x2a2a2a, width: 1, alpha: 0.6 });
+
+      // Draw progress fill with rounded corners
+      if (clamped > 0) {
+        const fillWidth = width * clamped;
+
+        // Main progress fill - gradient effect using two colors
+        // Draw base fill
+        graphics.roundRect(x, y, fillWidth, height, cornerRadius);
+        graphics.fill({ color: 0x3b82f6, alpha: 1.0 }); // blue-500
+
+        // Add highlight gradient effect (lighter top portion)
+        const highlightHeight = height * 0.4;
+        graphics.roundRect(x, y, fillWidth, highlightHeight, cornerRadius);
+        graphics.fill({ color: 0x60a5fa, alpha: 0.6 }); // blue-400
+
+        // Add subtle inner glow
+        graphics.roundRect(
+          x + 1,
+          y + 1,
+          fillWidth - 2,
+          height - 2,
+          cornerRadius - 1,
+        );
+        graphics.stroke({ color: 0x93c5fd, width: 0.5, alpha: 0.4 }); // blue-300
+      }
+
+      // Add to container if it's new
+      if (!existingProgressBar) {
+        container.addChild(graphics);
+      }
+    } else if (existingProgressBar) {
+      // Remove progress bar if progress is null
+      existingProgressBar.destroy();
     }
   }
 
