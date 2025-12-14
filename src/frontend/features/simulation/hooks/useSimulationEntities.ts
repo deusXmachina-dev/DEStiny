@@ -2,6 +2,7 @@
 
 import { usePlayback } from "@features/playback";
 import { useVisualization } from "@features/visualization/hooks/VisualizationContext";
+import type { SimulationEntityState } from "@features/visualization";
 import { useTick } from "@pixi/react";
 import { useEffect, useMemo, useRef } from "react";
 
@@ -25,6 +26,8 @@ export const useSimulationEntities = (): void => {
 
   // Track the last rendered time to avoid redundant calculations
   const lastRenderedTimeRef = useRef<number | null>(null);
+  // Cache last entities to avoid recalculation when paused
+  const lastEntitiesRef = useRef<SimulationEntityState[] | null>(null);
 
   // Create engine instance when recording changes
   const engine = useMemo(() => {
@@ -37,6 +40,7 @@ export const useSimulationEntities = (): void => {
   // Reset when recording changes to force recalculation
   useEffect(() => {
     lastRenderedTimeRef.current = null;
+    lastEntitiesRef.current = null;
   }, [recording]);
 
   // Use Pixi's tick to read time from clock and update entities each frame
@@ -48,23 +52,25 @@ export const useSimulationEntities = (): void => {
       if (entityManager) {
         entityManager.updateEntities([]);
       }
+      lastEntitiesRef.current = null;
       return;
     }
 
     // Get current time from clock (no React state, just a method call)
     const currentTime = clock.getTime();
 
-    // Skip if time hasn't changed (optimization for paused state)
-    if (currentTime === lastRenderedTimeRef.current) {
-      return;
+    // Recalculate entities only if time has changed
+    if (currentTime !== lastRenderedTimeRef.current) {
+      lastRenderedTimeRef.current = currentTime;
+      lastEntitiesRef.current = engine.getEntitiesAtTime(currentTime);
     }
 
-    lastRenderedTimeRef.current = currentTime;
-
-    // Derive entities from current time and update imperatively
-    const newEntities = engine.getEntitiesAtTime(currentTime);
-    if (entityManager) {
-      entityManager.updateEntities(newEntities);
+    // Always update entities (even when paused) to ensure they remain visible
+    // during resize/pan operations. This does some redundant work (setting
+    // position/rotation even when unchanged), but it's necessary to keep entities
+    // visible when the scene transforms change.
+    if (entityManager && lastEntitiesRef.current !== null) {
+      entityManager.updateEntities(lastEntitiesRef.current);
     }
   });
 };
