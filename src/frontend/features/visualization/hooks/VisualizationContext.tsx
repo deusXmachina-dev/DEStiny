@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, ReactNode, useContext, useRef, useState } from "react";
+import type { Container } from "pixi.js";
 
 import type { components } from "@/types/api";
 
@@ -51,6 +52,11 @@ interface VisualizationContextValue {
   // Interaction callbacks
   registerInteractionCallbacks: (callbacks: InteractionCallbacks) => void;
   getInteractionCallbacks: () => InteractionCallbacks;
+
+  // Entity refs for direct PixiJS updates (bypassing React)
+  registerEntityRef: (entityId: string, container: Container) => void;
+  unregisterEntityRef: (entityId: string) => void;
+  getEntityRef: (entityId: string) => Container | undefined;
 }
 
 const VisualizationContext = createContext<
@@ -104,6 +110,19 @@ export const VisualizationProvider = ({
 
   const getInteractionCallbacks = () => interactionCallbacksRef.current;
 
+  // Entity refs map for direct PixiJS position updates (bypasses React re-renders)
+  const entityRefsMap = useRef<Map<string, Container>>(new Map());
+
+  const registerEntityRef = (entityId: string, container: Container) => {
+    entityRefsMap.current.set(entityId, container);
+  };
+
+  const unregisterEntityRef = (entityId: string) => {
+    entityRefsMap.current.delete(entityId);
+  };
+
+  const getEntityRef = (entityId: string) => entityRefsMap.current.get(entityId);
+
   const value: VisualizationContextValue = {
     theme,
     screenSize,
@@ -118,6 +137,9 @@ export const VisualizationProvider = ({
     setScrollOffset,
     registerInteractionCallbacks,
     getInteractionCallbacks,
+    registerEntityRef,
+    unregisterEntityRef,
+    getEntityRef,
   };
 
   return (

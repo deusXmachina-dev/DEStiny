@@ -30,6 +30,8 @@ export const Scene = () => {
     return null; // Or a loading spinner
   }
 
+  console.debug("Scene rerender");
+
   return (
     <pixiContainer scale={zoom} x={scrollOffset.x} y={scrollOffset.y}>
       <Background theme={theme} />

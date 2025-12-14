@@ -2,10 +2,11 @@
 
 import { extend } from "@pixi/react";
 import { Container, Sprite as PixiSprite } from "pixi.js";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { useAssets } from "../../hooks/useAssets";
 import { useEntityInteractions } from "../../hooks/useEntityInteractions";
+import { useVisualization } from "../../hooks/VisualizationContext";
 import { SimulationEntityState } from "../../types";
 import { EntityName } from "./EntityName";
 
@@ -25,11 +26,20 @@ export const Entity = ({
   name,
 }: SimulationEntityState) => {
   const { getTexture } = useAssets();
+  const { registerEntityRef, unregisterEntityRef } = useVisualization();
   const texture = getTexture(entityType);
   const containerRef = useRef<Container | null>(null);
 
   // Set up entity-level interactions (drag start, click)
   useEntityInteractions(containerRef, entityId);
+
+  // Register container ref for direct position updates (bypasses React re-renders)
+  useEffect(() => {
+    if (containerRef.current) {
+      registerEntityRef(entityId, containerRef.current);
+    }
+    return () => unregisterEntityRef(entityId);
+  }, [entityId, registerEntityRef, unregisterEntityRef]);
 
   return (
     <pixiContainer ref={containerRef} x={x} y={y} rotation={angle}>

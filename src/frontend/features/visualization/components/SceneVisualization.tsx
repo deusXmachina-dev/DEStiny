@@ -34,6 +34,8 @@ export const SceneVisualization = ({ children }: SceneVisualizationProps) => {
     e.dataTransfer.dropEffect = "copy";
   };
 
+  console.debug("SceneVisualization rerender");
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
 
