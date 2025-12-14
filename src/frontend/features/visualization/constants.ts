@@ -14,6 +14,7 @@ export const ASSET_MAP: Record<string, string> = {
   sink: "/assets/sink.png",
   buffer: "/assets/buffer.png",
   manufacturing_cell: "/assets/robot.png",
+  control: "/assets/control.png",
 } satisfies Partial<Record<SimulationEntityType, string>>;
 
 /**

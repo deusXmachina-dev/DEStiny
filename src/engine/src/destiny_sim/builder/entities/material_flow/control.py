@@ -14,7 +14,6 @@ from destiny_sim.builder.entity import BuilderEntity
 from destiny_sim.core.environment import RecordingEnvironment
 from destiny_sim.core.rendering import SimulationEntityType
 
-MAX_MATERIAL_FLOW_DURATION = 5.0
 CONTROL_OK_ITEMS_METRIC = "OK items from control"
 CONTROL_NOK_ITEMS_METRIC = "NOK items from control"
 
@@ -42,7 +41,6 @@ class Control(BuilderEntity):
         self.ok_output = ok_output
         self.nok_output = nok_output
         self.nok_probability = nok_probability
-        self._box = Box()
 
     def process(self, env: RecordingEnvironment):
         """
@@ -74,14 +72,13 @@ class Control(BuilderEntity):
             env.incr_counter(f"{CONTROL_OK_ITEMS_METRIC} {self.name}")
         
         # Visualize material flow to selected output
-        flow_duration = MAX_MATERIAL_FLOW_DURATION
         env.record_motion(
-            self._box,
+            Box(),
             start_x=self.x,
             start_y=self.y,
             end_x=output.x,
             end_y=output.y,
-            duration=flow_duration,
+            duration=3,
         )
         
         # Route item to selected output

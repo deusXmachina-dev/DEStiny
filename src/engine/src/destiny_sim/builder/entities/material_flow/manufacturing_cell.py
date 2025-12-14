@@ -50,7 +50,6 @@ class ManufacturingCell(BuilderEntity):
         self.buffer_out = buffer_out
         self.mean = mean
         self.std_dev = std_dev
-        self._box = Box()
 
     def process(self, env: RecordingEnvironment):
         """
@@ -105,9 +104,10 @@ class ManufacturingCell(BuilderEntity):
 
         processing_duration = process_duration - flow_in_duration - flow_out_duration
 
+        box = Box()
         # Visualize material flow in
         env.record_motion(
-            self._box,
+            box,
             start_x=self.buffer_in.x,
             start_y=self.buffer_in.y,
             end_x=self.x,
@@ -117,7 +117,7 @@ class ManufacturingCell(BuilderEntity):
 
         # Visualize processing
         env.record_stay(
-            self._box,
+            box,
             x=self.x,
             y=self.y,
             start_time=env.now + flow_in_duration,
@@ -126,7 +126,7 @@ class ManufacturingCell(BuilderEntity):
 
         # Visualize material flow out
         env.record_motion(
-            self._box,
+            box,
             start_x=self.x,
             start_y=self.y,
             end_x=self.buffer_out.x,
