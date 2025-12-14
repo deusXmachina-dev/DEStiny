@@ -190,9 +190,9 @@ class TestSimulateEndpoint:
         data = response.json()
         
         # Should use override blueprint, not session one
-        assert "segments_by_entity" in data
+        assert "motion_segments_by_entity" in data
         # Check that we got segments (recording was generated)
-        assert isinstance(data["segments_by_entity"], dict)
+        assert isinstance(data["motion_segments_by_entity"], dict)
 
     @pytest.mark.django_db
     def test_simulate_with_multiple_entities(self, api_client):
@@ -368,7 +368,7 @@ class TestSimulateEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert "duration" in data
-        assert isinstance(data["segments_by_entity"], dict)
+        assert isinstance(data["motion_segments_by_entity"], dict)
 
     def test_simulate_missing_entity_type(self, api_client):
         """Simulate endpoint should return error for missing entityType."""
