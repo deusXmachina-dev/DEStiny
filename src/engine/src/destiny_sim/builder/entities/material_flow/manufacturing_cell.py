@@ -9,6 +9,7 @@ import numpy as np
 
 from destiny_sim.agv.items import Box
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
+from destiny_sim.builder.entities.material_flow.control import Control
 from destiny_sim.builder.entities.material_flow.sink import Sink
 from destiny_sim.builder.entities.material_flow.source import Source
 from destiny_sim.builder.entity import BuilderEntity
@@ -38,7 +39,7 @@ class ManufacturingCell(BuilderEntity):
         x: float,
         y: float,
         buffer_in: Union[Buffer, Source],
-        buffer_out: Union[Buffer, Sink],
+        buffer_out: Union[Buffer, Sink, Control],
         mean: float,
         std_dev: float,
     ):
