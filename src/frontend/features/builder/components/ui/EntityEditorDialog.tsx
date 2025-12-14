@@ -41,7 +41,9 @@ export const EntityEditorDialog = ({
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Edit Entity: {formatDisplayName(entity.entityType)}</DialogTitle>
+        <DialogTitle>
+          Edit Entity: {formatDisplayName(entity.entityType)}
+        </DialogTitle>
         <DialogDescription>
           Modify the parameters for this entity or remove it from the blueprint.
         </DialogDescription>

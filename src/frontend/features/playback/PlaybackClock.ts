@@ -40,7 +40,9 @@ export class PlaybackClock {
 
   // Controls
   play(): void {
-    if (this._isPlaying) return;
+    if (this._isPlaying) {
+      return;
+    }
     this._isPlaying = true;
     this._lastTimestamp = null;
     this._tick();
@@ -73,7 +75,9 @@ export class PlaybackClock {
   }
 
   private _tick = (): void => {
-    if (!this._isPlaying) return;
+    if (!this._isPlaying) {
+      return;
+    }
 
     const now = performance.now();
     if (this._lastTimestamp !== null) {

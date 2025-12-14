@@ -254,11 +254,11 @@ export const updateBlueprintEntityName = (
     if (entity.name === oldName) {
       return { ...entity, name: newName };
     }
-    
+
     // Update any entity parameter references to the old name
     const updatedParameters: Record<string, BlueprintEntityParameter> = {};
     let hasChanges = false;
-    
+
     for (const [paramName, param] of Object.entries(entity.parameters)) {
       if (
         param.parameterType === "entity" &&
@@ -275,10 +275,8 @@ export const updateBlueprintEntityName = (
         updatedParameters[paramName] = param;
       }
     }
-    
-    return hasChanges
-      ? { ...entity, parameters: updatedParameters }
-      : entity;
+
+    return hasChanges ? { ...entity, parameters: updatedParameters } : entity;
   }),
 });
 

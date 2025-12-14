@@ -16,7 +16,7 @@ import { MetricsSelector } from "./MetricsSelector";
 function MetricsPanelContent() {
   const { hasRecording, duration } = usePlayback();
   const currentTime = useTimePolling(1000);
-  
+
   const {
     displayedMetrics,
     visibleMetrics,

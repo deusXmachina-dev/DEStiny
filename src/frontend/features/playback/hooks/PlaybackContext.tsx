@@ -101,9 +101,7 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
   }, [clock, duration]);
 
   // Cleanup on unmount
-  useEffect(() => {
-    return () => clock.dispose();
-  }, [clock]);
+  useEffect(() => () => clock.dispose(), [clock]);
 
   const value: PlaybackContextValue = {
     recording,

@@ -15,7 +15,7 @@ import { SceneVisualization } from "@features/visualization/components/SceneVisu
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppState, AppMode } from "@/hooks/AppStateContext";
+import { AppMode, useAppState } from "@/hooks/AppStateContext";
 
 function HomeContent() {
   const { hasRecording } = usePlayback();

@@ -1,5 +1,6 @@
 "use client";
 
+import { useDebounce } from "@uidotdev/usehooks";
 import {
   createContext,
   ReactNode,
@@ -25,7 +26,6 @@ import {
   updateBlueprintEntityParameters,
   updateBlueprintEntityPosition,
 } from "../utils";
-import { useDebounce } from "@uidotdev/usehooks";
 
 interface BuilderContextValue {
   // State
@@ -112,11 +112,12 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   // Save mutation
   const saveMutation = $api.useMutation("put", "/api/blueprint");
 
-
   const debouncedBlueprint = useDebounce(blueprint, 3000);
 
   useEffect(() => {
-    if (!debouncedBlueprint) return;
+    if (!debouncedBlueprint) {
+      return;
+    }
 
     if (justFetchedRef.current) {
       justFetchedRef.current = false;
@@ -148,7 +149,9 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const removeEntity = (entityId: string) => {
     setBlueprintState((current) => {
-      if (!current) {return null;}
+      if (!current) {
+        return null;
+      }
       return removeBlueprintEntity(current, entityId);
     });
     if (selectedEntityId === entityId) {
@@ -191,7 +194,9 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
 
   const moveEntity = (entityId: string, x: number, y: number) => {
     setBlueprintState((current) => {
-      if (!current) {return null;}
+      if (!current) {
+        return null;
+      }
       return updateBlueprintEntityPosition(current, entityId, x, y);
     });
   };

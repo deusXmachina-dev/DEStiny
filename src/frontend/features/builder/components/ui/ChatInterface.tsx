@@ -51,7 +51,9 @@ function useBlueprintSyncOnToolComplete(
 
   useEffect(() => {
     for (const message of messages) {
-      if (message.role !== "assistant") {continue;}
+      if (message.role !== "assistant") {
+        continue;
+      }
 
       for (const part of message.parts) {
         if (
@@ -134,7 +136,9 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    if (!text.trim()) {return;}
+    if (!text.trim()) {
+      return;
+    }
     sendMessage({ text });
     setInput("");
   };
