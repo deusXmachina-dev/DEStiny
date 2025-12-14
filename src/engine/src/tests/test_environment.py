@@ -47,9 +47,9 @@ def test_record_motion():
     )
 
     recording = env.get_recording()
-    assert len(recording.segments_by_entity[entity.id]) == 1
+    assert len(recording.motion_segments_by_entity[entity.id]) == 1
 
-    seg = recording.segments_by_entity[entity.id][0]
+    seg = recording.motion_segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
     assert seg.entity_type == SimulationEntityType.EMPTY
     assert seg.parent_id is None
@@ -74,7 +74,7 @@ def test_record_motion_with_parent():
     )
 
     recording = env.get_recording()
-    seg = recording.segments_by_entity[child.id][0]
+    seg = recording.motion_segments_by_entity[child.id][0]
     assert seg.parent_id == parent.id
 
 
@@ -99,9 +99,9 @@ def test_recording_to_dict():
     data = recording.model_dump(by_alias=True)
 
     assert data["duration"] == 10
-    assert len(data["segments_by_entity"][entity.id]) == 1
+    assert len(data["motion_segments_by_entity"][entity.id]) == 1
 
-    seg = data["segments_by_entity"][entity.id][0]
+    seg = data["motion_segments_by_entity"][entity.id][0]
     assert seg["entityId"] == entity.id
     assert seg["entityType"] == SimulationEntityType.EMPTY
     assert seg["startX"] == 0
@@ -125,7 +125,7 @@ def test_record_stay():
     )
 
     recording = env.get_recording()
-    seg = recording.segments_by_entity[child.id][0]
+    seg = recording.motion_segments_by_entity[child.id][0]
     assert seg.parent_id == parent.id
     assert seg.start_x == seg.end_x == 10.0
     assert seg.start_y == seg.end_y == 20.0
@@ -139,9 +139,9 @@ def test_record_disappearance():
     env.record_disappearance(entity=entity)
 
     recording = env.get_recording()
-    assert len(recording.segments_by_entity[entity.id]) == 1
+    assert len(recording.motion_segments_by_entity[entity.id]) == 1
 
-    seg = recording.segments_by_entity[entity.id][0]
+    seg = recording.motion_segments_by_entity[entity.id][0]
     assert seg.entity_id == entity.id
     assert seg.start_time == env.now
     assert seg.end_time == env.now

@@ -134,3 +134,5 @@ class ManufacturingCell(BuilderEntity):
             start_time=env.now + flow_in_duration + processing_duration,
             duration=flow_out_duration,
         )
+        
+        env.record_progress(self, duration=process_duration)

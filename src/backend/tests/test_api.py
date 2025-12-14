@@ -122,8 +122,8 @@ class TestSimulateEndpoint:
         assert isinstance(data["duration"], (int, float))
         assert data["duration"] > 0
         
-        assert "segments_by_entity" in data
-        assert isinstance(data["segments_by_entity"], dict)
+        assert "motion_segments_by_entity" in data
+        assert isinstance(data["motion_segments_by_entity"], dict)
         
         assert "metrics" in data
         assert isinstance(data["metrics"], dict)
@@ -190,9 +190,9 @@ class TestSimulateEndpoint:
         data = response.json()
         
         # Should use override blueprint, not session one
-        assert "segments_by_entity" in data
+        assert "motion_segments_by_entity" in data
         # Check that we got segments (recording was generated)
-        assert isinstance(data["segments_by_entity"], dict)
+        assert isinstance(data["motion_segments_by_entity"], dict)
 
     @pytest.mark.django_db
     def test_simulate_with_multiple_entities(self, api_client):
@@ -245,7 +245,7 @@ class TestSimulateEndpoint:
         # Should have segments for both entities
         # Note: segments may be empty if simulation completes before entities move
         # This is a simulation behavior, not an API issue
-        segments_by_entity = data.get("segments_by_entity", {})
+        segments_by_entity = data.get("motion_segments_by_entity", {})
         # Check that we got a valid response structure
         assert isinstance(segments_by_entity, dict)
         # If segments exist, verify we have data for multiple entities
@@ -352,7 +352,7 @@ class TestSimulateEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert data["duration"] > 0
-        assert isinstance(data["segments_by_entity"], dict)
+        assert isinstance(data["motion_segments_by_entity"], dict)
 
     @pytest.mark.django_db
     def test_simulate_with_empty_session_blueprint(self, api_client):
@@ -368,7 +368,7 @@ class TestSimulateEndpoint:
         assert response.status_code == 200
         data = response.json()
         assert "duration" in data
-        assert isinstance(data["segments_by_entity"], dict)
+        assert isinstance(data["motion_segments_by_entity"], dict)
 
     def test_simulate_missing_entity_type(self, api_client):
         """Simulate endpoint should return error for missing entityType."""
@@ -542,13 +542,13 @@ class TestSimulateEndpoint:
         data = response.json()
         
         # Check segments structure
-        segments_by_entity = data["segments_by_entity"]
-        assert isinstance(segments_by_entity, dict)
+        motion_segments_by_entity = data["motion_segments_by_entity"]
+        assert isinstance(motion_segments_by_entity, dict)
         
         # Should have at least one entity with segments
-        if segments_by_entity:
-            entity_id = list(segments_by_entity.keys())[0]
-            segments = segments_by_entity[entity_id]
+        if motion_segments_by_entity:
+            entity_id = list(motion_segments_by_entity.keys())[0]
+            segments = motion_segments_by_entity[entity_id]
             assert isinstance(segments, list)
             assert len(segments) > 0
             

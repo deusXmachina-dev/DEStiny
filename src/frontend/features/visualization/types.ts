@@ -8,6 +8,12 @@ import type { components } from "@/types/api";
 export type SimulationEntityType =
   components["schemas"]["SimulationEntityType"];
 
+export interface ProgressData {
+  value: number;
+  minValue: number;
+  maxValue: number;
+}
+
 export interface SimulationEntityState {
   entityId: string;
   entityType: SimulationEntityType;
@@ -16,4 +22,5 @@ export interface SimulationEntityState {
   angle: number;
   children: SimulationEntityState[];
   name: string | null;
+  progress: ProgressData | null; // null = no progress bar
 }

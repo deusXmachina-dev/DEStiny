@@ -17,7 +17,7 @@ const createRecording = (
   overrides: Partial<SimulationRecording> &
     Pick<SimulationRecording, "duration">,
 ): SimulationRecording => ({
-  segments_by_entity: {},
+  motion_segments_by_entity: {},
   metrics: createEmptyMetrics(),
   ...overrides,
 });
@@ -58,7 +58,7 @@ describe("SimulationEngine", () => {
     it("returns empty array when entity has empty segments", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           "entity-1": [],
         },
       });
@@ -69,7 +69,7 @@ describe("SimulationEngine", () => {
     it("interpolates position at midpoint of segment", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -96,7 +96,7 @@ describe("SimulationEngine", () => {
     it("returns start position at time 0", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -121,7 +121,7 @@ describe("SimulationEngine", () => {
     it("returns end position at end time", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -146,7 +146,7 @@ describe("SimulationEngine", () => {
     it("does not return entity before its segment starts", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -166,7 +166,7 @@ describe("SimulationEngine", () => {
     it("does not return entity after its segment ends", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -186,7 +186,7 @@ describe("SimulationEngine", () => {
     it("handles null endTime as indefinite (uses recording duration)", () => {
       const recording = createRecording({
         duration: 100,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -211,7 +211,7 @@ describe("SimulationEngine", () => {
     it("interpolates angle correctly", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -235,7 +235,7 @@ describe("SimulationEngine", () => {
     it("transitions between segments correctly", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -274,7 +274,7 @@ describe("SimulationEngine", () => {
     it("handles backward seeking (rewind)", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -310,7 +310,7 @@ describe("SimulationEngine", () => {
     it("builds parent-child relationships", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -346,7 +346,7 @@ describe("SimulationEngine", () => {
     it("treats entity as root when parent is not rendered", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -386,7 +386,7 @@ describe("SimulationEngine", () => {
     it("allows correct calculation after cache reset", () => {
       const recording = createRecording({
         duration: 20,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
@@ -425,7 +425,7 @@ describe("SimulationEngine", () => {
     it("handles multiple independent entities", () => {
       const recording = createRecording({
         duration: 10,
-        segments_by_entity: {
+        motion_segments_by_entity: {
           agv1: [
             createSegment({
               entityId: "agv1",
