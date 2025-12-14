@@ -81,6 +81,7 @@ export const blueprintToEntityStates = (
       angle,
       children: [],
       name: entity.name,
+      progress: null,
     };
   });
 };
