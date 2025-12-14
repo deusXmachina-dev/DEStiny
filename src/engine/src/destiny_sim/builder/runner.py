@@ -6,6 +6,7 @@ from typing import Any, Dict, Type
 
 from destiny_sim.builder.entities import Human
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
+from destiny_sim.builder.entities.material_flow.control import Control
 from destiny_sim.builder.entities.material_flow.manufacturing_cell import (
     ManufacturingCell,
 )
@@ -28,6 +29,7 @@ _ENTITY_REGISTRY: Dict[SimulationEntityType, Type[BuilderEntity]] = {
     Sink.entity_type: Sink,
     Buffer.entity_type: Buffer,
     ManufacturingCell.entity_type: ManufacturingCell,
+    Control.entity_type: Control,
 }
 
 

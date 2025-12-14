@@ -1,11 +1,26 @@
-"""Tests for material flow entities (Source, Sink, Buffer, ManufacturingCell)."""
+"""Tests for material flow entities (Source, Sink, Buffer, ManufacturingCell, Control)."""  # noqa: E501
 
-from destiny_sim.builder.entities.material_flow.buffer import Buffer, BUFFER_NUMBER_OF_ITEMS_METRIC
-from destiny_sim.builder.entities.material_flow.manufacturing_cell import ManufacturingCell
-from destiny_sim.builder.entities.material_flow.sink import Sink, SINK_ITEM_DELIVERED_METRIC
-from destiny_sim.builder.entities.material_flow.source import Source, SOURCE_ITEM_PRODUCED_METRIC
+import pytest
+
+from destiny_sim.builder.entities.material_flow.buffer import (
+    BUFFER_NUMBER_OF_ITEMS_METRIC,
+    Buffer,
+)
+from destiny_sim.builder.entities.material_flow.control import (
+    Control,
+)
+from destiny_sim.builder.entities.material_flow.manufacturing_cell import (
+    ManufacturingCell,
+)
+from destiny_sim.builder.entities.material_flow.sink import (
+    SINK_ITEM_DELIVERED_METRIC,
+    Sink,
+)
+from destiny_sim.builder.entities.material_flow.source import (
+    SOURCE_ITEM_PRODUCED_METRIC,
+    Source,
+)
 from destiny_sim.core.environment import RecordingEnvironment
-from destiny_sim.core.metrics import MetricType
 
 
 def test_source_produces_item():
@@ -30,7 +45,14 @@ def test_source_produces_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    source_metric = next((m for m in metrics.counter if m.name == f"{SOURCE_ITEM_PRODUCED_METRIC} {source.name}"), None)
+    source_metric = next(
+        (
+            m
+            for m in metrics.counter
+            if m.name == f"{SOURCE_ITEM_PRODUCED_METRIC} {source.name}"
+        ),
+        None,
+    )
     assert source_metric is not None
     assert source_metric.data.value[-1] == 1
 
@@ -50,7 +72,14 @@ def test_sink_consumes_item():
     # Check that the counter was incremented
     recording = env.get_recording()
     metrics = recording.metrics
-    sink_metric = next((m for m in metrics.counter if m.name == f"{SINK_ITEM_DELIVERED_METRIC} {sink.name}"), None)
+    sink_metric = next(
+        (
+            m
+            for m in metrics.counter
+            if m.name == f"{SINK_ITEM_DELIVERED_METRIC} {sink.name}"
+        ),
+        None,
+    )
     assert sink_metric is not None
     assert sink_metric.data.value[-1] == 1
 
@@ -87,7 +116,14 @@ def test_buffer_stores_and_retrieves_item():
     # Check that gauge was adjusted correctly (should end at 0)
     recording = env.get_recording()
     metrics = recording.metrics
-    buffer_metric = next((m for m in metrics.gauge if m.name == f"{BUFFER_NUMBER_OF_ITEMS_METRIC} {buffer.name}"), None)
+    buffer_metric = next(
+        (
+            m
+            for m in metrics.gauge
+            if m.name == f"{BUFFER_NUMBER_OF_ITEMS_METRIC} {buffer.name}"
+        ),
+        None,
+    )
     assert buffer_metric is not None
     assert buffer_metric.data.value == [1, 2, 1, 0]
 
@@ -117,7 +153,7 @@ def test_buffer_respects_capacity():
 
 
 def test_manufacturing_cell_processes_items():
-    """Test that ManufacturingCell processes items from input buffer to output buffer."""
+    """Test ManufacturingCell processes items from input to output buffer."""
     env = RecordingEnvironment()
     
     # Create buffers and manufacturing cell
@@ -134,7 +170,6 @@ def test_manufacturing_cell_processes_items():
     )
     
     items_processed = []
-    processing_times = []
     
     def producer():
         # Put items into input buffer
@@ -161,3 +196,33 @@ def test_manufacturing_cell_processes_items():
     # Should have processed all 3 items
     assert len(items_processed) == 3
     assert all(item[1] in ["item_1", "item_2", "item_3"] for item in items_processed)
+
+@pytest.mark.parametrize("nok_probability", [0.0, 1.0])
+def test_control_routes_items(nok_probability):
+    """Test Control routes items to ok_output or nok_output based on probability."""
+    env = RecordingEnvironment()
+    
+    # Create outputs
+    ok_sink = Sink(name="OK Sink", x=100.0, y=0.0)
+    nok_sink = Sink(name="NOK Sink", x=0.0, y=100.0)
+    
+    control = Control(
+        name="Control Station",
+        x=50.0,
+        y=50.0,
+        ok_output=ok_sink,
+        nok_output=nok_sink,
+        nok_probability=nok_probability,
+    )
+    
+    def producer():
+        yield control.put_item(env, "item_1")
+    
+    env.process(producer())
+    env.run()
+    
+    expected_ok = 1 if nok_probability == 0.0 else 0
+    expected_nok = 1 if nok_probability == 1.0 else 0
+    
+    assert ok_sink.items_delivered == expected_ok
+    assert nok_sink.items_delivered == expected_nok

@@ -164,7 +164,7 @@ export interface components {
          * @description Simulation entity types for rendering entities in the frontend.
          * @enum {string}
          */
-        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "manufacturing_cell" | "";
+        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "manufacturing_cell" | "control" | "";
         /**
          * MetricType
          * @description Enumeration of metric types.
