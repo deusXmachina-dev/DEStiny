@@ -104,7 +104,18 @@ describe("getNextEntityName", () => {
     };
 
     expect(getNextEntityName("agv", blueprint)).toBe("Agv 1");
-    expect(getNextEntityName("BUFFER", blueprint)).toBe("BUFFER 1");
+    expect(getNextEntityName("BUFFER", blueprint)).toBe("Buffer 1");
     expect(getNextEntityName("source", blueprint)).toBe("Source 1");
+  });
+
+  it("replaces underscores with spaces in entity type", () => {
+    const blueprint: SimulationBlueprint = {
+      entities: [],
+    };
+
+    expect(getNextEntityName("grid_node", blueprint)).toBe("Grid node 1");
+    expect(getNextEntityName("manufacturing_cell", blueprint)).toBe(
+      "Manufacturing cell 1",
+    );
   });
 });

@@ -16,6 +16,7 @@ import type {
 } from "../../../types";
 import {
   createEntityParameter,
+  formatDisplayName,
   getAvailableEntitiesForParameter,
 } from "../../../utils";
 
@@ -54,8 +55,8 @@ export const EntityParameterInput = ({
 
   return (
     <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor={name} className="text-right capitalize">
-        {name}
+      <Label htmlFor={name} className="text-right">
+        {formatDisplayName(name)}
       </Label>
       <Select value={currentValue} onValueChange={handleChange}>
         <SelectTrigger className="col-span-3">
@@ -69,7 +70,7 @@ export const EntityParameterInput = ({
           ) : (
             availableEntities.map((entity) => (
               <SelectItem key={entity.name} value={entity.name}>
-                {entity.name} ({entity.entityType})
+                {entity.name} ({formatDisplayName(entity.entityType)})
               </SelectItem>
             ))
           )}

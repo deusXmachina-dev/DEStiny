@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { ASSET_MAP } from "@/features/visualization/constants";
 
 import type { BuilderEntitySchema } from "../../types";
+import { formatDisplayName } from "../../utils";
 
 interface DraggableEntityItemProps {
   schema: BuilderEntitySchema;
@@ -67,8 +68,8 @@ export function DraggableEntityItem({
           height={displayHeight}
           className="w-12 h-12 object-contain pointer-events-none mx-2"
         />
-        <span className="text-md font-medium text-foreground capitalize pointer-events-none">
-          {schema.entityType}
+        <span className="text-md font-medium text-foreground pointer-events-none">
+          {formatDisplayName(schema.entityType)}
         </span>
       </div>
       {/* Hidden image for drag preview */}

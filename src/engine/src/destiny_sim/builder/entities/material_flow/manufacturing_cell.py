@@ -38,16 +38,16 @@ class ManufacturingCell(BuilderEntity):
         name: str,
         x: float,
         y: float,
-        buffer_in: Union[Buffer, Source],
-        buffer_out: Union[Buffer, Sink, Control],
+        input: Union[Buffer, Source],
+        output: Union[Buffer, Sink, Control],
         mean: float,
         std_dev: float,
     ):
         super().__init__(name=name)
         self.x = x
         self.y = y
-        self.buffer_in = buffer_in
-        self.buffer_out = buffer_out
+        self.input = input
+        self.output = output
         self.mean = mean
         self.std_dev = std_dev
 
@@ -65,7 +65,7 @@ class ManufacturingCell(BuilderEntity):
 
         while True:
             # Get item from input buffer
-            item = yield self.buffer_in.get_item(env)
+            item = yield self.input.get_item(env)
 
             # Set state to processing
             env.set_state(
@@ -91,7 +91,7 @@ class ManufacturingCell(BuilderEntity):
             )
 
             # Put item in output buffer
-            yield self.buffer_out.put_item(env, item)
+            yield self.output.put_item(env, item)
 
     def _visualize_material_flow(
         self, env: RecordingEnvironment, process_duration: float
@@ -108,8 +108,8 @@ class ManufacturingCell(BuilderEntity):
         # Visualize material flow in
         env.record_motion(
             box,
-            start_x=self.buffer_in.x,
-            start_y=self.buffer_in.y,
+            start_x=self.input.x,
+            start_y=self.input.y,
             end_x=self.x,
             end_y=self.y,
             duration=flow_in_duration,
@@ -129,8 +129,8 @@ class ManufacturingCell(BuilderEntity):
             box,
             start_x=self.x,
             start_y=self.y,
-            end_x=self.buffer_out.x,
-            end_y=self.buffer_out.y,
+            end_x=self.output.x,
+            end_y=self.output.y,
             start_time=env.now + flow_in_duration + processing_duration,
             duration=flow_out_duration,
         )

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
-import { createPrimitiveParameter } from "../../../utils";
+import { createPrimitiveParameter, formatDisplayName } from "../../../utils";
 
 interface BooleanParameterInputProps {
   name: string;
@@ -33,8 +33,8 @@ export const BooleanParameterInput = ({
 
   return (
     <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor={name} className="text-right capitalize">
-        {name}
+      <Label htmlFor={name} className="text-right">
+        {formatDisplayName(name)}
       </Label>
       <Select
         value={currentValue ? "true" : "false"}

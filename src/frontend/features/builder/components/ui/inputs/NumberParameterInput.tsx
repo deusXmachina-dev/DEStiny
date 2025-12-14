@@ -9,6 +9,7 @@ import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
 import {
   createPrimitiveParameter,
   finalizeNumberValue,
+  formatDisplayName,
   isIntermediateNumberState,
   parseNumberValue,
 } from "../../../utils";
@@ -67,8 +68,8 @@ export const NumberParameterInput = ({
 
   return (
     <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor={name} className="text-right capitalize">
-        {name}
+      <Label htmlFor={name} className="text-right">
+        {formatDisplayName(name)}
       </Label>
       <Input
         id={name}

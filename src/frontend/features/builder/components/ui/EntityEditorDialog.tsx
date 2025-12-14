@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 
 import type { BlueprintEntity } from "../../types";
+import { formatDisplayName } from "../../utils";
 
 interface EntityEditorDialogProps {
   entity: BlueprintEntity;
@@ -40,7 +41,7 @@ export const EntityEditorDialog = ({
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>Edit Entity: {entity.entityType}</DialogTitle>
+        <DialogTitle>Edit Entity: {formatDisplayName(entity.entityType)}</DialogTitle>
         <DialogDescription>
           Modify the parameters for this entity or remove it from the blueprint.
         </DialogDescription>

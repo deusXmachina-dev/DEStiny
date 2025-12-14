@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import type { BlueprintEntityParameter } from "../../../types";
-import { createPrimitiveParameter } from "../../../utils";
+import { createPrimitiveParameter, formatDisplayName } from "../../../utils";
 
 interface StringParameterInputProps {
   name: string;
@@ -35,8 +35,8 @@ export const StringParameterInput = ({
 
   return (
     <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor={name} className="text-right capitalize">
-        {name}
+      <Label htmlFor={name} className="text-right">
+        {formatDisplayName(name)}
       </Label>
       <Input
         id={name}
