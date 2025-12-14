@@ -1,12 +1,11 @@
 "use client";
 
 import { createContext, ReactNode, useContext, useRef, useState } from "react";
-import type { Container } from "pixi.js";
 
 import type { components } from "@/types/api";
 
 import { SimulationTheme } from "../constants";
-import type { SimulationEntityState } from "../types";
+import type { EntityManager } from "../pixi/EntityManager";
 
 type CanvasDropEntityType =
   components["schemas"]["BlueprintEntity"]["entityType"];
@@ -37,7 +36,6 @@ interface VisualizationContextValue {
   // State
   theme: SimulationTheme;
   screenSize: ScreenSize;
-  entities: SimulationEntityState[];
   interactive: boolean;
   zoom: number;
   scrollOffset: ScrollOffset;
@@ -45,7 +43,6 @@ interface VisualizationContextValue {
   // Actions
   setTheme: (theme: SimulationTheme) => void;
   setScreenSize: (screenSize: ScreenSize) => void;
-  setEntities: (entities: SimulationEntityState[]) => void;
   setZoom: (zoom: number) => void;
   setScrollOffset: (scrollOffset: ScrollOffset) => void;
 
@@ -53,10 +50,9 @@ interface VisualizationContextValue {
   registerInteractionCallbacks: (callbacks: InteractionCallbacks) => void;
   getInteractionCallbacks: () => InteractionCallbacks;
 
-  // Entity refs for direct PixiJS updates (bypassing React)
-  registerEntityRef: (entityId: string, container: Container) => void;
-  unregisterEntityRef: (entityId: string) => void;
-  getEntityRef: (entityId: string) => Container | undefined;
+  // EntityManager for imperative entity updates (bypassing React)
+  registerEntityManager: (manager: EntityManager) => void;
+  getEntityManager: () => EntityManager | null;
 }
 
 const VisualizationContext = createContext<
@@ -71,10 +67,10 @@ interface VisualizationProviderProps {
 /**
  * VisualizationProvider - State specific to the PixiJS visualization runtime.
  *
- * This provider contains visualization runtime concerns (theme, screenSize, entities).
+ * This provider contains visualization runtime concerns (theme, screenSize).
  *
- * Children components (SimulationEntityUpdater, BuilderInteractionHandler) are responsible
- * for updating entities via setEntities.
+ * Entity rendering is handled imperatively by EntityManager (bypasses React).
+ * Children can register an EntityManager via registerEntityManager.
  *
  * Children can register interaction callbacks via registerInteractionCallbacks.
  * The visualization layer will invoke these callbacks when interactions occur.
@@ -90,9 +86,6 @@ export const VisualizationProvider = ({
     width: 0,
     height: 0,
   });
-
-  // Entity state - updated by children (SimulationEntityUpdater or BuilderInteractionHandler)
-  const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
   // Zoom and scroll state
   const [zoom, setZoom] = useState<number>(1.0);
@@ -110,36 +103,29 @@ export const VisualizationProvider = ({
 
   const getInteractionCallbacks = () => interactionCallbacksRef.current;
 
-  // Entity refs map for direct PixiJS position updates (bypasses React re-renders)
-  const entityRefsMap = useRef<Map<string, Container>>(new Map());
+  // EntityManager for imperative entity updates (bypasses React re-renders)
+  const entityManagerRef = useRef<EntityManager | null>(null);
 
-  const registerEntityRef = (entityId: string, container: Container) => {
-    entityRefsMap.current.set(entityId, container);
+  const registerEntityManager = (manager: EntityManager) => {
+    entityManagerRef.current = manager;
   };
 
-  const unregisterEntityRef = (entityId: string) => {
-    entityRefsMap.current.delete(entityId);
-  };
-
-  const getEntityRef = (entityId: string) => entityRefsMap.current.get(entityId);
+  const getEntityManager = () => entityManagerRef.current;
 
   const value: VisualizationContextValue = {
     theme,
     screenSize,
-    entities,
     interactive,
     zoom,
     scrollOffset,
     setTheme,
     setScreenSize,
-    setEntities,
     setZoom,
     setScrollOffset,
     registerInteractionCallbacks,
     getInteractionCallbacks,
-    registerEntityRef,
-    unregisterEntityRef,
-    getEntityRef,
+    registerEntityManager,
+    getEntityManager,
   };
 
   return (

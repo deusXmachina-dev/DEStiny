@@ -4,7 +4,6 @@ import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent, FederatedWheelEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { getDndState } from "./useEntityInteractions";
 import { useVisualization } from "./VisualizationContext";
 
 /**
@@ -21,7 +20,7 @@ import { useVisualization } from "./VisualizationContext";
  */
 export const useZoomAndPan = () => {
   const { app } = useApplication();
-  const { zoom, scrollOffset, setZoom, setScrollOffset, interactive } =
+  const { zoom, scrollOffset, setZoom, setScrollOffset, interactive, getEntityManager } =
     useVisualization();
   const stageRef = useRef(app.stage);
 
@@ -88,8 +87,8 @@ export const useZoomAndPan = () => {
       event.preventDefault();
 
       // Don't zoom if entity is being dragged
-      const dndState = getDndState();
-      if (dndState.isDragging) {
+      const entityManager = getEntityManager();
+      if (entityManager?.getDndState().isDragging) {
         return;
       }
 
@@ -130,8 +129,8 @@ export const useZoomAndPan = () => {
 
     const onPanStart = (event: FederatedPointerEvent) => {
       // Don't start pan if entity is already being dragged
-      const dndState = getDndState();
-      if (dndState.isDragging) {
+      const entityManager = getEntityManager();
+      if (entityManager?.getDndState().isDragging) {
         return;
       }
 
@@ -194,8 +193,8 @@ export const useZoomAndPan = () => {
 
     const onPanMove = (event: FederatedPointerEvent) => {
       // Check if entity drag started - if so, cancel panning and pinching
-      const dndState = getDndState();
-      if (dndState.isDragging) {
+      const entityManager = getEntityManager();
+      if (entityManager?.getDndState().isDragging) {
         // Entity is being dragged, cancel pan and pinch
         panStateRef.current = {
           isPanning: false,
@@ -339,5 +338,5 @@ export const useZoomAndPan = () => {
       cleanupStage.off("pointerupoutside", onPanEnd);
       cleanupStage.off("pointercancel", onPanEnd);
     };
-  }, [app, setZoom, setScrollOffset, interactive]);
+  }, [app, setZoom, setScrollOffset, interactive, getEntityManager]);
 };

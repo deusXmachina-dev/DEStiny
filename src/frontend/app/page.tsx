@@ -62,7 +62,7 @@ function HomeContent() {
               </TabsList>
             </div>
             <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
-              <MetricsPanel />
+             {/*  <MetricsPanel /> */}
             </TabsContent>
             <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
               <BuilderPanel />

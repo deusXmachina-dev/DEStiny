@@ -1,24 +1,38 @@
 "use client";
 
 import { extend } from "@pixi/react";
-import { Container, Sprite } from "pixi.js";
+import { Container as PixiContainer, Sprite } from "pixi.js";
+import { useEffect, useRef } from "react";
 
 import { useAssets } from "../../hooks/useAssets";
 import { useStageInteractions } from "../../hooks/useStageInteractions";
 import { useZoomAndPan } from "../../hooks/useZoomAndPan";
 import { useVisualization } from "../../hooks/VisualizationContext";
+import { EntityManager } from "../../pixi/EntityManager";
 import { Background } from "./Background";
-import { Entity } from "./Entity";
 
 // Extend Pixi.js components for @pixi/react
 extend({
-  Container,
+  Container: PixiContainer,
   Sprite,
 });
 
 export const Scene = () => {
-  const { isLoaded } = useAssets();
-  const { entities, zoom, scrollOffset, theme } = useVisualization();
+  const { isLoaded, getTexture } = useAssets();
+  const {
+    zoom,
+    scrollOffset,
+    theme,
+    interactive,
+    getInteractionCallbacks,
+    registerEntityManager,
+  } = useVisualization();
+
+  console.debug("Scene rerender");
+
+  // Ref to the container that EntityManager will use
+  const entityContainerRef = useRef<PixiContainer | null>(null);
+  const entityManagerRef = useRef<EntityManager | null>(null);
 
   // Set up stage-level interaction handlers (drag move, drag end)
   useStageInteractions();
@@ -26,18 +40,39 @@ export const Scene = () => {
   // Set up zoom and pan handlers
   useZoomAndPan();
 
-  if (!isLoaded) {
-    return null; // Or a loading spinner
-  }
+  // Initialize EntityManager when assets are loaded and container is ready
+  useEffect(() => {
+    if (!isLoaded || !entityContainerRef.current) {
+      return;
+    }
 
-  console.debug("Scene rerender");
+    // Create EntityManager if not already created
+    if (!entityManagerRef.current) {
+      entityManagerRef.current = new EntityManager(
+        entityContainerRef.current,
+        getTexture,
+        getInteractionCallbacks,
+        interactive,
+      );
+      registerEntityManager(entityManagerRef.current);
+    }
+
+    return () => {
+      if (entityManagerRef.current) {
+        entityManagerRef.current.dispose();
+        entityManagerRef.current = null;
+      }
+    };
+  }, [isLoaded, getTexture, getInteractionCallbacks, interactive, registerEntityManager]);
+
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <pixiContainer scale={zoom} x={scrollOffset.x} y={scrollOffset.y}>
       <Background theme={theme} />
-      {entities.map((entity) => (
-        <Entity key={entity.entityId} {...entity} />
-      ))}
+      <pixiContainer ref={entityContainerRef} />
     </pixiContainer>
   );
 };

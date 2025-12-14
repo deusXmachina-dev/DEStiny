@@ -12,22 +12,25 @@ import { useBuilderEntities } from "../hooks/useBuilderEntities";
  *
  * Similar to SimulationEntityUpdater, this component:
  * 1. Gets entities from BuilderContext (useBuilderEntities)
- * 2. Updates VisualizationContext with current entities
+ * 2. Updates EntityManager with current entities (imperatively, no React state)
  * 3. Registers interaction callbacks for builder-specific actions
  *
  * Must be used within:
- * - A VisualizationProvider (for entity updates and interaction events)
+ * - A VisualizationProvider (for EntityManager and interaction events)
  * - A BuilderProvider (for builder actions and entities)
  */
 export function BuilderInteractionHandler() {
   const entities = useBuilderEntities();
-  const { setEntities } = useVisualization();
+  const { getEntityManager } = useVisualization();
   const { moveEntity, addEntity, openEditor } = useBuilder();
 
-  // Update visualization entities from builder state
+  // Update visualization entities from builder state via EntityManager
   useEffect(() => {
-    setEntities(entities);
-  }, [entities, setEntities]);
+    const entityManager = getEntityManager();
+    if (entityManager) {
+      entityManager.updateEntities(entities);
+    }
+  }, [entities, getEntityManager]);
 
   // Register interaction callbacks
   useInteractionEvents({

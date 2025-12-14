@@ -4,7 +4,6 @@ import { useApplication } from "@pixi/react";
 import { FederatedPointerEvent } from "pixi.js";
 import { useEffect, useRef } from "react";
 
-import { endDrag, getDndState } from "./useEntityInteractions";
 import { useVisualization } from "./VisualizationContext";
 
 /**
@@ -15,7 +14,7 @@ import { useVisualization } from "./VisualizationContext";
  * - pointerup/pointerupoutside: Finalizes drag and invokes onEntityDragEnd callback
  *
  * This hook should be used ONCE at the Scene level.
- * It works in conjunction with useEntityInteractions, which handles drag initiation.
+ * It works in conjunction with EntityManager, which handles drag initiation.
  *
  * Only active when interactive is true in VisualizationContext.
  *
@@ -24,7 +23,8 @@ import { useVisualization } from "./VisualizationContext";
  * - A VisualizationProvider (for callbacks)
  */
 export const useStageInteractions = () => {
-  const { getInteractionCallbacks, interactive } = useVisualization();
+  const { getInteractionCallbacks, getEntityManager, interactive } =
+    useVisualization();
   const { app } = useApplication();
   const stageRef = useRef(app.stage);
 
@@ -46,7 +46,10 @@ export const useStageInteractions = () => {
     currentStage.hitArea = app.screen;
 
     const onDragMove = (event: FederatedPointerEvent) => {
-      const dndState = getDndState();
+      const entityManager = getEntityManager();
+      if (!entityManager) return;
+
+      const dndState = entityManager.getDndState();
       if (!dndState.target || !dndState.target.parent || !dndState.isDragging) {
         return;
       }
@@ -62,7 +65,10 @@ export const useStageInteractions = () => {
     };
 
     const onDragEnd = () => {
-      const dndState = getDndState();
+      const entityManager = getEntityManager();
+      if (!entityManager) return;
+
+      const dndState = entityManager.getDndState();
       if (!dndState.target || !dndState.entityId || !dndState.isDragging) {
         return;
       }
@@ -76,7 +82,7 @@ export const useStageInteractions = () => {
       );
 
       // Reset drag state
-      endDrag();
+      entityManager.endDrag();
     };
 
     currentStage.on("pointermove", onDragMove);
@@ -89,5 +95,5 @@ export const useStageInteractions = () => {
       cleanupStage.off("pointerup", onDragEnd);
       cleanupStage.off("pointerupoutside", onDragEnd);
     };
-  }, [app, getInteractionCallbacks, interactive]);
+  }, [app, getInteractionCallbacks, getEntityManager, interactive]);
 };
