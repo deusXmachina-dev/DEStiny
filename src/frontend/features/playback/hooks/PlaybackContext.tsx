@@ -3,37 +3,30 @@
 import {
   createContext,
   ReactNode,
-  useCallback,
   useContext,
+  useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { setDefaultWithDevOverride } from "@/lib/utils";
 
-import { PlaybackClock } from "../components/PlaybackClock";
+import { PlaybackClock } from "../PlaybackClock";
 import { SimulationRecording } from "../types";
 
 interface PlaybackContextValue {
-  // State
+  // State (React-managed)
   recording: SimulationRecording | null;
   hasRecording: boolean;
   simulationName: string;
-  isPlaying: boolean;
-  speed: number;
-  currentTime: number;
   duration: number;
-  seekTarget: number | null;
 
   // Actions
-  play: () => void;
-  pause: () => void;
-  togglePlay: () => void;
-  setSpeed: (speed: number) => void;
   setRecording: (recording: SimulationRecording | null) => void;
   setSimulationName: (name: string) => void;
-  seek: (time: number) => void;
-  setCurrentTime: (time: number) => void;
-  clearSeekTarget: () => void;
+
+  // Clock instance (all time/playback methods)
+  clock: PlaybackClock;
 }
 
 const PlaybackContext = createContext<PlaybackContextValue | undefined>(
@@ -77,61 +70,53 @@ function getInitialRecording(): {
 /**
  * PlaybackProvider - Core simulation playback state and controls.
  *
- * This provider contains only playback-related state (recording, play/pause, speed, time)
- * with NO visualization dependencies. It can be consumed by any view (visualization, metrics, etc.).
+ * This provider manages recording state and exposes a memoized PlaybackClock
+ * instance for time management. The clock handles RAF internally, avoiding
+ * React re-renders on every frame.
  */
 export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(setDefaultWithDevOverride(1, 20));
   const [simulationName, setSimulationName] = useState(
     () => getInitialRecording().name,
   );
   const [recording, setRecording] = useState<SimulationRecording | null>(
     () => getInitialRecording().recording,
   );
-  const [currentTime, setCurrentTime] = useState(0);
-  const [seekTarget, setSeekTarget] = useState<number | null>(null);
 
   // Compute duration from recording
   const duration = recording?.duration || 0;
   const hasRecording = recording !== null;
 
-  // Actions
-  const play = useCallback(() => setIsPlaying(true), []);
-  const pause = useCallback(() => setIsPlaying(false), []);
-  const togglePlay = useCallback(() => setIsPlaying((prev) => !prev), []);
-  const seek = useCallback((time: number) => {
-    setSeekTarget(time);
-    setCurrentTime(time);
+  // Memoized clock - stable reference for the lifetime of the provider
+  const clock = useMemo(() => {
+    const c = new PlaybackClock();
+    // Set initial speed (different in dev vs prod)
+    c.setSpeed(setDefaultWithDevOverride(1, 20));
+    return c;
   }, []);
 
-  const clearSeekTarget = useCallback(() => {
-    setSeekTarget(null);
-  }, []);
+  // Sync duration to clock when recording changes
+  useEffect(() => {
+    clock.setDuration(duration);
+    clock.reset();
+  }, [clock, duration]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => clock.dispose();
+  }, [clock]);
 
   const value: PlaybackContextValue = {
     recording,
     hasRecording,
     simulationName,
-    isPlaying,
-    speed,
-    currentTime,
     duration,
-    seekTarget,
-    play,
-    pause,
-    togglePlay,
-    setSpeed,
     setRecording,
     setSimulationName,
-    seek,
-    setCurrentTime,
-    clearSeekTarget,
+    clock,
   };
 
   return (
     <PlaybackContext.Provider value={value}>
-      <PlaybackClock />
       {children}
     </PlaybackContext.Provider>
   );

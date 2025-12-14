@@ -15,18 +15,16 @@ import { Slider } from "@/components/ui/slider";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
+import { useTimePolling } from "../hooks/useTimePolling";
 
 export function PlaybackControls() {
-  const {
-    isPlaying,
-    speed,
-    togglePlay,
-    setSpeed,
-    seek,
-    currentTime,
-    duration,
-    hasRecording,
-  } = usePlayback();
+  const { clock, duration, hasRecording } = usePlayback();
+  // Poll time at 100ms intervals for slider display
+  const currentTime = useTimePolling(100);
+
+  // Read clock state during render (updates when useTimePolling triggers re-render)
+  const isPlaying = clock.isPlaying();
+  const speed = clock.getSpeed();
 
   const disabled = !hasRecording;
 
@@ -37,7 +35,7 @@ export function PlaybackControls() {
         <div className="flex items-center gap-2">
           <Button
             disabled={disabled}
-            onClick={() => seek(0)}
+            onClick={() => clock.seek(0)}
             size="icon"
             className="size-9"
             title="Seek to start"
@@ -45,7 +43,7 @@ export function PlaybackControls() {
             <Rewind className="size-4" />
           </Button>
           <Button
-            onClick={togglePlay}
+            onClick={() => clock.togglePlay()}
             size="icon"
             className="size-9"
             title="Play/Pause"
@@ -58,7 +56,7 @@ export function PlaybackControls() {
           </Button>
           <Button
             disabled={disabled}
-            onClick={() => seek(duration)}
+            onClick={() => clock.seek(duration)}
             size="icon"
             className="size-9"
             title="Seek to end"
@@ -81,7 +79,7 @@ export function PlaybackControls() {
             step={0.01}
             onValueChange={(vals) => {
               if (vals[0] !== undefined) {
-                seek(vals[0]);
+                clock.seek(vals[0]);
               }
             }}
             className="flex-1"
@@ -97,7 +95,7 @@ export function PlaybackControls() {
           <Select
             disabled={disabled}
             value={speed.toString()}
-            onValueChange={(val) => setSpeed(parseFloat(val))}
+            onValueChange={(val) => clock.setSpeed(parseFloat(val))}
           >
             <SelectTrigger className="w-[90px] font-mono">
               <SelectValue />

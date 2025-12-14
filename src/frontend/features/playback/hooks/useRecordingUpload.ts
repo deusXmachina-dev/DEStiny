@@ -8,7 +8,7 @@ import { parseRecording } from "../utils";
 import { usePlayback } from "./PlaybackContext";
 
 export function useRecordingUpload() {
-  const { setRecording, pause, setSimulationName } = usePlayback();
+  const { setRecording, clock, setSimulationName } = usePlayback();
 
   const handleUpload = useCallback(
     (_file: File, content: string) => {
@@ -17,10 +17,10 @@ export function useRecordingUpload() {
       if (parsed) {
         setRecording(parsed);
         setSimulationName(name ?? "Uploaded Simulation");
-        pause();
+        clock.pause();
       }
     },
-    [setRecording, pause, setSimulationName],
+    [setRecording, clock, setSimulationName],
   );
 
   const { triggerFileUpload } = useFileUpload({

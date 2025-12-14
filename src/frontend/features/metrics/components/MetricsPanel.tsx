@@ -1,6 +1,7 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
+import { useTimePolling } from "@features/playback/hooks/useTimePolling";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
@@ -13,7 +14,9 @@ import { StateProportionChart } from "./charts/StateProportionChart";
 import { MetricsSelector } from "./MetricsSelector";
 
 function MetricsPanelContent() {
-  const { hasRecording, currentTime, duration } = usePlayback();
+  const { hasRecording, duration } = usePlayback();
+  const currentTime = useTimePolling(1000);
+  
   const {
     displayedMetrics,
     visibleMetrics,
@@ -22,6 +25,8 @@ function MetricsPanelContent() {
     handleMoveUp,
     handleMoveDown,
   } = useMetrics();
+
+  console.log("MetricsPanelContent rerender");
 
   return (
     <SidePanel>

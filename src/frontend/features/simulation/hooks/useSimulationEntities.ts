@@ -18,7 +18,7 @@ import { SimulationEngine } from "../logic/SimulationEngine";
  * recording management, and time-based entity derivation.
  */
 export const useSimulationEntities = (): SimulationEntityState[] => {
-  const { recording, currentTime } = usePlayback();
+  const { recording, clock } = usePlayback();
   const [entities, setEntities] = useState<SimulationEntityState[]>([]);
 
   // Track the last rendered time to avoid redundant calculations
@@ -37,7 +37,7 @@ export const useSimulationEntities = (): SimulationEntityState[] => {
     lastRenderedTimeRef.current = null;
   }, [recording]);
 
-  // Use Pixi's tick to read currentTime and compute entities each frame
+  // Use Pixi's tick to read time from clock and compute entities each frame
   useTick(() => {
     if (!engine) {
       if (entities.length > 0) {
@@ -45,6 +45,9 @@ export const useSimulationEntities = (): SimulationEntityState[] => {
       }
       return;
     }
+
+    // Get current time from clock (no React state, just a method call)
+    const currentTime = clock.getTime();
 
     // Skip if time hasn't changed (optimization for paused state)
     if (currentTime === lastRenderedTimeRef.current) {
