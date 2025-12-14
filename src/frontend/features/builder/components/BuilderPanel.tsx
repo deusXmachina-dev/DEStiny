@@ -15,6 +15,8 @@ import { EntityPalette } from "./ui/EntityPalette";
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();
 
+  console.debug("BuilderPanelContent rerender");
+
   return (
     <SidePanel>
       <SidePanel.Content className="p-0">

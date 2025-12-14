@@ -80,7 +80,7 @@ export function calculateStateProportions(
       stateDurations.set(currentState, currentDuration + duration);
     }
   }
-  
+
   let totalTime = 0;
   for (const duration of stateDurations.values()) {
     totalTime += duration;

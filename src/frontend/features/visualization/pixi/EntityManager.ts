@@ -330,7 +330,9 @@ export class EntityManager {
     container.cursor = "pointer";
 
     const onPointerDown = (event: FederatedPointerEvent) => {
-      if (!container.parent) {return;}
+      if (!container.parent) {
+        return;
+      }
 
       dragStartPos = { x: event.global.x, y: event.global.y };
       wasDragging = false;
@@ -351,7 +353,9 @@ export class EntityManager {
     };
 
     const onPointerMove = (event: FederatedPointerEvent) => {
-      if (!dragStartPos) {return;}
+      if (!dragStartPos) {
+        return;
+      }
 
       const distance = Math.sqrt(
         Math.pow(event.global.x - dragStartPos.x, 2) +

@@ -184,10 +184,7 @@ describe("calculateStateProportions", () => {
     ]);
 
     // Assert that proportions sum to 1.0 (100%)
-    const sumOfProportions = result.reduce(
-      (sum, r) => sum + r.proportion,
-      0,
-    );
+    const sumOfProportions = result.reduce((sum, r) => sum + r.proportion, 0);
     expect(sumOfProportions).toBeCloseTo(1.0, 10);
   });
 });

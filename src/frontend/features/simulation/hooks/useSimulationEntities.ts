@@ -1,8 +1,8 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
-import { useVisualization } from "@features/visualization/hooks/VisualizationContext";
 import type { SimulationEntityState } from "@features/visualization";
+import { useVisualization } from "@features/visualization/hooks/VisualizationContext";
 import { useTick } from "@pixi/react";
 import { useEffect, useMemo, useRef } from "react";
 

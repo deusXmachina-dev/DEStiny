@@ -5,12 +5,12 @@ import {
   BuilderPanel,
   EntityEditor,
 } from "@features/builder";
+import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, usePlayback } from "@features/playback";
 import { SimulationEntityUpdater } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 import { useEffect } from "react";
-import { MetricsPanel } from "@features/metrics";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppMode, useAppState } from "@/hooks/AppStateContext";
@@ -29,7 +29,7 @@ function HomeContent() {
       clock.reset();
     } else if (mode === "simulation") {
       simulateMutation.mutate(
-        { }, // No body needed - uses session blueprint
+        {}, // No body needed - uses session blueprint
         {
           onSuccess: (data) => {
             setRecording(data);
