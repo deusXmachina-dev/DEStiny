@@ -110,13 +110,29 @@ WSGI_APPLICATION = "wsgi.application"
 ASGI_APPLICATION = "asgi.application"
 
 
-# Database - SQLite for session storage
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+# Database
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USERNAME"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
+
+# Validate required database environment variables
+required_db_vars = ["DB_NAME", "DB_USERNAME", "DB_PASSWORD", "DB_HOST"]
+missing_vars = [var for var in required_db_vars if not os.getenv(var)]
+if missing_vars:
+    raise ValueError(
+        f"Missing required database environment variables: {', '.join(missing_vars)}"
+    )
+
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
@@ -129,7 +145,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# DEFAULT_AUTO_FIELD - not needed without database models
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Logging
