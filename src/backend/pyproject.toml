@@ -36,7 +36,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["simulation", "utils", "settings"]
+packages = ["simulation", "utils", "settings", "agent"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "settings.test_settings"

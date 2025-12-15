@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent, ModelRetry, RunContext
 
 from destiny_sim.builder.schema import (
     BlueprintEntity,
@@ -249,7 +249,7 @@ def add_entity(
         entity_type_enum = SimulationEntityType(entity_type.lower())
     except ValueError:
         available_types = [e.value for e in SimulationEntityType]
-        raise ValueError(
+        raise ModelRetry(
             f"Invalid entity_type '{entity_type}'. "
             f"Available types: {available_types}. "
             f"Use list_entity_types() to see all available entity types and their parameters."
@@ -261,7 +261,7 @@ def add_entity(
     entity_class = registered_entities.get(entity_type_enum)
     
     if entity_class is None:
-        raise ValueError(
+        raise ModelRetry(
             f"Entity type '{entity_type}' is not registered. "
             f"Available registered types: {[et.value for et in registered_entities.keys()]}. "
             f"Use list_entity_types() to see all available entity types."
@@ -277,7 +277,7 @@ def add_entity(
         # Check if name already exists
         existing_names = {e.name for e in blueprint.entities}
         if entity_name in existing_names:
-            raise ValueError(
+            raise ModelRetry(
                 f"Entity with name '{entity_name}' already exists in blueprint. "
                 f"Use get_blueprint() to see existing entities, or use a different name."
             )
@@ -291,7 +291,7 @@ def add_entity(
     missing_params = required_params - provided_params
     
     if missing_params:
-        raise ValueError(
+        raise ModelRetry(
             f"Missing required parameters for entity type '{entity_type}': {sorted(missing_params)}. "
             f"Required parameters: {sorted(required_params)}. "
             f"Use list_entity_types() to see parameter details."
@@ -301,7 +301,7 @@ def add_entity(
         for param_name, param_value in parameters.items():
             if param_name not in param_schema.parameters:
                 available_params = sorted(param_schema.parameters.keys())
-                raise ValueError(
+                raise ModelRetry(
                     f"Unknown parameter '{param_name}' for entity type '{entity_type}'. "
                     f"Available parameters: {available_params}. "
                     f"Use list_entity_types() to see parameter details."
@@ -313,7 +313,7 @@ def add_entity(
             if param_info.type.value == "entity":
                 # Entity reference - value should be a name string
                 if not isinstance(param_value, str):
-                    raise ValueError(
+                    raise ModelRetry(
                         f"Parameter '{param_name}' is an entity reference and must be a name string, "
                         f"got {type(param_value).__name__}. "
                         f"Use get_blueprint() to find names of existing entities."
@@ -322,7 +322,9 @@ def add_entity(
                 # Validate referenced entity exists
                 existing_names = {e.name for e in blueprint.entities}
                 if param_value not in existing_names:
-                    raise ValueError(
+                    print(f"Tried to reference non-existent entity")
+                    
+                    raise ModelRetry(
                         f"Entity reference '{param_value}' for parameter '{param_name}' does not exist. "
                         f"Use get_blueprint() to see all existing entity names."
                     )
@@ -333,7 +335,7 @@ def add_entity(
                     if referenced_entity:
                         allowed_types = [et.value for et in param_info.allowedEntityTypes]
                         if referenced_entity.entityType not in param_info.allowedEntityTypes:
-                            raise ValueError(
+                            raise ModelRetry(
                                 f"Parameter '{param_name}' must reference one of: {allowed_types}, "
                                 f"but '{param_value}' is a '{referenced_entity.entityType.value}'. "
                                 f"Use get_blueprint() to check entity types."
@@ -344,15 +346,15 @@ def add_entity(
                 # Primitive parameter - validate type
                 expected_type = param_info.type.value
                 if expected_type == "number" and not isinstance(param_value, (int, float)):
-                    raise ValueError(
+                    raise ModelRetry(
                         f"Parameter '{param_name}' must be a number, got {type(param_value).__name__}"
                     )
                 elif expected_type == "string" and not isinstance(param_value, str):
-                    raise ValueError(
+                    raise ModelRetry(
                         f"Parameter '{param_name}' must be a string, got {type(param_value).__name__}"
                     )
                 elif expected_type == "boolean" and not isinstance(param_value, bool):
-                    raise ValueError(
+                    raise ModelRetry(
                         f"Parameter '{param_name}' must be a boolean, got {type(param_value).__name__}"
                     )
                 
@@ -373,8 +375,6 @@ def add_entity(
     
     # Add to blueprint
     blueprint.entities.append(blueprint_entity)
-    
-    print(f"Blueprint: {blueprint}")
 
     # Save updated blueprint to storage
     storage.save_blueprint(blueprint)
@@ -432,7 +432,7 @@ def update_entity(
     entity = next((e for e in blueprint.entities if e.name == entity_name), None)
     if entity is None:
         existing_names = [e.name for e in blueprint.entities]
-        raise ValueError(
+        raise ModelRetry(
             f"Entity with name '{entity_name}' not found. "
             f"Use get_blueprint() to see existing entities. "
             f"Available names: {existing_names[:10]}{'...' if len(existing_names) > 10 else ''}"
@@ -444,7 +444,7 @@ def update_entity(
     entity_class = registered_entities.get(entity.entityType)
     
     if entity_class is None:
-        raise ValueError(
+        raise ModelRetry(
             f"Entity type '{entity.entityType.value}' is not registered. "
             f"Cannot validate parameters."
         )
@@ -456,7 +456,7 @@ def update_entity(
     for param_name, param_value in parameters.items():
         if param_name not in param_schema.parameters:
             available_params = sorted(param_schema.parameters.keys())
-            raise ValueError(
+            raise ModelRetry(
                 f"Unknown parameter '{param_name}' for entity type '{entity.entityType.value}'. "
                 f"Available parameters: {available_params}. "
                 f"Use list_entity_types() to see parameter details."
@@ -468,13 +468,13 @@ def update_entity(
         if param_info.type.value == "entity":
             # Entity reference validation
             if not isinstance(param_value, str):
-                raise ValueError(
+                raise ModelRetry(
                     f"Parameter '{param_name}' is an entity reference and must be a name string, "
                     f"got {type(param_value).__name__}"
                 )
             
             if param_value not in existing_names:
-                raise ValueError(
+                raise ModelRetry(
                     f"Entity reference '{param_value}' for parameter '{param_name}' does not exist. "
                     f"Use get_blueprint() to see all existing entity names."
                 )
@@ -485,7 +485,7 @@ def update_entity(
                 if referenced_entity:
                     allowed_types = [et.value for et in param_info.allowedEntityTypes]
                     if referenced_entity.entityType not in param_info.allowedEntityTypes:
-                        raise ValueError(
+                        raise ModelRetry(
                             f"Parameter '{param_name}' must reference one of: {allowed_types}, "
                             f"but '{param_value}' is a '{referenced_entity.entityType.value}'"
                         )
@@ -495,15 +495,15 @@ def update_entity(
             # Primitive parameter validation
             expected_type = param_info.type.value
             if expected_type == "number" and not isinstance(param_value, (int, float)):
-                raise ValueError(
+                raise ModelRetry(
                     f"Parameter '{param_name}' must be a number, got {type(param_value).__name__}"
                 )
             elif expected_type == "string" and not isinstance(param_value, str):
-                raise ValueError(
+                raise ModelRetry(
                     f"Parameter '{param_name}' must be a string, got {type(param_value).__name__}"
                 )
             elif expected_type == "boolean" and not isinstance(param_value, bool):
-                raise ValueError(
+                raise ModelRetry(
                     f"Parameter '{param_name}' must be a boolean, got {type(param_value).__name__}"
                 )
             
@@ -553,7 +553,7 @@ def remove_entity(
     entity = next((e for e in blueprint.entities if e.name == entity_name), None)
     if entity is None:
         existing_names = [e.name for e in blueprint.entities]
-        raise ValueError(
+        raise ModelRetry(
             f"Entity with name '{entity_name}' not found. "
             f"Use get_blueprint() to see existing entities. "
             f"Available names: {existing_names[:10]}{'...' if len(existing_names) > 10 else ''}"
