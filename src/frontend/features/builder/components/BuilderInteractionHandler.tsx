@@ -21,16 +21,17 @@ import { useBuilderEntities } from "../hooks/useBuilderEntities";
  */
 export function BuilderInteractionHandler() {
   const entities = useBuilderEntities();
-  const { getEntityManager } = useVisualization();
+  const { sceneManagerReady, getSceneManager } = useVisualization();
   const { moveEntity, addEntity, openEditor } = useBuilder();
 
   // Update visualization entities from builder state via EntityManager
   useEffect(() => {
-    const entityManager = getEntityManager();
+    const sceneManager = getSceneManager();
+    const entityManager = sceneManager?.getEntityManager();
     if (entityManager) {
       entityManager.updateEntities(entities);
     }
-  }, [entities, getEntityManager]);
+  }, [entities, sceneManagerReady]);
 
   // Register interaction callbacks
   useInteractionEvents({

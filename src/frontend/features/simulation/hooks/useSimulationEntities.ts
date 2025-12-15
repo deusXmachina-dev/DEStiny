@@ -22,7 +22,7 @@ import { SimulationEngine } from "../logic/SimulationEngine";
  */
 export const useSimulationEntities = (): void => {
   const { recording, clock } = usePlayback();
-  const { getEntityManager } = useVisualization();
+  const { getSceneManager } = useVisualization();
 
   // Track the last rendered time to avoid redundant calculations
   const lastRenderedTimeRef = useRef<number | null>(null);
@@ -45,7 +45,8 @@ export const useSimulationEntities = (): void => {
 
   // Use Pixi's tick to read time from clock and update entities each frame
   useTick(() => {
-    const entityManager = getEntityManager();
+    const sceneManager = getSceneManager();
+    const entityManager = sceneManager?.getEntityManager();
 
     if (!engine) {
       // Clear entities when no recording

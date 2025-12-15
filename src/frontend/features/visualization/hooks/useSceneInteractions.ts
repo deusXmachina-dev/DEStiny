@@ -6,39 +6,32 @@ import { useEffect, useRef } from "react";
 
 import { useVisualization } from "./VisualizationContext";
 
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 5.0;
+const ZOOM_SENSITIVITY = 0.001;
+
 /**
- * Hook to handle zoom and pan interactions for the visualization.
+ * Consolidated hook for all scene-level interactions.
  *
- * Features:
+ * Handles:
  * - Wheel events for zooming (zoom to cursor position)
- * - Regular drag on empty space for panning
- * - Prevents panning when entity dragging is active
+ * - Pinch-to-zoom for touch devices
+ * - Drag on empty space for panning
+ * - Entity drag move and end (stage-level handlers)
+ * - Prevents page scrolling when interacting with canvas
  *
  * Must be used within:
  * - A Pixi Application context (for app.stage)
- * - A VisualizationProvider (for zoom/scroll state)
+ * - A VisualizationProvider (for SceneManager and EntityManager)
  */
-export const useZoomAndPan = () => {
+export const useSceneInteractions = () => {
   const { app } = useApplication();
   const {
-    zoom,
-    scrollOffset,
-    setZoom,
-    setScrollOffset,
     interactive,
-    getEntityManager,
+    getInteractionCallbacks,
+    getSceneManager,
+    sceneManagerReady,
   } = useVisualization();
-  const stageRef = useRef(app.stage);
-
-  // Refs for zoom and scrollOffset to avoid recreating listeners on every state change
-  const zoomRef = useRef(zoom);
-  const scrollOffsetRef = useRef(scrollOffset);
-
-  // Update refs when state changes
-  useEffect(() => {
-    zoomRef.current = zoom;
-    scrollOffsetRef.current = scrollOffset;
-  }, [zoom, scrollOffset]);
 
   // Pan state
   const panStateRef = useRef<{
@@ -62,26 +55,29 @@ export const useZoomAndPan = () => {
     isPinching: false,
     pointerPositions: new Map(),
     startDistance: 0,
-    startZoom: zoom,
+    startZoom: 1.0,
     centerWorld: null,
   });
 
-  // Update stage ref when app changes
+  // Set up all scene interactions
   useEffect(() => {
-    stageRef.current = app.stage;
-  }, [app]);
+    // Guard: ensure Pixi app is fully initialized
+    // Use optional chaining before destructuring to handle proxy/incomplete objects
+    if (
+      !app?.stage ||
+      !app?.renderer?.screen ||
+      !app?.canvas ||
+      !sceneManagerReady
+    ) {
+      return;
+    }
 
-  // Set up zoom and pan handlers
-  useEffect(() => {
-    const currentStage = stageRef.current;
+    const { stage, renderer, canvas } = app;
+    const { screen } = renderer;
 
-    // Set up stage to be interactive for wheel events
-    currentStage.eventMode = "static";
-    currentStage.hitArea = app.screen;
-
-    const MIN_ZOOM = 0.1;
-    const MAX_ZOOM = 5.0;
-    const ZOOM_SENSITIVITY = 0.001;
+    // Setup stage once (handles both zoom/pan and entity drag)
+    stage.eventMode = "static";
+    stage.hitArea = screen;
 
     // Helper function to calculate distance between two points
     const getDistance = (
@@ -89,18 +85,34 @@ export const useZoomAndPan = () => {
       p2: { x: number; y: number },
     ): number => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
+    // ========== Wheel handling (prevents page scroll + handles zoom) ==========
+    const handleCanvasWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    // Use capture phase to catch event before it bubbles
+    canvas.addEventListener("wheel", handleCanvasWheel, {
+      passive: false,
+      capture: true,
+    });
+
+    // ========== Zoom via wheel ==========
     const onWheel = (event: FederatedWheelEvent) => {
-      event.preventDefault();
+      const sceneManager = getSceneManager();
+      if (!sceneManager) {
+        return;
+      }
 
       // Don't zoom if entity is being dragged
-      const entityManager = getEntityManager();
+      const entityManager = sceneManager.getEntityManager();
       if (entityManager?.getDndState().isDragging) {
         return;
       }
 
-      // Use refs for current values
-      const currentZoom = zoomRef.current;
-      const currentScrollOffset = scrollOffsetRef.current;
+      // Get current values from SceneManager
+      const currentZoom = sceneManager.getZoom();
+      const currentScrollOffset = sceneManager.getScrollOffset();
 
       // Calculate zoom delta
       const zoomDelta = -event.deltaY * ZOOM_SENSITIVITY;
@@ -121,22 +133,29 @@ export const useZoomAndPan = () => {
       const worldX = (pointerScreenX - currentScrollOffset.x) / currentZoom;
       const worldY = (pointerScreenY - currentScrollOffset.y) / currentZoom;
 
-      // Update zoom
-      setZoom(newZoom);
-
-      // Adjust scrollOffset to keep the point under cursor fixed
-      // After zoom: worldX = (pointerScreenX - newScrollOffset.x) / newZoom
-      // So: newScrollOffset.x = pointerScreenX - worldX * newZoom
-      setScrollOffset({
+      // Calculate new scroll offset to keep the point under cursor fixed
+      const newScrollOffset = {
         x: pointerScreenX - worldX * newZoom,
         y: pointerScreenY - worldY * newZoom,
-      });
+      };
+
+      // Update via SceneManager (single update for both)
+      sceneManager.setTransform(newZoom, newScrollOffset);
     };
 
-    const onPanStart = (event: FederatedPointerEvent) => {
+    // ========== Pan/Pinch start ==========
+    const onPointerDown = (event: FederatedPointerEvent) => {
+      const sceneManager = getSceneManager();
+      if (!sceneManager) {
+        return;
+      }
+
       // Don't start pan if entity is already being dragged
-      const entityManager = getEntityManager();
+      const entityManager = sceneManager.getEntityManager();
       if (entityManager?.getDndState().isDragging) {
+        return;
+      }
+      if (!sceneManager) {
         return;
       }
 
@@ -164,8 +183,11 @@ export const useZoomAndPan = () => {
             return;
           }
 
+          const currentZoom = sceneManager.getZoom();
+          const currentScrollOffset = sceneManager.getScrollOffset();
+
           pinchState.isPinching = true;
-          pinchState.startZoom = zoomRef.current;
+          pinchState.startZoom = currentZoom;
           pinchState.startDistance = getDistance(p1, p2);
 
           // Calculate center point in screen coordinates
@@ -173,8 +195,6 @@ export const useZoomAndPan = () => {
           const centerScreenY = (p1.y + p2.y) / 2;
 
           // Convert to world coordinates
-          const currentZoom = zoomRef.current;
-          const currentScrollOffset = scrollOffsetRef.current;
           pinchState.centerWorld = {
             x: (centerScreenX - currentScrollOffset.x) / currentZoom,
             y: (centerScreenY - currentScrollOffset.y) / currentZoom,
@@ -185,34 +205,52 @@ export const useZoomAndPan = () => {
 
       // Single pointer - check if we should start panning
       // Only start panning on left mouse button (button === 0 or undefined)
-      // Skip if middle or right mouse button
       if (event.button !== 0 && event.button !== undefined) {
         return;
       }
 
       // Start panning - we'll cancel it on pointermove if an entity drag starts
-      // This allows entity dragging to take priority
       panState.isPanning = true;
       panState.panStartPos = { x: event.global.x, y: event.global.y };
-      panState.panStartOffset = { ...scrollOffsetRef.current };
+      panState.panStartOffset = { ...sceneManager.getScrollOffset() };
     };
 
-    const onPanMove = (event: FederatedPointerEvent) => {
-      // Check if entity drag started - if so, cancel panning and pinching
-      const entityManager = getEntityManager();
-      if (entityManager?.getDndState().isDragging) {
-        // Entity is being dragged, cancel pan and pinch
-        panStateRef.current = {
-          isPanning: false,
-          panStartPos: null,
-          panStartOffset: null,
-        };
-        pinchStateRef.current.isPinching = false;
+    // ========== Pan/Pinch/Entity drag move ==========
+    const onPointerMove = (event: FederatedPointerEvent) => {
+      const sceneManager = getSceneManager();
+      if (!sceneManager) {
         return;
       }
 
+      const entityManager = sceneManager.getEntityManager();
       const pinchState = pinchStateRef.current;
       const panState = panStateRef.current;
+
+      // Handle entity dragging (from useStageInteractions)
+      if (interactive && entityManager) {
+        const dndState = entityManager.getDndState();
+        if (dndState.target && dndState.target.parent && dndState.isDragging) {
+          // Cancel pan/pinch when entity is being dragged
+          panState.isPanning = false;
+          panState.panStartPos = null;
+          panState.panStartOffset = null;
+          pinchState.isPinching = false;
+
+          // Get the pointer position in the target's parent space
+          const pointerPos = dndState.target.parent.toLocal(event.global);
+
+          // Apply the offset so the sprite moves naturally
+          dndState.target.position.set(
+            pointerPos.x + dndState.offset.x,
+            pointerPos.y + dndState.offset.y,
+          );
+          return;
+        }
+      }
+
+      if (!sceneManager) {
+        return;
+      }
 
       // Handle pinch-to-zoom if 2+ pointers are active
       if (pinchState.pointerPositions.size >= 2) {
@@ -230,17 +268,16 @@ export const useZoomAndPan = () => {
             return;
           }
 
+          const currentZoom = sceneManager.getZoom();
+          const currentScrollOffset = sceneManager.getScrollOffset();
+
           pinchState.isPinching = true;
-          pinchState.startZoom = zoomRef.current;
+          pinchState.startZoom = currentZoom;
           pinchState.startDistance = getDistance(p1, p2);
 
-          // Calculate center point in screen coordinates
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
 
-          // Convert to world coordinates
-          const currentZoom = zoomRef.current;
-          const currentScrollOffset = scrollOffsetRef.current;
           pinchState.centerWorld = {
             x: (centerScreenX - currentScrollOffset.x) / currentZoom,
             y: (centerScreenY - currentScrollOffset.y) / currentZoom,
@@ -270,20 +307,14 @@ export const useZoomAndPan = () => {
             Math.min(MAX_ZOOM, pinchState.startZoom * scale),
           );
 
-          // Calculate current center position
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
 
-          // Update zoom
-          setZoom(newZoom);
-
-          // Adjust scrollOffset to keep center point fixed
-          setScrollOffset({
+          sceneManager.setTransform(newZoom, {
             x: centerScreenX - pinchState.centerWorld.x * newZoom,
             y: centerScreenY - pinchState.centerWorld.y * newZoom,
           });
         }
-
         return;
       }
 
@@ -292,22 +323,42 @@ export const useZoomAndPan = () => {
         return;
       }
 
-      // Calculate pan delta
       const deltaX = event.global.x - panState.panStartPos.x;
       const deltaY = event.global.y - panState.panStartPos.y;
 
-      // Update scroll offset
       if (panState.panStartOffset) {
-        setScrollOffset({
+        sceneManager.setScrollOffset({
           x: panState.panStartOffset.x + deltaX,
           y: panState.panStartOffset.y + deltaY,
         });
       }
     };
 
-    const onPanEnd = (event: FederatedPointerEvent) => {
+    // ========== Pan/Pinch/Entity drag end ==========
+    const onPointerEnd = (event: FederatedPointerEvent) => {
+      const sceneManager = getSceneManager();
       const pinchState = pinchStateRef.current;
       const panState = panStateRef.current;
+
+      // Handle entity drag end (from useStageInteractions)
+      if (interactive && sceneManager) {
+        const entityManager = sceneManager.getEntityManager();
+        if (entityManager) {
+          const dndState = entityManager.getDndState();
+          if (dndState.target && dndState.entityId && dndState.isDragging) {
+            // Invoke callback with new position
+            const callbacks = getInteractionCallbacks();
+            callbacks.onEntityDragEnd?.(
+              dndState.entityId,
+              dndState.target.x,
+              dndState.target.y,
+            );
+
+            // Reset drag state
+            entityManager.endDrag();
+          }
+        }
+      }
 
       // Remove pointer from tracking
       pinchState.pointerPositions.delete(event.pointerId);
@@ -327,22 +378,28 @@ export const useZoomAndPan = () => {
       }
     };
 
-    // Register event listeners
-    currentStage.on("wheel", onWheel);
-    currentStage.on("pointerdown", onPanStart);
-    currentStage.on("pointermove", onPanMove);
-    currentStage.on("pointerup", onPanEnd);
-    currentStage.on("pointerupoutside", onPanEnd);
-    currentStage.on("pointercancel", onPanEnd);
+    // Register event listeners on stage
+    stage.on("wheel", onWheel);
+    stage.on("pointerdown", onPointerDown);
+    stage.on("pointermove", onPointerMove);
+    stage.on("pointerup", onPointerEnd);
+    stage.on("pointerupoutside", onPointerEnd);
+    stage.on("pointercancel", onPointerEnd);
 
     return () => {
-      const cleanupStage = stageRef.current;
-      cleanupStage.off("wheel", onWheel);
-      cleanupStage.off("pointerdown", onPanStart);
-      cleanupStage.off("pointermove", onPanMove);
-      cleanupStage.off("pointerup", onPanEnd);
-      cleanupStage.off("pointerupoutside", onPanEnd);
-      cleanupStage.off("pointercancel", onPanEnd);
+      // Guard: check if still valid before cleanup
+      canvas?.removeEventListener("wheel", handleCanvasWheel, {
+        capture: true,
+      });
+
+      if (stage) {
+        stage.off("wheel", onWheel);
+        stage.off("pointerdown", onPointerDown);
+        stage.off("pointermove", onPointerMove);
+        stage.off("pointerup", onPointerEnd);
+        stage.off("pointerupoutside", onPointerEnd);
+        stage.off("pointercancel", onPointerEnd);
+      }
     };
-  }, [app, setZoom, setScrollOffset, interactive, getEntityManager]);
+  }, [interactive, getInteractionCallbacks, sceneManagerReady]);
 };

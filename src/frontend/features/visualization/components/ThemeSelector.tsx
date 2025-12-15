@@ -19,13 +19,18 @@ const THEME_OPTIONS: { value: SimulationTheme; label: string }[] = Object.keys(
 }));
 
 export function ThemeSelector() {
-  const { theme, setTheme } = useVisualization();
+  const { theme, setTheme, getSceneManager } = useVisualization();
+
+  const handleThemeChange = (value: string) => {
+    const newTheme = value as SimulationTheme;
+    setTheme(newTheme);
+    // Directly update BackgroundManager via SceneManager (no React state intermediary)
+    const sceneManager = getSceneManager();
+    sceneManager?.getBackgroundManager()?.setTheme(newTheme);
+  };
 
   return (
-    <Select
-      value={theme}
-      onValueChange={(value) => setTheme(value as SimulationTheme)}
-    >
+    <Select value={theme} onValueChange={handleThemeChange}>
       <SelectTrigger className="w-[150px]">
         <SelectValue placeholder="Theme" />
       </SelectTrigger>

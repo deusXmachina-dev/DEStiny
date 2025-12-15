@@ -2,14 +2,13 @@
 
 import { extend } from "@pixi/react";
 import { Container as PixiContainer, Sprite } from "pixi.js";
-import { useEffect, useMemo, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
 import { useAssets } from "../../hooks/useAssets";
-import { useStageInteractions } from "../../hooks/useStageInteractions";
-import { useZoomAndPan } from "../../hooks/useZoomAndPan";
+import { useCanvasResize } from "../../hooks/useCanvasResize";
+import { useSceneInteractions } from "../../hooks/useSceneInteractions";
 import { useVisualization } from "../../hooks/VisualizationContext";
-import { EntityManager } from "../../pixi/EntityManager";
-import { Background } from "./Background";
+import { SceneManager } from "../../pixi/SceneManager";
 
 // Extend Pixi.js components for @pixi/react
 extend({
@@ -17,74 +16,58 @@ extend({
   Sprite,
 });
 
-export const Scene = () => {
+interface SceneProps {
+  parentRef: RefObject<HTMLDivElement | null>;
+}
+
+export const Scene = ({ parentRef }: SceneProps) => {
   const { isLoaded, getTexture } = useAssets();
   const {
-    zoom,
-    scrollOffset,
-    theme,
+    theme: initialTheme,
     interactive,
     getInteractionCallbacks,
-    registerEntityManager,
+    registerSceneManager,
   } = useVisualization();
 
-  console.debug("Scene rerender");
+  // Refs for container and manager
+  const containerRef = useRef<PixiContainer | null>(null);
+  const sceneManagerRef = useRef<SceneManager | null>(null);
 
-  // Ref to the container that EntityManager will use
-  const entityContainerRef = useRef<PixiContainer | null>(null);
-  const entityManagerRef = useRef<EntityManager | null>(null);
+  useSceneInteractions();
+  useCanvasResize(parentRef);
 
-  // Set up stage-level interaction handlers (drag move, drag end)
-  useStageInteractions();
-
-  // Set up zoom and pan handlers
-  useZoomAndPan();
-
-  // Memoize Background to only update when theme changes
-  const memoizedBackground = useMemo(
-    () => <Background theme={theme} />,
-    [theme],
-  );
-
-  // Initialize EntityManager when assets are loaded and container is ready
+  // Initialize SceneManager once when container is ready
+  // SceneManager will initialize BackgroundManager and EntityManager internally
   useEffect(() => {
-    if (!isLoaded || !entityContainerRef.current) {
+    if (!isLoaded || !containerRef.current) {
       return;
     }
 
-    // Create EntityManager if not already created
-    if (!entityManagerRef.current) {
-      entityManagerRef.current = new EntityManager(
-        entityContainerRef.current,
-        getTexture,
-        getInteractionCallbacks,
-        interactive,
-      );
-      registerEntityManager(entityManagerRef.current);
-    }
+    // Create and initialize SceneManager
+    const sceneManager = new SceneManager();
+    sceneManager.initialize({
+      container: containerRef.current,
+      theme: initialTheme,
+      getTexture,
+      getInteractionCallbacks,
+      interactive,
+    });
+    sceneManagerRef.current = sceneManager;
+    registerSceneManager(sceneManager);
 
     return () => {
-      if (entityManagerRef.current) {
-        entityManagerRef.current.dispose();
-        entityManagerRef.current = null;
+      if (sceneManagerRef.current) {
+        sceneManagerRef.current.dispose();
+        sceneManagerRef.current = null;
       }
     };
-  }, [
-    isLoaded,
-    getTexture,
-    getInteractionCallbacks,
-    interactive,
-    registerEntityManager,
-  ]);
+    // SceneManager is initialized once. Updates (screenSize, theme) go directly to managers.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded]);
 
   if (!isLoaded) {
     return null;
   }
 
-  return (
-    <pixiContainer scale={zoom} x={scrollOffset.x} y={scrollOffset.y}>
-      {memoizedBackground}
-      <pixiContainer ref={entityContainerRef} />
-    </pixiContainer>
-  );
+  return <pixiContainer ref={containerRef} />;
 };

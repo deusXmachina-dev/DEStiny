@@ -8,7 +8,10 @@ export const parseRecording = (content: string): SimulationRecording | null => {
   try {
     const parsed = JSON.parse(content);
     // Basic validation
-    if (typeof parsed.duration !== "number" || !parsed.motion_segments_by_entity) {
+    if (
+      typeof parsed.duration !== "number" ||
+      !parsed.motion_segments_by_entity
+    ) {
       console.error("Invalid recording format");
       return null;
     }

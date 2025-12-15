@@ -1,5 +1,8 @@
 import type { SimulationRecording } from "@features/playback";
-import type { ProgressData, SimulationEntityState } from "@features/visualization";
+import type {
+  ProgressData,
+  SimulationEntityState,
+} from "@features/visualization";
 
 import { lerp } from "../utils";
 
@@ -167,10 +170,7 @@ export class SimulationEngine {
       segment.end_time ?? segment.start_time + this.recording.duration;
 
     // Only return progress if time is within [start_time, effectiveEndTime]
-    if (
-      timeSeconds < segment.start_time ||
-      timeSeconds > effectiveEndTime
-    ) {
+    if (timeSeconds < segment.start_time || timeSeconds > effectiveEndTime) {
       return null;
     }
 
@@ -181,11 +181,7 @@ export class SimulationEngine {
         ? (timeSeconds - segment.start_time) / segmentDuration
         : 0;
 
-    const interpolatedValue = lerp(
-      segment.start_value,
-      segment.end_value,
-      t,
-    );
+    const interpolatedValue = lerp(segment.start_value, segment.end_value, t);
 
     return {
       value: interpolatedValue,

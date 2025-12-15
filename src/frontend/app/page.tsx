@@ -10,18 +10,21 @@ import { PlaybackControls, usePlayback } from "@features/playback";
 import { SimulationEntityUpdater } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { useEffect } from "react";
 
+import { ClientOnly } from "@/components/common/ClientOnly";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { $api } from "@/lib/api-client";
-import { useLocalStorage } from "@uidotdev/usehooks";
-import { ClientOnly } from "@/components/common/ClientOnly";
 
 type AppMode = "simulation" | "builder";
 
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
-  const [mode, setMode] = useLocalStorage<AppMode>(`destiny-app-mode`, "builder");
+  const [mode, setMode] = useLocalStorage<AppMode>(
+    `destiny-app-mode`,
+    "builder",
+  );
 
   const simulateMutation = $api.useMutation("post", "/api/simulate");
 

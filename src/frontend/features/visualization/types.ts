@@ -24,3 +24,13 @@ export interface SimulationEntityState {
   name: string | null;
   progress: ProgressData | null; // null = no progress bar
 }
+
+export interface ScrollOffset {
+  x: number;
+  y: number;
+}
+
+export interface ScreenSize {
+  width: number;
+  height: number;
+}

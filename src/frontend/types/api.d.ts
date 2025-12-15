@@ -4,597 +4,612 @@
  */
 
 export interface paths {
-    "/api/schema": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Schema
-         * @description Returns the entity schema for the frontend builder.
-         */
-        get: operations["simulation_api_simulation_get_schema"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api/schema": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/simulate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Run Simulation
-         * @description Runs a simulation using the provided blueprint or the one stored in session.
-         *
-         *     Args:
-         *         request: Django HTTP request
-         *         blueprint: Optional blueprint to use. If not provided, uses session-stored blueprint.
-         *
-         *     Returns:
-         *         SimulationRecording with the simulation results
-         */
-        post: operations["simulation_api_simulation_run_simulation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Schema
+     * @description Returns the entity schema for the frontend builder.
+     */
+    get: operations["simulation_api_simulation_get_schema"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/simulate": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/chat": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Chat */
-        post: operations["simulation_api_chat_chat"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Run Simulation
+     * @description Runs a simulation using the provided blueprint or the one stored in session.
+     *
+     *     Args:
+     *         request: Django HTTP request
+     *         blueprint: Optional blueprint to use. If not provided, uses session-stored blueprint.
+     *
+     *     Returns:
+     *         SimulationRecording with the simulation results
+     */
+    post: operations["simulation_api_simulation_run_simulation"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/chat": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/blueprint": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Blueprint
-         * @description Get the current blueprint from storage.
-         *
-         *     Returns the blueprint stored in the session, or an empty blueprint if none exists.
-         */
-        get: operations["simulation_api_blueprint_get_blueprint"];
-        /**
-         * Put Blueprint
-         * @description Update the current blueprint in storage.
-         *
-         *     Saves the provided blueprint to the session storage.
-         *
-         *     Args:
-         *         blueprint: The blueprint to save
-         *
-         *     Returns:
-         *         The saved blueprint
-         */
-        put: operations["simulation_api_blueprint_put_blueprint"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Chat */
+    post: operations["simulation_api_chat_chat"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/blueprint": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/blueprint/canvas-size": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Post Canvas Size
-         * @description Update the canvas size in storage.
-         *
-         *     Saves the provided canvas size to the session storage.
-         */
-        post: operations["simulation_api_blueprint_post_canvas_size"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Blueprint
+     * @description Get the current blueprint from storage.
+     *
+     *     Returns the blueprint stored in the session, or an empty blueprint if none exists.
+     */
+    get: operations["simulation_api_blueprint_get_blueprint"];
+    /**
+     * Put Blueprint
+     * @description Update the current blueprint in storage.
+     *
+     *     Saves the provided blueprint to the session storage.
+     *
+     *     Args:
+     *         blueprint: The blueprint to save
+     *
+     *     Returns:
+     *         The saved blueprint
+     */
+    put: operations["simulation_api_blueprint_put_blueprint"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/blueprint/canvas-size": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    get?: never;
+    put?: never;
+    /**
+     * Post Canvas Size
+     * @description Update the canvas size in storage.
+     *
+     *     Saves the provided canvas size to the session storage.
+     */
+    post: operations["simulation_api_blueprint_post_canvas_size"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /**
-         * BuilderEntitySchema
-         * @description Schema for a builder entity definition.
-         */
-        BuilderEntitySchema: {
-            entityType: components["schemas"]["SimulationEntityType"];
-            /** Parameters */
-            parameters: {
-                [key: string]: components["schemas"]["ParameterInfo"];
-            };
-        };
-        /**
-         * ParameterInfo
-         * @description Information about a parameter, including its name, type and optional constraints.
-         *
-         *     This allows for richer parameter definitions beyond just the type,
-         *     such as filtering allowed entity types for entity parameters.
-         */
-        ParameterInfo: {
-            /**
-             * Name
-             * @description The name of the parameter
-             */
-            name: string;
-            /** @description The type of the parameter */
-            type: components["schemas"]["ParameterType"];
-            /**
-             * Allowedentitytypes
-             * @description For ENTITY type parameters, optionally restrict which entity types are valid. If None, all entity types are allowed.
-             */
-            allowedEntityTypes?: components["schemas"]["SimulationEntityType"][] | null;
-        };
-        /**
-         * ParameterType
-         * @description Allowed primitive parameter types for builder entities.
-         * @enum {string}
-         */
-        ParameterType: "string" | "number" | "boolean" | "entity";
-        /**
-         * SimulationEntityType
-         * @description Simulation entity types for rendering entities in the frontend.
-         * @enum {string}
-         */
-        SimulationEntityType: "agv" | "robot" | "box" | "palette" | "source" | "sink" | "buffer" | "human" | "counter" | "grid_node" | "manufacturing_cell" | "control" | "";
-        /**
-         * MetricType
-         * @description Enumeration of metric types.
-         * @enum {string}
-         */
-        MetricType: "counter" | "gauge" | "sample" | "state";
-        /** Metric[StateMetricData] */
-        Metric_StateMetricData_: {
-            /** Name */
-            name: string;
-            type: components["schemas"]["MetricType"];
-            /**
-             * Labels
-             * @default {}
-             */
-            labels: {
-                [key: string]: string;
-            };
-            data: components["schemas"]["StateMetricData"];
-        };
-        /** Metric[TimeSeriesMetricData] */
-        Metric_TimeSeriesMetricData_: {
-            /** Name */
-            name: string;
-            type: components["schemas"]["MetricType"];
-            /**
-             * Labels
-             * @default {}
-             */
-            labels: {
-                [key: string]: string;
-            };
-            data: components["schemas"]["TimeSeriesMetricData"];
-        };
-        /**
-         * MetricsSchema
-         * @description Schema that groups metrics by their type.
-         *     Each metric type has its own list of metrics.
-         */
-        MetricsSchema: {
-            /**
-             * Counter
-             * @default []
-             */
-            counter: components["schemas"]["Metric_TimeSeriesMetricData_"][];
-            /**
-             * Gauge
-             * @default []
-             */
-            gauge: components["schemas"]["Metric_TimeSeriesMetricData_"][];
-            /**
-             * Sample
-             * @default []
-             */
-            sample: components["schemas"]["Metric_TimeSeriesMetricData_"][];
-            /**
-             * State
-             * @default []
-             */
-            state: components["schemas"]["Metric_StateMetricData_"][];
-        };
-        /**
-         * MotionSegment
-         * @description Describes an entity's position/motion during a time interval.
-         *
-         *     - entity_id: Unique identifier for the entity
-         *     - entity_type: Type for rendering (e.g., "agv", "box", "source")
-         *     - parent_id: If set, coordinates are relative to parent; if None, world coordinates
-         *     - start_time: When this segment begins
-         *     - end_time: When this segment ends (None = until simulation end)
-         *     - start_x/y, end_x/y: Position at start and end of segment
-         *     - start_angle, end_angle: Rotation at start and end of segment
-         *
-         *     Position at time t is computed via linear interpolation.
-         */
-        MotionSegment: {
-            /** Entityid */
-            entityId: string;
-            entityType: components["schemas"]["SimulationEntityType"];
-            /** Name */
-            name?: string | null;
-            /** Parentid */
-            parentId?: string | null;
-            /** Starttime */
-            startTime: number;
-            /** Endtime */
-            endTime?: number | null;
-            /** Startx */
-            startX: number;
-            /** Starty */
-            startY: number;
-            /** Endx */
-            endX: number;
-            /** Endy */
-            endY: number;
-            /**
-             * Startangle
-             * @default 0
-             */
-            startAngle: number;
-            /**
-             * Endangle
-             * @default 0
-             */
-            endAngle: number;
-        };
-        /**
-         * ProgressSegment
-         * @description Describes an entity's progress/value during a time interval.
-         *
-         *     Value at time t is computed via linear interpolation between
-         *     start_value and end_value. min_value and max_value define the bounds
-         *     for visualization (e.g., 0-100 for percentage, 0-capacity for buffer counts).
-         */
-        ProgressSegment: {
-            /** Entity Id */
-            entity_id: string;
-            /** Start Time */
-            start_time: number;
-            /** End Time */
-            end_time: number | null;
-            /** Start Value */
-            start_value: number;
-            /** End Value */
-            end_value: number;
-            /** Min Value */
-            min_value: number;
-            /** Max Value */
-            max_value: number;
-        };
-        /**
-         * SimulationRecording
-         * @description Complete recording of a simulation run.
-         *
-         *     For each component there is a sequence of records
-         *     where the start time of each record needs to be higher than
-         *     start time of previous one for the same component.
-         *
-         *     Notes:
-         *     - new record invalidates the previous one
-         *     - to record stay in location, use the same start and end time and coordinates
-         *     - to stay indefinitely, use None for end time
-         *     - to stop rendering of an entity use same start and end time
-         */
-        SimulationRecording: {
-            /** Duration */
-            duration: number;
-            /**
-             * Motion Segments By Entity
-             * @default {}
-             */
-            motion_segments_by_entity: {
-                [key: string]: components["schemas"]["MotionSegment"][];
-            };
-            /**
-             * Progress Segments By Entity
-             * @default {}
-             */
-            progress_segments_by_entity: {
-                [key: string]: components["schemas"]["ProgressSegment"][];
-            };
-            /**
-             * @default {
-             *       "counter": [],
-             *       "gauge": [],
-             *       "sample": [],
-             *       "state": []
-             *     }
-             */
-            metrics: components["schemas"]["MetricsSchema"];
-        };
-        /**
-         * StateMetricData
-         * @description Data for state metrics.
-         *     Timestamp and state are parallel arrays.
-         *     possible_states enumerates all valid state values.
-         */
-        StateMetricData: {
-            /** Timestamp */
-            timestamp: number[];
-            /** State */
-            state: string[];
-            /** Possible States */
-            possible_states: string[];
-        };
-        /**
-         * TimeSeriesMetricData
-         * @description Data for time-series metrics (counter, gauge, sample).
-         *     Timestamp and value are parallel arrays.
-         */
-        TimeSeriesMetricData: {
-            /** Timestamp */
-            timestamp: number[];
-            /** Value */
-            value: number[];
-        };
-        /**
-         * Blueprint
-         * @description Simulation blueprint used by the engine.
-         *
-         *     This mirrors the structure expected by destiny_sim.builder.runner.run_blueprint
-         *     and by the frontend builder feature.
-         */
-        Blueprint: {
-            /**
-             * @default {
-             *       "initialTime": 0,
-             *       "duration": null,
-             *       "canvasSize": null
-             *     }
-             */
-            simParams: components["schemas"]["SimParams"];
-            /**
-             * Entities
-             * @default []
-             */
-            entities: components["schemas"]["BlueprintEntity"][];
-        };
-        /**
-         * BlueprintEntity
-         * @description Single entity instance in a simulation blueprint.
-         */
-        BlueprintEntity: {
-            entityType: components["schemas"]["SimulationEntityType"];
-            /**
-             * Name
-             * @description Entity name (must be unique within blueprint)
-             */
-            name: string;
-            /** Parameters */
-            parameters: {
-                [key: string]: components["schemas"]["BlueprintEntityParameter"];
-            };
-        };
-        /**
-         * BlueprintEntityParameter
-         * @description Single parameter for a blueprint entity.
-         */
-        BlueprintEntityParameter: {
-            /**
-             * Name
-             * @description The name of the parameter
-             */
-            name: string;
-            /** @description PRIMITIVE or ENTITY */
-            parameterType: components["schemas"]["BlueprintParameterType"];
-            /**
-             * Value
-             * @description The parameter value (primitive value or name string for entities)
-             */
-            value: string | number | boolean;
-        };
-        /**
-         * BlueprintParameterType
-         * @description Parameter type for blueprint entity parameters.
-         * @enum {string}
-         */
-        BlueprintParameterType: "primitive" | "entity";
-        /**
-         * CanvasSize
-         * @description Canvas size for the simulation.
-         */
-        CanvasSize: {
-            /**
-             * Width
-             * @description Canvas width in pixels
-             */
-            width: number;
-            /**
-             * Height
-             * @description Canvas height in pixels
-             */
-            height: number;
-        };
-        /**
-         * SimParams
-         * @description Simulation-level parameters shared between frontend and engine.
-         */
-        SimParams: {
-            /**
-             * Initialtime
-             * @default 0
-             */
-            initialTime: number;
-            /** Duration */
-            duration?: number | null;
-            canvasSize?: components["schemas"]["CanvasSize"] | null;
-        };
+  schemas: {
+    /**
+     * BuilderEntitySchema
+     * @description Schema for a builder entity definition.
+     */
+    BuilderEntitySchema: {
+      entityType: components["schemas"]["SimulationEntityType"];
+      /** Parameters */
+      parameters: {
+        [key: string]: components["schemas"]["ParameterInfo"];
+      };
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /**
+     * ParameterInfo
+     * @description Information about a parameter, including its name, type and optional constraints.
+     *
+     *     This allows for richer parameter definitions beyond just the type,
+     *     such as filtering allowed entity types for entity parameters.
+     */
+    ParameterInfo: {
+      /**
+       * Name
+       * @description The name of the parameter
+       */
+      name: string;
+      /** @description The type of the parameter */
+      type: components["schemas"]["ParameterType"];
+      /**
+       * Allowedentitytypes
+       * @description For ENTITY type parameters, optionally restrict which entity types are valid. If None, all entity types are allowed.
+       */
+      allowedEntityTypes?:
+        | components["schemas"]["SimulationEntityType"][]
+        | null;
+    };
+    /**
+     * ParameterType
+     * @description Allowed primitive parameter types for builder entities.
+     * @enum {string}
+     */
+    ParameterType: "string" | "number" | "boolean" | "entity";
+    /**
+     * SimulationEntityType
+     * @description Simulation entity types for rendering entities in the frontend.
+     * @enum {string}
+     */
+    SimulationEntityType:
+      | "agv"
+      | "robot"
+      | "box"
+      | "palette"
+      | "source"
+      | "sink"
+      | "buffer"
+      | "human"
+      | "counter"
+      | "grid_node"
+      | "manufacturing_cell"
+      | "control"
+      | "";
+    /**
+     * MetricType
+     * @description Enumeration of metric types.
+     * @enum {string}
+     */
+    MetricType: "counter" | "gauge" | "sample" | "state";
+    /** Metric[StateMetricData] */
+    Metric_StateMetricData_: {
+      /** Name */
+      name: string;
+      type: components["schemas"]["MetricType"];
+      /**
+       * Labels
+       * @default {}
+       */
+      labels: {
+        [key: string]: string;
+      };
+      data: components["schemas"]["StateMetricData"];
+    };
+    /** Metric[TimeSeriesMetricData] */
+    Metric_TimeSeriesMetricData_: {
+      /** Name */
+      name: string;
+      type: components["schemas"]["MetricType"];
+      /**
+       * Labels
+       * @default {}
+       */
+      labels: {
+        [key: string]: string;
+      };
+      data: components["schemas"]["TimeSeriesMetricData"];
+    };
+    /**
+     * MetricsSchema
+     * @description Schema that groups metrics by their type.
+     *     Each metric type has its own list of metrics.
+     */
+    MetricsSchema: {
+      /**
+       * Counter
+       * @default []
+       */
+      counter: components["schemas"]["Metric_TimeSeriesMetricData_"][];
+      /**
+       * Gauge
+       * @default []
+       */
+      gauge: components["schemas"]["Metric_TimeSeriesMetricData_"][];
+      /**
+       * Sample
+       * @default []
+       */
+      sample: components["schemas"]["Metric_TimeSeriesMetricData_"][];
+      /**
+       * State
+       * @default []
+       */
+      state: components["schemas"]["Metric_StateMetricData_"][];
+    };
+    /**
+     * MotionSegment
+     * @description Describes an entity's position/motion during a time interval.
+     *
+     *     - entity_id: Unique identifier for the entity
+     *     - entity_type: Type for rendering (e.g., "agv", "box", "source")
+     *     - parent_id: If set, coordinates are relative to parent; if None, world coordinates
+     *     - start_time: When this segment begins
+     *     - end_time: When this segment ends (None = until simulation end)
+     *     - start_x/y, end_x/y: Position at start and end of segment
+     *     - start_angle, end_angle: Rotation at start and end of segment
+     *
+     *     Position at time t is computed via linear interpolation.
+     */
+    MotionSegment: {
+      /** Entityid */
+      entityId: string;
+      entityType: components["schemas"]["SimulationEntityType"];
+      /** Name */
+      name?: string | null;
+      /** Parentid */
+      parentId?: string | null;
+      /** Starttime */
+      startTime: number;
+      /** Endtime */
+      endTime?: number | null;
+      /** Startx */
+      startX: number;
+      /** Starty */
+      startY: number;
+      /** Endx */
+      endX: number;
+      /** Endy */
+      endY: number;
+      /**
+       * Startangle
+       * @default 0
+       */
+      startAngle: number;
+      /**
+       * Endangle
+       * @default 0
+       */
+      endAngle: number;
+    };
+    /**
+     * ProgressSegment
+     * @description Describes an entity's progress/value during a time interval.
+     *
+     *     Value at time t is computed via linear interpolation between
+     *     start_value and end_value. min_value and max_value define the bounds
+     *     for visualization (e.g., 0-100 for percentage, 0-capacity for buffer counts).
+     */
+    ProgressSegment: {
+      /** Entity Id */
+      entity_id: string;
+      /** Start Time */
+      start_time: number;
+      /** End Time */
+      end_time: number | null;
+      /** Start Value */
+      start_value: number;
+      /** End Value */
+      end_value: number;
+      /** Min Value */
+      min_value: number;
+      /** Max Value */
+      max_value: number;
+    };
+    /**
+     * SimulationRecording
+     * @description Complete recording of a simulation run.
+     *
+     *     For each component there is a sequence of records
+     *     where the start time of each record needs to be higher than
+     *     start time of previous one for the same component.
+     *
+     *     Notes:
+     *     - new record invalidates the previous one
+     *     - to record stay in location, use the same start and end time and coordinates
+     *     - to stay indefinitely, use None for end time
+     *     - to stop rendering of an entity use same start and end time
+     */
+    SimulationRecording: {
+      /** Duration */
+      duration: number;
+      /**
+       * Motion Segments By Entity
+       * @default {}
+       */
+      motion_segments_by_entity: {
+        [key: string]: components["schemas"]["MotionSegment"][];
+      };
+      /**
+       * Progress Segments By Entity
+       * @default {}
+       */
+      progress_segments_by_entity: {
+        [key: string]: components["schemas"]["ProgressSegment"][];
+      };
+      /**
+       * @default {
+       *       "counter": [],
+       *       "gauge": [],
+       *       "sample": [],
+       *       "state": []
+       *     }
+       */
+      metrics: components["schemas"]["MetricsSchema"];
+    };
+    /**
+     * StateMetricData
+     * @description Data for state metrics.
+     *     Timestamp and state are parallel arrays.
+     *     possible_states enumerates all valid state values.
+     */
+    StateMetricData: {
+      /** Timestamp */
+      timestamp: number[];
+      /** State */
+      state: string[];
+      /** Possible States */
+      possible_states: string[];
+    };
+    /**
+     * TimeSeriesMetricData
+     * @description Data for time-series metrics (counter, gauge, sample).
+     *     Timestamp and value are parallel arrays.
+     */
+    TimeSeriesMetricData: {
+      /** Timestamp */
+      timestamp: number[];
+      /** Value */
+      value: number[];
+    };
+    /**
+     * Blueprint
+     * @description Simulation blueprint used by the engine.
+     *
+     *     This mirrors the structure expected by destiny_sim.builder.runner.run_blueprint
+     *     and by the frontend builder feature.
+     */
+    Blueprint: {
+      /**
+       * @default {
+       *       "initialTime": 0,
+       *       "duration": null,
+       *       "canvasSize": null
+       *     }
+       */
+      simParams: components["schemas"]["SimParams"];
+      /**
+       * Entities
+       * @default []
+       */
+      entities: components["schemas"]["BlueprintEntity"][];
+    };
+    /**
+     * BlueprintEntity
+     * @description Single entity instance in a simulation blueprint.
+     */
+    BlueprintEntity: {
+      entityType: components["schemas"]["SimulationEntityType"];
+      /**
+       * Name
+       * @description Entity name (must be unique within blueprint)
+       */
+      name: string;
+      /** Parameters */
+      parameters: {
+        [key: string]: components["schemas"]["BlueprintEntityParameter"];
+      };
+    };
+    /**
+     * BlueprintEntityParameter
+     * @description Single parameter for a blueprint entity.
+     */
+    BlueprintEntityParameter: {
+      /**
+       * Name
+       * @description The name of the parameter
+       */
+      name: string;
+      /** @description PRIMITIVE or ENTITY */
+      parameterType: components["schemas"]["BlueprintParameterType"];
+      /**
+       * Value
+       * @description The parameter value (primitive value or name string for entities)
+       */
+      value: string | number | boolean;
+    };
+    /**
+     * BlueprintParameterType
+     * @description Parameter type for blueprint entity parameters.
+     * @enum {string}
+     */
+    BlueprintParameterType: "primitive" | "entity";
+    /**
+     * CanvasSize
+     * @description Canvas size for the simulation.
+     */
+    CanvasSize: {
+      /**
+       * Width
+       * @description Canvas width in pixels
+       */
+      width: number;
+      /**
+       * Height
+       * @description Canvas height in pixels
+       */
+      height: number;
+    };
+    /**
+     * SimParams
+     * @description Simulation-level parameters shared between frontend and engine.
+     */
+    SimParams: {
+      /**
+       * Initialtime
+       * @default 0
+       */
+      initialTime: number;
+      /** Duration */
+      duration?: number | null;
+      canvasSize?: components["schemas"]["CanvasSize"] | null;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    simulation_api_simulation_get_schema: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BuilderEntitySchema"][];
-                };
-            };
-        };
+  simulation_api_simulation_get_schema: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    simulation_api_simulation_run_simulation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["Blueprint"] | null;
-            };
+        content: {
+          "application/json": components["schemas"]["BuilderEntitySchema"][];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SimulationRecording"];
-                };
-            };
-        };
+      };
     };
-    simulation_api_chat_chat: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  simulation_api_simulation_run_simulation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    simulation_api_blueprint_get_blueprint: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Blueprint"];
-                };
-            };
-        };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["Blueprint"] | null;
+      };
     };
-    simulation_api_blueprint_put_blueprint: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Blueprint"];
-            };
+        content: {
+          "application/json": components["schemas"]["SimulationRecording"];
         };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Blueprint"];
-                };
-            };
-        };
+      };
     };
-    simulation_api_blueprint_post_canvas_size: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CanvasSize"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  simulation_api_chat_chat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  simulation_api_blueprint_get_blueprint: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Blueprint"];
+        };
+      };
+    };
+  };
+  simulation_api_blueprint_put_blueprint: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Blueprint"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Blueprint"];
+        };
+      };
+    };
+  };
+  simulation_api_blueprint_post_canvas_size: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CanvasSize"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
 }

@@ -1,25 +1,23 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useRef, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 import type { components } from "@/types/api";
 
 import { SimulationTheme } from "../constants";
-import type { EntityManager } from "../pixi/EntityManager";
+import type { SceneManager } from "../pixi/SceneManager";
+import type { ScreenSize } from "../types";
 
 type CanvasDropEntityType =
   components["schemas"]["BlueprintEntity"]["entityType"];
 type CanvasDropParameterInfo = components["schemas"]["ParameterInfo"];
-
-interface ScreenSize {
-  width: number;
-  height: number;
-}
-
-interface ScrollOffset {
-  x: number;
-  y: number;
-}
 
 export interface InteractionCallbacks {
   onEntityDragEnd?: (entityId: string, x: number, y: number) => void;
@@ -37,22 +35,20 @@ interface VisualizationContextValue {
   theme: SimulationTheme;
   screenSize: ScreenSize;
   interactive: boolean;
-  zoom: number;
-  scrollOffset: ScrollOffset;
 
   // Actions
   setTheme: (theme: SimulationTheme) => void;
   setScreenSize: (screenSize: ScreenSize) => void;
-  setZoom: (zoom: number) => void;
-  setScrollOffset: (scrollOffset: ScrollOffset) => void;
 
   // Interaction callbacks
   registerInteractionCallbacks: (callbacks: InteractionCallbacks) => void;
   getInteractionCallbacks: () => InteractionCallbacks;
 
-  // EntityManager for imperative entity updates (bypassing React)
-  registerEntityManager: (manager: EntityManager) => void;
-  getEntityManager: () => EntityManager | null;
+  // SceneManager for imperative scene updates (bypassing React)
+  // SceneManager owns BackgroundManager and EntityManager internally
+  registerSceneManager: (manager: SceneManager) => void;
+  sceneManagerReady: boolean;
+  getSceneManager: () => SceneManager | null;
 }
 
 const VisualizationContext = createContext<
@@ -69,11 +65,12 @@ interface VisualizationProviderProps {
  *
  * This provider contains visualization runtime concerns (theme, screenSize).
  *
- * Entity rendering is handled imperatively by EntityManager (bypasses React).
- * Children can register an EntityManager via registerEntityManager.
+ * Scene transform (zoom/pan), background, and entity rendering are all handled
+ * imperatively by SceneManager (bypasses React). SceneManager owns BackgroundManager
+ * and EntityManager internally.
  *
+ * Children can register a SceneManager via registerSceneManager.
  * Children can register interaction callbacks via registerInteractionCallbacks.
- * The visualization layer will invoke these callbacks when interactions occur.
  *
  * @param interactive - Whether entities should be interactive (default: true)
  */
@@ -87,45 +84,44 @@ export const VisualizationProvider = ({
     height: 0,
   });
 
-  // Zoom and scroll state
-  const [zoom, setZoom] = useState<number>(1.0);
-  const [scrollOffset, setScrollOffset] = useState<ScrollOffset>({
-    x: 0,
-    y: 0,
-  });
-
   // Interaction callbacks - stored in ref to avoid re-renders
   const interactionCallbacksRef = useRef<InteractionCallbacks>({});
 
-  const registerInteractionCallbacks = (callbacks: InteractionCallbacks) => {
-    interactionCallbacksRef.current = callbacks;
-  };
+  const registerInteractionCallbacks = useCallback(
+    (callbacks: InteractionCallbacks) => {
+      interactionCallbacksRef.current = callbacks;
+    },
+    [],
+  );
 
-  const getInteractionCallbacks = () => interactionCallbacksRef.current;
+  const getInteractionCallbacks = useCallback(
+    () => interactionCallbacksRef.current,
+    [],
+  );
 
-  // EntityManager for imperative entity updates (bypasses React re-renders)
-  const entityManagerRef = useRef<EntityManager | null>(null);
+  // SceneManager for imperative scene transform updates (bypasses React re-renders)
+  const sceneManagerRef = useRef<SceneManager | null>(null);
 
-  const registerEntityManager = (manager: EntityManager) => {
-    entityManagerRef.current = manager;
-  };
+  const registerSceneManager = useCallback((manager: SceneManager) => {
+    sceneManagerRef.current = manager;
+    setSceneManagerReady(true);
+  }, []);
 
-  const getEntityManager = () => entityManagerRef.current;
+  const getSceneManager = useCallback(() => sceneManagerRef.current, []);
+
+  const [sceneManagerReady, setSceneManagerReady] = useState(false);
 
   const value: VisualizationContextValue = {
     theme,
     screenSize,
     interactive,
-    zoom,
-    scrollOffset,
     setTheme,
     setScreenSize,
-    setZoom,
-    setScrollOffset,
     registerInteractionCallbacks,
     getInteractionCallbacks,
-    registerEntityManager,
-    getEntityManager,
+    registerSceneManager,
+    getSceneManager,
+    sceneManagerReady,
   };
 
   return (
@@ -150,4 +146,4 @@ export const useVisualization = (): VisualizationContextValue => {
 };
 
 // Export types for external use
-export type { ScreenSize, ScrollOffset, VisualizationContextValue };
+export type { ScreenSize, VisualizationContextValue };
