@@ -1,14 +1,9 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Eye, EyeOff, Settings2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, EyeOff } from "lucide-react";
 
+import { ConfigureSelect } from "@/components/common/ConfigureSelect";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
 
 interface MetricsSelectorProps {
@@ -27,21 +22,8 @@ export function MetricsSelector({
   onMoveDown,
 }: MetricsSelectorProps) {
   return (
-    <Select>
-      <SelectTrigger className="w-auto gap-2">
-        <Settings2 className="h-4 w-4" />
-        <SelectValue placeholder="Configure" />
-      </SelectTrigger>
-      <SelectContent
-        className="w-80"
-        align="end"
-        onCloseAutoFocus={(e) => e.preventDefault()}
-      >
-        <div className="p-2">
-          <div className="text-sm font-semibold mb-3 px-2">
-            Chart Visibility & Order
-          </div>
-          <div className="space-y-1">
+    <ConfigureSelect title="Chart Visibility & Order">
+      <div className="space-y-1">
             {metricOrder.map((metricName, index) => {
               const isVisible = visibleMetrics.has(metricName);
               const isFirst = index === 0;
@@ -96,9 +78,7 @@ export function MetricsSelector({
                 </div>
               );
             })}
-          </div>
-        </div>
-      </SelectContent>
-    </Select>
+      </div>
+    </ConfigureSelect>
   );
 }
