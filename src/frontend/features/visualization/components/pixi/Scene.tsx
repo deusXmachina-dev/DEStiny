@@ -65,6 +65,13 @@ export const Scene = ({ parentRef }: SceneProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
+  // Update interactive state when it changes
+  useEffect(() => {
+    if (sceneManagerRef.current) {
+      sceneManagerRef.current.setInteractive(interactive);
+    }
+  }, [interactive]);
+
   if (!isLoaded) {
     return null;
   }

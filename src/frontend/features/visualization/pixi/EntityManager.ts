@@ -122,6 +122,25 @@ export class EntityManager {
   }
 
   /**
+   * Update the interactive state and apply it to all existing entities.
+   */
+  setInteractive(interactive: boolean): void {
+    if (this.interactive === interactive) {
+      return;
+    }
+    this.interactive = interactive;
+
+    // Update all existing entities
+    for (const [entityId, container] of this.entityMap) {
+      if (interactive) {
+        this.setupInteractions(container, entityId);
+      } else {
+        this.removeInteractions(container);
+      }
+    }
+  }
+
+  /**
    * Clean up all entities and the container.
    */
   dispose(): void {
@@ -385,5 +404,12 @@ export class EntityManager {
     container.on("pointermove", onPointerMove);
     container.on("pointerup", onPointerUp);
     container.on("pointertap", onPointerTap);
+  }
+
+  private removeInteractions(container: Container): void {
+    container.eventMode = "none";
+    container.cursor = "default";
+    // Remove all event listeners we added in setupInteractions
+    container.removeAllListeners();
   }
 }

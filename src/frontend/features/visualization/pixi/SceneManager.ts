@@ -85,6 +85,13 @@ export class SceneManager {
   }
 
   /**
+   * Update the interactive state of entities.
+   */
+  setInteractive(interactive: boolean): void {
+    this.entityManager?.setInteractive(interactive);
+  }
+
+  /**
    * Update screen size (needed for background calculations).
    */
   setScreenSize(size: ScreenSize): void {
