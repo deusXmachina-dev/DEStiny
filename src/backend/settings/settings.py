@@ -61,6 +61,13 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # Allow cross-origin cookies (required when frontend and backend are on different domains)
+    SESSION_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SAMESITE = "None"
+else:
+    # In development, use Lax (works for same-origin or localhost)
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
 
 
 # Application definition
