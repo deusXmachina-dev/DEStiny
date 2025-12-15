@@ -107,7 +107,7 @@ blueprint_agent = Agent("openai:gpt-5.2", deps_type=BlueprintStorage)
 Context = RunContext[BlueprintStorage]
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def list_entity_types(ctx: Context) -> Dict[str, Any]:
     """
     List all available entity types and their parameters.
@@ -145,7 +145,7 @@ def list_entity_types(ctx: Context) -> Dict[str, Any]:
     return result
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def get_blueprint(ctx: Context) -> Dict[str, Any]:
     """
     Get the current blueprint state.
@@ -216,7 +216,7 @@ def _get_next_entity_name(entity_type: SimulationEntityType, blueprint) -> str:
     return f"{capitalized_type} {next_number}"
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def add_entity(
     ctx: Context,
     entity_type: str,
@@ -387,7 +387,7 @@ def add_entity(
     }
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def get_canvas_size(
     ctx: Context,
 ) -> Dict[str, Any] | str:
@@ -404,7 +404,7 @@ def get_canvas_size(
     }
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def update_entity(
     ctx: Context,
     entity_name: str,
@@ -528,7 +528,7 @@ def update_entity(
     }
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def remove_entity(
     ctx: Context,
     entity_name: str,
@@ -573,7 +573,7 @@ def remove_entity(
     }
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def set_simulation_params(
     ctx: Context,
     duration: float | None = None,
@@ -611,7 +611,7 @@ def set_simulation_params(
     }
 
 
-@blueprint_agent.tool
+@blueprint_agent.tool(sequential=True)
 def clear_blueprint(
     ctx: Context,
 ) -> Dict[str, Any]:
