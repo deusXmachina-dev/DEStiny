@@ -21,6 +21,15 @@ env:
 
 jobs:
   build-test-deploy:
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
     name: Build And Test
     runs-on: blacksmith-2vcpu-ubuntu-2404
     steps:
@@ -53,7 +62,12 @@ jobs:
 
       - name: Run Tests in Container
         env:
-          SECRET_KEY: TEST_SECRET_KEY
+          SECRET_KEY: test_secret_key
+          DB_USERNAME: test_user
+          DB_PASSWORD: test_password
+          DB_NAME: test_db
+          DB_HOST: localhost
+          DB_PORT: 5432
           DEBUG: true
         run: |
           docker run --rm \
