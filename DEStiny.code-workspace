@@ -3,10 +3,11 @@
     { "path": "src/backend" },
     { "path": "src/engine" },
     { "path": "src/frontend", 
-      "settings": {
+    "settings": {
         "python.terminal.activateEnvironment": false
       }
     },
+    { "path": ".", "name": "Root" }
   ],
   "settings": {}
 }
