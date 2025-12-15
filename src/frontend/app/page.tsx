@@ -13,12 +13,15 @@ import { VisualizationProvider } from "@features/visualization/hooks/Visualizati
 import { useEffect } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppMode, useAppState } from "@/hooks/AppStateContext";
 import { $api } from "@/lib/api-client";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import { ClientOnly } from "@/components/common/ClientOnly";
+
+type AppMode = "simulation" | "builder";
 
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
-  const { mode, setMode } = useAppState();
+  const [mode, setMode] = useLocalStorage<AppMode>(`destiny-app-mode`, "builder");
 
   const simulateMutation = $api.useMutation("post", "/api/simulate");
 
@@ -98,5 +101,9 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return <HomeContent />;
+  return (
+    <ClientOnly>
+      <HomeContent />
+    </ClientOnly>
+  );
 }

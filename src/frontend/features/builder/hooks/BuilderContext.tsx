@@ -101,13 +101,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   };
 
   // Only run this effect on mount
-  useEffect(() => {
-    // add some timeout to prevent race condition with the initial render
-    setTimeout(() => {
-      fetchBlueprint();
-    }, 300);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => fetchBlueprint(), []);
 
   // Save mutation
   const saveMutation = $api.useMutation("put", "/api/blueprint");
