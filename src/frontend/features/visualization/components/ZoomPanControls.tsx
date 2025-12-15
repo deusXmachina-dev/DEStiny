@@ -4,7 +4,9 @@ import { RotateCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import { useSceneActions, useSceneTransform } from "../hooks/useSceneTransform";
+import { useVisualization } from "../hooks/VisualizationContext";
+import { useSceneTransform } from "../hooks/useSceneTransform";
+import { useCallback } from "react";
 
 /**
  * ZoomPanControls - Minimal inline display of zoom and pan state with reset button.
@@ -19,7 +21,14 @@ import { useSceneActions, useSceneTransform } from "../hooks/useSceneTransform";
  */
 export const ZoomPanControls = () => {
   const { zoom, scrollOffset } = useSceneTransform(100); // 100ms throttle
-  const { reset } = useSceneActions();
+  const { getSceneManager, sceneManagerReady } = useVisualization();
+
+  const handleReset = useCallback(() => {
+    const sceneManager = getSceneManager();
+    if (sceneManager && sceneManagerReady) {
+      sceneManager.reset();
+    }
+  }, [sceneManagerReady]);
 
   return (
     <div className="absolute top-2 right-2 z-10 flex items-center gap-2 rounded-md border bg-background/30 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm transition-all hover:bg-background/50">
@@ -36,7 +45,7 @@ export const ZoomPanControls = () => {
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={reset}
+        onClick={handleReset}
         className="h-5 w-5"
         title="Reset zoom and position"
       >

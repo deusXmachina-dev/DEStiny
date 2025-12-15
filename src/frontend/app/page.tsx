@@ -21,10 +21,7 @@ type AppMode = "simulation" | "builder";
 
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
-  const [mode, setMode] = useLocalStorage<AppMode>(
-    `destiny-app-mode`,
-    "builder",
-  );
+  const [mode, setMode] = useLocalStorage<AppMode>(`destiny-app-mode`, "builder");
 
   const simulateMutation = $api.useMutation("post", "/api/simulate");
 

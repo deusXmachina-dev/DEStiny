@@ -5,7 +5,7 @@ export { useVisualization } from "./hooks/VisualizationContext";
 export { VisualizationProvider } from "./hooks/VisualizationContext";
 
 // Scene transform hooks
-export { useSceneActions, useSceneTransform } from "./hooks/useSceneTransform";
+export { useSceneTransform } from "./hooks/useSceneTransform";
 
 // export types
 export type { ProgressData, SimulationEntityState } from "./types";
