@@ -1,6 +1,5 @@
 "use client";
 
-import { useDebounce } from "@uidotdev/usehooks";
 import {
   createContext,
   ReactNode,
@@ -107,10 +106,8 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   // Save mutation
   const saveMutation = $api.useMutation("put", "/api/blueprint");
 
-  const debouncedBlueprint = useDebounce(blueprint, 3000);
-
   useEffect(() => {
-    if (!debouncedBlueprint) {
+    if (!blueprint) {
       return;
     }
 
@@ -119,8 +116,8 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
       return;
     }
 
-    saveMutation.mutate({ body: debouncedBlueprint });
-  }, [debouncedBlueprint]);
+    saveMutation.mutate({ body: blueprint });
+  }, [blueprint]);
 
   const addEntity = (
     entityType: BlueprintEntity["entityType"],

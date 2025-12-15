@@ -11,7 +11,7 @@ import { SimulationEntityUpdater } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,8 +19,17 @@ import { $api } from "@/lib/api-client";
 
 type AppMode = "simulation" | "builder";
 
+// Memoized components to prevent unnecessary re-renders on tab change
+const MemoizedSimulationEntityUpdater = memo(SimulationEntityUpdater);
+const MemoizedBuilderInteractionHandler = memo(BuilderInteractionHandler);
+const MemoizedEntityEditor = memo(EntityEditor);
+const MemoizedMetricsPanel = memo(MetricsPanel);
+const MemoizedBuilderPanel = memo(BuilderPanel);
+const MemoizedPlaybackControls = memo(PlaybackControls);
+
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
+  const [isStale, setIsStale] = useState(false);
   const [mode, setMode] = useLocalStorage<AppMode>(
     `destiny-app-mode`,
     "builder",
@@ -34,11 +43,17 @@ function HomeContent() {
       clock.pause();
       clock.reset();
     } else if (mode === "simulation") {
+      setIsStale(true);
       simulateMutation.mutate(
         {}, // No body needed - uses session blueprint
         {
           onSuccess: (data) => {
             setRecording(data);
+            setIsStale(false);
+          },
+          onError: (error) => {
+            console.error("Error simulating recording:", error);
+            setIsStale(false);
           },
         },
       );
@@ -55,10 +70,12 @@ function HomeContent() {
         <div className="w-[70%] h-full relative">
           <VisualizationProvider interactive={mode === "builder"}>
             <SceneVisualization>
-              {mode === "simulation" && <SimulationEntityUpdater />}
-              {mode === "builder" && <BuilderInteractionHandler />}
+              {mode === "simulation" && !isStale && (
+                <MemoizedSimulationEntityUpdater />
+              )}
+              {mode === "builder" && <MemoizedBuilderInteractionHandler />}
             </SceneVisualization>
-            {mode === "builder" && <EntityEditor />}
+            {mode === "builder" && <MemoizedEntityEditor />}
           </VisualizationProvider>
         </div>
 
@@ -83,10 +100,10 @@ function HomeContent() {
               </TabsList>
             </div>
             <TabsContent value="simulation" className="flex-1 min-h-0 mt-0">
-              <MetricsPanel />
+              <MemoizedMetricsPanel />
             </TabsContent>
             <TabsContent value="builder" className="flex-1 min-h-0 mt-0">
-              <BuilderPanel />
+              <MemoizedBuilderPanel />
             </TabsContent>
           </Tabs>
         </div>
@@ -95,7 +112,7 @@ function HomeContent() {
       {mode === "simulation" && (
         <div className="border-t border-border shadow-lg">
           <div className="p-4 max-w-7xl mx-auto">
-            <PlaybackControls />
+            <MemoizedPlaybackControls />
           </div>
         </div>
       )}
