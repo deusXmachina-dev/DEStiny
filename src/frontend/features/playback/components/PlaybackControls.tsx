@@ -15,16 +15,12 @@ import { Slider } from "@/components/ui/slider";
 
 import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
-import { useTimePolling } from "../hooks/useTimePolling";
+import { usePlaybackState } from "../hooks/usePlaybackState";
 
 export function PlaybackControls() {
   const { clock, duration, hasRecording } = usePlayback();
   // Poll time at 100ms intervals for slider display
-  const currentTime = useTimePolling(100);
-
-  // Read clock state during render (updates when useTimePolling triggers re-render)
-  const isPlaying = clock.isPlaying();
-  const speed = clock.getSpeed();
+  const { time: currentTime, isPlaying, speed } = usePlaybackState(100);
 
   const disabled = !hasRecording;
 

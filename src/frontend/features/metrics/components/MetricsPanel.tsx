@@ -1,10 +1,10 @@
 "use client";
 
 import { usePlayback } from "@features/playback";
-import { useTimePolling } from "@features/playback/hooks/useTimePolling";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { SidePanel } from "@/components/common/SidePanel";
+import { usePlaybackState } from "@/features/playback/";
 
 import { MetricsProvider, useMetrics } from "../hooks";
 import type { StateMetric, TimeSeriesMetric } from "../index";
@@ -15,7 +15,7 @@ import { MetricsSelector } from "./MetricsSelector";
 
 function MetricsPanelContent() {
   const { hasRecording, duration } = usePlayback();
-  const currentTime = useTimePolling(1000);
+  const { time: currentTime } = usePlaybackState(1000);
 
   const {
     displayedMetrics,

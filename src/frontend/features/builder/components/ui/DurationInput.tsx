@@ -213,7 +213,9 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Day</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">
+          :
+        </span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-hours"
@@ -231,7 +233,9 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Hour</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">
+          :
+        </span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-minutes"
@@ -249,7 +253,9 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Minute</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">
+          :
+        </span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-secs"

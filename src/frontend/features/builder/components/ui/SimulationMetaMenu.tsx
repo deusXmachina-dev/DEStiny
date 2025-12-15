@@ -42,7 +42,7 @@ export function SimulationMetaMenu() {
     }
 
     updateSimParams({
-      duration: duration,
+      duration,
     });
     setOpen(false);
   };
@@ -54,7 +54,11 @@ export function SimulationMetaMenu() {
       onOpenChange={setOpen}
     >
       <form onSubmit={handleApply} className="space-y-3">
-        <DurationInput value={duration} onChange={handleDurationChange} error={error} />
+        <DurationInput
+          value={duration}
+          onChange={handleDurationChange}
+          error={error}
+        />
 
         <div className="flex justify-end gap-2 pt-2">
           <Button

@@ -11,10 +11,12 @@ export class PlaybackClock {
   private _duration = 0;
   private _rafId: number | null = null;
   private _lastTimestamp: number | null = null;
+  private _seekTarget: number | null = null;
 
   // Getters
   getTime(): number {
-    return this._time;
+    // Return seekTarget if pending, otherwise return current time
+    return this._seekTarget !== null ? this._seekTarget : this._time;
   }
 
   isPlaying(): boolean {
@@ -54,6 +56,11 @@ export class PlaybackClock {
       cancelAnimationFrame(this._rafId);
       this._rafId = null;
     }
+    // Apply pending seek immediately since no more ticks will run
+    if (this._seekTarget !== null) {
+      this._time = this._seekTarget;
+      this._seekTarget = null;
+    }
   }
 
   togglePlay(): void {
@@ -65,18 +72,25 @@ export class PlaybackClock {
   }
 
   seek(time: number): void {
-    this._time = Math.max(0, Math.min(time, this._duration));
+    this._seekTarget = Math.max(0, Math.min(time, this._duration));
     this._lastTimestamp = null; // Reset to avoid jump
   }
 
   reset(): void {
     this.pause();
     this._time = 0;
+    this._seekTarget = null;
   }
 
   private _tick = (): void => {
     if (!this._isPlaying) {
       return;
+    }
+
+    // Apply pending seek at the start of the frame
+    if (this._seekTarget !== null) {
+      this._time = this._seekTarget;
+      this._seekTarget = null;
     }
 
     const now = performance.now();

@@ -1,6 +1,6 @@
 export { PlaybackControls } from "./components/PlaybackControls";
 export { PlaybackProvider, usePlayback } from "./hooks/PlaybackContext";
-export { useTimePolling } from "./hooks/useTimePolling";
+export { usePlaybackState, useTimePolling } from "./hooks/usePlaybackState";
 export { PlaybackClock } from "./PlaybackClock";
 export { formatTime } from "@lib/utils";
 

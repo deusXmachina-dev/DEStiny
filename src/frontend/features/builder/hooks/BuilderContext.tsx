@@ -45,9 +45,7 @@ interface BuilderContextValue {
     entityId: string,
     formValues: Record<string, BlueprintEntityParameter>,
   ) => void;
-  updateSimParams: (
-    params: Partial<SimulationBlueprint["simParams"]>,
-  ) => void;
+  updateSimParams: (params: Partial<SimulationBlueprint["simParams"]>) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
   updateEntityName: (entityId: string, name: string) => void;
   setBlueprint: (blueprint: SimulationBlueprint) => void;

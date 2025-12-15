@@ -29,8 +29,8 @@ const MAX_ZOOM = 5.0;
  * container's transform properties to avoid React re-renders during
  * high-frequency interactions like panning and zooming.
  *
- * Components that need to react to transform changes can subscribe via
- * the subscribe() method.
+ * Components that need to react to transform changes can cribe via
+ * the cribe() method.
  */
 export class SceneManager {
   private zoom = 1.0;
@@ -131,7 +131,6 @@ export class SceneManager {
     this.zoom = clampedZoom;
     this.applyTransform();
     this.updateBackground();
-    this.notifyListeners();
   }
 
   /**
@@ -144,7 +143,6 @@ export class SceneManager {
     this.scrollOffset = { ...offset };
     this.applyTransform();
     this.updateBackground();
-    this.notifyListeners();
   }
 
   /**
@@ -164,7 +162,6 @@ export class SceneManager {
     this.scrollOffset = { ...offset };
     this.applyTransform();
     this.updateBackground();
-    this.notifyListeners();
   }
 
   /**
@@ -175,7 +172,6 @@ export class SceneManager {
     this.scrollOffset = { x: 0, y: 0 };
     this.applyTransform();
     this.updateBackground();
-    this.notifyListeners();
   }
 
   /**
@@ -195,16 +191,6 @@ export class SceneManager {
     return {
       x: worldX * this.zoom + this.scrollOffset.x,
       y: worldY * this.zoom + this.scrollOffset.y,
-    };
-  }
-
-  /**
-   * Subscribe to transform changes. Returns an unsubscribe function.
-   */
-  subscribe(listener: TransformListener): () => void {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
     };
   }
 
@@ -243,14 +229,5 @@ export class SceneManager {
       this.scrollOffset,
       this.screenSize,
     );
-  }
-
-  /**
-   * Notify all listeners of transform change.
-   */
-  private notifyListeners(): void {
-    for (const listener of this.listeners) {
-      listener(this.zoom, { ...this.scrollOffset });
-    }
   }
 }
