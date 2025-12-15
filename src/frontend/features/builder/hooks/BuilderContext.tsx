@@ -45,6 +45,9 @@ interface BuilderContextValue {
     entityId: string,
     formValues: Record<string, BlueprintEntityParameter>,
   ) => void;
+  updateSimParams: (
+    params: Partial<SimulationBlueprint["simParams"]>,
+  ) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
   updateEntityName: (entityId: string, name: string) => void;
   setBlueprint: (blueprint: SimulationBlueprint) => void;
@@ -201,6 +204,25 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     });
   };
 
+  const updateSimParams = (
+    params: Partial<SimulationBlueprint["simParams"]>,
+  ) => {
+    setBlueprintState((current) => {
+      const currentSimParams = current?.simParams ?? { initialTime: 0 };
+      const nextSimParams = { ...currentSimParams, ...params };
+      if (!current) {
+        return {
+          simParams: nextSimParams,
+          entities: [],
+        };
+      }
+      return {
+        ...current,
+        simParams: nextSimParams,
+      };
+    });
+  };
+
   const handleSetBlueprint = (newBlueprint: SimulationBlueprint) => {
     setBlueprintState(newBlueprint);
   };
@@ -246,6 +268,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     addEntity,
     removeEntity,
     updateEntity,
+    updateSimParams,
     moveEntity,
     updateEntityName,
     setBlueprint: handleSetBlueprint,
