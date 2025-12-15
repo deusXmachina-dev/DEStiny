@@ -11,6 +11,7 @@ import {
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
 import { ChatInterface } from "./ui/ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
+import { SimulationMetaMenu } from "./ui/SimulationMetaMenu";
 
 function BuilderPanelContent() {
   const { schemas, isLoading } = useBuilderSchemas();
@@ -19,6 +20,9 @@ function BuilderPanelContent() {
 
   return (
     <SidePanel>
+      <SidePanel.Header className="justify-end p-3 border-b-0">
+        <SimulationMetaMenu />
+      </SidePanel.Header>
       <SidePanel.Content className="p-0">
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={25}>
