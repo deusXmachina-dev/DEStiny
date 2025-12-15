@@ -101,7 +101,7 @@ When an entity parameter requires another entity (like `buffer_in` or `buffer_ou
 5. Set simulation parameters if needed
 6. Confirm the blueprint is complete"""
 
-blueprint_agent = Agent("openai:gpt-5.1", deps_type=BlueprintStorage)
+blueprint_agent = Agent("openai:gpt-5.2", deps_type=BlueprintStorage)
 
 
 Context = RunContext[BlueprintStorage]
@@ -373,6 +373,8 @@ def add_entity(
     
     # Add to blueprint
     blueprint.entities.append(blueprint_entity)
+    
+    print(f"Blueprint: {blueprint}")
 
     # Save updated blueprint to storage
     storage.save_blueprint(blueprint)
