@@ -72,9 +72,11 @@ export const EntityEditorForm = ({
         />
 
         {/* Parameter fields */}
-        {Object.entries(schema.parameters).map(([key, paramInfo]) => {
-          const currentParam = formValues[key];
-          const onChange = handleParameterChange(key);
+        {Object.entries(schema.parameters)
+          .filter(([key]) => key !== "x" && key !== "y")
+          .map(([key, paramInfo]) => {
+            const currentParam = formValues[key];
+            const onChange = handleParameterChange(key);
 
           if (paramInfo.type === "entity") {
             return (
