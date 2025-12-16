@@ -164,7 +164,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const suggestions: Array<{ name: string; prompt: string }> = [
     {
       name: "Simple Manufacturing",
-      prompt: "Create a simple manufacturing line with a source, manufacturing cell, and sink connected in sequence. Use some sensible ",
+      prompt: "Create a simple manufacturing line with a source, manufacturing cell, and sink connected in sequence.",
     },
     {
       name: "Buffered Production",
@@ -172,7 +172,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
     },
     {
       name: "Quality Controlled Line",
-      prompt: "Build a manufacturing line with source, manufacturing cell, quality control (with OK and NOK outputs), buffer for OK items feeding another cell, and sinks for both OK and NOK items",
+      prompt: "Create a manufacturing line with a source, manufacturing cell, and quality control (with OK and NOK outputs). Route NOK items to a sink below the manufacturing cell. Buffer OK items and feed them to another manufacturing cell, then route the final OK items to a sink.",
     },
   ];
 
