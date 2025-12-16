@@ -234,10 +234,12 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   };
 
   const clearEntities = async () => {
-    const result = await saveMutation.mutateAsync({ body: {
-      simParams: blueprint?.simParams ?? { initialTime: 0 },
-      entities: [],
-    } });
+    const result = await saveMutation.mutateAsync({
+      body: {
+        simParams: blueprint?.simParams ?? { initialTime: 0 },
+        entities: [],
+      },
+    });
     if (result) {
       justFetchedRef.current = true;
       setBlueprintState(result);

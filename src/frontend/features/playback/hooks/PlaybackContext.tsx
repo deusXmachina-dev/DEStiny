@@ -46,7 +46,8 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
 
   // Compute duration from recording
   const duration = recording?.duration || 0;
-  const hasRecording = Object.keys(recording?.motion_segments_by_entity ?? {}).length > 0;
+  const hasRecording =
+    Object.keys(recording?.motion_segments_by_entity ?? {}).length > 0;
   // Memoized clock - stable reference for the lifetime of the provider
   const clock = useMemo(() => {
     const c = new PlaybackClock();

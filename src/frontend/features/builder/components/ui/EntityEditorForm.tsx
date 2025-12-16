@@ -78,56 +78,56 @@ export const EntityEditorForm = ({
             const currentParam = formValues[key];
             const onChange = handleParameterChange(key);
 
-          if (paramInfo.type === "entity") {
-            return (
-              <EntityParameterInput
-                key={key}
-                name={key}
-                paramInfo={paramInfo}
-                value={currentParam}
-                blueprint={blueprint}
-                excludeName={entity.name}
-                onChange={onChange}
-              />
-            );
-          }
+            if (paramInfo.type === "entity") {
+              return (
+                <EntityParameterInput
+                  key={key}
+                  name={key}
+                  paramInfo={paramInfo}
+                  value={currentParam}
+                  blueprint={blueprint}
+                  excludeName={entity.name}
+                  onChange={onChange}
+                />
+              );
+            }
 
-          if (paramInfo.type === "number") {
+            if (paramInfo.type === "number") {
+              return (
+                <NumberParameterInput
+                  key={key}
+                  name={key}
+                  paramInfo={paramInfo}
+                  value={currentParam}
+                  onChange={onChange}
+                  onSubmit={performSubmit}
+                />
+              );
+            }
+
+            if (paramInfo.type === "boolean") {
+              return (
+                <BooleanParameterInput
+                  key={key}
+                  name={key}
+                  paramInfo={paramInfo}
+                  value={currentParam}
+                  onChange={onChange}
+                />
+              );
+            }
+
+            // Default to string input
             return (
-              <NumberParameterInput
+              <StringParameterInput
                 key={key}
                 name={key}
-                paramInfo={paramInfo}
                 value={currentParam}
                 onChange={onChange}
                 onSubmit={performSubmit}
               />
             );
-          }
-
-          if (paramInfo.type === "boolean") {
-            return (
-              <BooleanParameterInput
-                key={key}
-                name={key}
-                paramInfo={paramInfo}
-                value={currentParam}
-                onChange={onChange}
-              />
-            );
-          }
-
-          // Default to string input
-          return (
-            <StringParameterInput
-              key={key}
-              name={key}
-              value={currentParam}
-              onChange={onChange}
-              onSubmit={performSubmit}
-            />
-          );
-        })}
+          })}
       </div>
     </form>
   );

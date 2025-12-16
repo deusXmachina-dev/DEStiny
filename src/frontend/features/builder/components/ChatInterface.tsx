@@ -33,6 +33,8 @@ import {
   PromptInputTools,
   usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
+import { Shimmer } from "@/components/ai-elements/shimmer";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import {
   Tool,
   ToolContent,
@@ -44,8 +46,6 @@ import { BACKEND_URL } from "@/config/api";
 import { cn } from "@/lib/utils";
 
 import { useBuilder } from "../hooks/BuilderContext";
-import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
-import { Shimmer } from "@/components/ai-elements/shimmer";
 
 interface ChatInterfaceProps {
   className?: string;
@@ -158,7 +158,7 @@ const ChatSubmitButton = ({
 }) => {
   const attachments = usePromptInputAttachments();
   const hasContent = input.trim() || attachments.files.length > 0;
-  
+
   return (
     <PromptInputSubmit
       disabled={!hasContent || isLoading}
@@ -175,15 +175,18 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const suggestions: Array<{ name: string; prompt: string }> = [
     {
       name: "Simple Manufacturing",
-      prompt: "Create a manufacturing line with only a source, manufacturing cell, and sink connected in sequence. Do not add any additional entities or logic.",
+      prompt:
+        "Create a manufacturing line with only a source, manufacturing cell, and sink connected in sequence. Do not add any additional entities or logic.",
     },
     {
       name: "Buffered Production",
-      prompt: "Set up a production line with a source, manufacturing cell, buffer, another manufacturing cell, and sink",
+      prompt:
+        "Set up a production line with a source, manufacturing cell, buffer, another manufacturing cell, and sink",
     },
     {
       name: "Quality Controlled Line",
-      prompt: "Create a manufacturing line with a source, manufacturing cell, and quality control (with OK and NOK outputs). Route NOK items to a sink below the manufacturing cell. Buffer OK items and feed them to another manufacturing cell, then route the final OK items to a sink.",
+      prompt:
+        "Create a manufacturing line with a source, manufacturing cell, and quality control (with OK and NOK outputs). Route NOK items to a sink below the manufacturing cell. Buffer OK items and feed them to another manufacturing cell, then route the final OK items to a sink.",
     },
   ];
 
@@ -251,33 +254,33 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
             </Suggestion>
           ))}
         </Suggestions>
-      <div className="w-full px-4 pb-4">
-        <PromptInput onSubmit={handleSubmit} multiple>
-          <PromptInputHeader>
-            <PromptInputAttachments>
-              {(attachment) => <PromptInputAttachment data={attachment} />}
-            </PromptInputAttachments>
-          </PromptInputHeader>
-          <PromptInputBody>
-            <PromptInputTextarea
-              placeholder="Start building your simulation..."
-              onChange={(e) => setInput(e.target.value)}
-              value={input}
-            />
-          </PromptInputBody>
-          <PromptInputFooter className="flex justify-between">
-            <PromptInputTools>
-              <PromptInputActionMenu>
-                <PromptInputActionMenuTrigger />
-                <PromptInputActionMenuContent>
-                  <PromptInputActionAddAttachments />
-                </PromptInputActionMenuContent>
-              </PromptInputActionMenu>
-            </PromptInputTools>
-            <ChatSubmitButton input={input} isLoading={isLoading} />
-          </PromptInputFooter>
-        </PromptInput>
-      </div>
+        <div className="w-full px-4 pb-4">
+          <PromptInput onSubmit={handleSubmit} multiple>
+            <PromptInputHeader>
+              <PromptInputAttachments>
+                {(attachment) => <PromptInputAttachment data={attachment} />}
+              </PromptInputAttachments>
+            </PromptInputHeader>
+            <PromptInputBody>
+              <PromptInputTextarea
+                placeholder="Start building your simulation..."
+                onChange={(e) => setInput(e.target.value)}
+                value={input}
+              />
+            </PromptInputBody>
+            <PromptInputFooter className="flex justify-between">
+              <PromptInputTools>
+                <PromptInputActionMenu>
+                  <PromptInputActionMenuTrigger />
+                  <PromptInputActionMenuContent>
+                    <PromptInputActionAddAttachments />
+                  </PromptInputActionMenuContent>
+                </PromptInputActionMenu>
+              </PromptInputTools>
+              <ChatSubmitButton input={input} isLoading={isLoading} />
+            </PromptInputFooter>
+          </PromptInput>
+        </div>
       </div>
     </div>
   );

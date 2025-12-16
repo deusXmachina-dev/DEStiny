@@ -38,9 +38,14 @@ function HomeContent() {
   );
 
   // Detect if running on Mac for keyboard shortcut display
-  const isMac = typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+  const isMac =
+    typeof window !== "undefined" &&
+    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
   const modifierKey = isMac ? "⌘" : "⌃";
-  const simulationEnabled = useMemo(() => hasRecording || hasEntities, [hasRecording, hasEntities]);
+  const simulationEnabled = useMemo(
+    () => hasRecording || hasEntities,
+    [hasRecording, hasEntities],
+  );
 
   const handleClearEntities = useCallback(async () => {
     setRecording(null);
@@ -115,7 +120,10 @@ function HomeContent() {
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Visualization (70%) */}
         <div className="w-[70%] h-full relative">
-          <button onClick={handleClearEntities} className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-md border bg-background/30 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm transition-all hover:bg-background/50">
+          <button
+            onClick={handleClearEntities}
+            className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-md border bg-background/30 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm transition-all hover:bg-background/50"
+          >
             <span className="text-muted-foreground">
               Press <Kbd className="mx-1">{modifierKey}C</Kbd> to clear
             </span>
