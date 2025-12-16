@@ -18,10 +18,20 @@ import {
 } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+  PromptInputAttachment,
+  PromptInputAttachments,
   PromptInputBody,
   PromptInputFooter,
+  PromptInputHeader,
+  type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputTools,
+  usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
 import {
   Tool,
@@ -126,6 +136,25 @@ const ChatMessage = ({ message }: { message: UIMessage }) => {
   );
 };
 
+// Submit button component that can access attachments context
+const ChatSubmitButton = ({
+  input,
+  isLoading,
+}: {
+  input: string;
+  isLoading: boolean;
+}) => {
+  const attachments = usePromptInputAttachments();
+  const hasContent = input.trim() || attachments.files.length > 0;
+  
+  return (
+    <PromptInputSubmit
+      disabled={!hasContent || isLoading}
+      status={isLoading ? "submitted" : "ready"}
+    />
+  );
+};
+
 const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
   const chatId = useMemo(() => nanoid(), []);
@@ -147,14 +176,21 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   useBlueprintSyncOnToolComplete(messages, fetchBlueprint);
 
   const handleSubmit = (
-    { text }: { text: string },
+    message: PromptInputMessage,
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    if (!text.trim()) {
+    const hasText = Boolean(message.text?.trim());
+    const hasAttachments = Boolean(message.files?.length);
+
+    if (!(hasText || hasAttachments)) {
       return;
     }
-    sendMessage({ text });
+
+    sendMessage({
+      text: message.text || "Sent with attachments",
+      files: message.files,
+    });
     setInput("");
   };
 
@@ -176,18 +212,28 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
         <ConversationScrollButton />
       </Conversation>
       <div className="w-full px-4 pb-4 pt-4">
-        <PromptInput onSubmit={handleSubmit}>
+        <PromptInput onSubmit={handleSubmit} multiple>
+          <PromptInputHeader>
+            <PromptInputAttachments>
+              {(attachment) => <PromptInputAttachment data={attachment} />}
+            </PromptInputAttachments>
+          </PromptInputHeader>
           <PromptInputBody>
             <PromptInputTextarea
               onChange={(e) => setInput(e.target.value)}
               value={input}
             />
           </PromptInputBody>
-          <PromptInputFooter className="flex justify-end">
-            <PromptInputSubmit
-              disabled={!input.trim() || isLoading}
-              status={isLoading ? "submitted" : "ready"}
-            />
+          <PromptInputFooter className="flex justify-between">
+            <PromptInputTools>
+              <PromptInputActionMenu>
+                <PromptInputActionMenuTrigger />
+                <PromptInputActionMenuContent>
+                  <PromptInputActionAddAttachments />
+                </PromptInputActionMenuContent>
+              </PromptInputActionMenu>
+            </PromptInputTools>
+            <ChatSubmitButton input={input} isLoading={isLoading} />
           </PromptInputFooter>
         </PromptInput>
       </div>
