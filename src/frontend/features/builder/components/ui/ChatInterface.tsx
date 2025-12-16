@@ -74,39 +74,61 @@ function useBlueprintSyncOnToolComplete(
 }
 
 const ChatMessage = ({ message }: { message: UIMessage }) => {
-  const textContent = message.parts
-    .filter((part) => part.type === "text")
-    .map((part) => part.text)
-    .join("");
+  // Render parts in order, grouping consecutive text parts
+  const renderParts = () => {
+    const elements: React.ReactNode[] = [];
+    let currentTextParts: string[] = [];
 
-  const toolParts = message.parts.filter(isToolPart);
+    const flushText = () => {
+      if (currentTextParts.length > 0) {
+        const textContent = currentTextParts.join("");
+        if (textContent) {
+          elements.push(
+            <MessageResponse key={`${message.id}-text-${elements.length}`}>
+              {textContent}
+            </MessageResponse>,
+          );
+        }
+        currentTextParts = [];
+      }
+    };
+
+    message.parts.forEach((part, index) => {
+      if (part.type === "text" && part.text) {
+        currentTextParts.push(part.text);
+      } else if (isToolPart(part)) {
+        // Flush any accumulated text before rendering the tool
+        flushText();
+
+        const toolName = part.type.replace("tool-", "").replace(/_/g, " ");
+        elements.push(
+          <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
+            <ToolHeader
+              title={toolName}
+              type={part.type}
+              state={part.state}
+            />
+            <ToolContent>
+              {part.input != null && <ToolInput input={part.input} />}
+              <ToolOutput
+                output={part.output}
+                errorText={part.errorText}
+              />
+            </ToolContent>
+          </Tool>,
+        );
+      }
+    });
+
+    // Flush any remaining text at the end
+    flushText();
+
+    return elements;
+  };
 
   return (
     <Message from={message.role} key={message.id}>
-      <MessageContent>
-        {textContent && <MessageResponse>{textContent}</MessageResponse>}
-        {toolParts.map((toolPart, index) => {
-          const toolName = toolPart.type
-            .replace("tool-", "")
-            .replace(/_/g, " ");
-          return (
-            <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
-              <ToolHeader
-                title={toolName}
-                type={toolPart.type}
-                state={toolPart.state}
-              />
-              <ToolContent>
-                {toolPart.input != null && <ToolInput input={toolPart.input} />}
-                <ToolOutput
-                  output={toolPart.output}
-                  errorText={toolPart.errorText}
-                />
-              </ToolContent>
-            </Tool>
-          );
-        })}
-      </MessageContent>
+      <MessageContent>{renderParts()}</MessageContent>
     </Message>
   );
 };
