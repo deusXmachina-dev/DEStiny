@@ -21,8 +21,8 @@ blueprint_agent = _init_blueprint_agent()
 Context = RunContext[BlueprintStorage]
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_list_entity_types(ctx: Context) -> Dict[str, Any]:
+@blueprint_agent.tool(name="list_entity_types", sequential=True)
+def _list_entity_types(ctx: Context) -> Dict[str, Any]:
     """
     List all available entity types and their parameters.
     
@@ -35,8 +35,8 @@ def agent_list_entity_types(ctx: Context) -> Dict[str, Any]:
     return list_entity_types()
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_get_blueprint(ctx: Context) -> Dict[str, Any]:
+@blueprint_agent.tool(name="get_blueprint", sequential=True)
+def _get_blueprint(ctx: Context) -> Dict[str, Any]:
     """
     Get the current blueprint state.
     
@@ -50,7 +50,7 @@ def agent_get_blueprint(ctx: Context) -> Dict[str, Any]:
 
 
 @blueprint_agent.tool(sequential=True)
-def agent_add_entity(
+def _add_entity(
     ctx: Context,
     entity_type: str,
     entity_name: str | None = None,
@@ -76,8 +76,8 @@ def agent_add_entity(
     return add_entity(ctx.deps, entity_type, entity_name, parameters)
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_get_canvas_size(
+@blueprint_agent.tool(name="get_canvas_size", sequential=True)
+def _get_canvas_size(
     ctx: Context,
 ) -> Dict[str, Any] | str:
     """
@@ -86,8 +86,8 @@ def agent_get_canvas_size(
     return get_canvas_size(ctx.deps)
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_rename_entity(
+@blueprint_agent.tool(name="rename_entity", sequential=True)
+def _rename_entity(
     ctx: Context,
     entity_name: str,
     new_name: str,
@@ -105,8 +105,8 @@ def agent_rename_entity(
     return rename_entity(ctx.deps, entity_name, new_name)
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_update_entity_params(
+@blueprint_agent.tool(name="update_entity_params", sequential=True)
+def _update_entity_params(
     ctx: Context,
     entity_name: str,
     parameters: Dict[str, Any],
@@ -128,8 +128,8 @@ def agent_update_entity_params(
     """
     return update_entity_params(ctx.deps, entity_name, parameters)
 
-@blueprint_agent.tool(sequential=True)
-def agent_remove_entity(
+@blueprint_agent.tool(name="remove_entity", sequential=True)
+def _remove_entity(
     ctx: Context,
     entity_name: str,
 ) -> Dict[str, Any]:
@@ -149,8 +149,8 @@ def agent_remove_entity(
     return remove_entity(ctx.deps, entity_name)
 
 
-@blueprint_agent.tool(sequential=True)
-def agent_set_simulation_params(
+@blueprint_agent.tool(name="set_simulation_params", sequential=True)
+def _set_simulation_params(
     ctx: Context,
     duration: float | None = None,
     initial_time: float | None = None,
@@ -168,8 +168,8 @@ def agent_set_simulation_params(
     return set_simulation_params(ctx.deps, duration, initial_time)
     
 
-@blueprint_agent.tool(sequential=True)
-def agent_clear_blueprint(
+@blueprint_agent.tool(name="clear_blueprint", sequential=True)
+def _clear_blueprint(
     ctx: Context,
 ) -> Dict[str, Any]:
     """
