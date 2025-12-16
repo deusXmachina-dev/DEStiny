@@ -51,12 +51,10 @@ export function PlaybackControls({ isLoading }: PlaybackControlsProps) {
           >
             {isPlaying ? (
               <Pause className="size-4" />
+            ) : isLoading ? (
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              isLoading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Play className="size-4" />
-              )
+              <Play className="size-4" />
             )}
           </Button>
           <Button

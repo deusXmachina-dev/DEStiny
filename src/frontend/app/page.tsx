@@ -25,7 +25,6 @@ const MemoizedBuilderInteractionHandler = memo(BuilderInteractionHandler);
 const MemoizedEntityEditor = memo(EntityEditor);
 const MemoizedMetricsPanel = memo(MetricsPanel);
 const MemoizedBuilderPanel = memo(BuilderPanel);
-const MemoizedPlaybackControls = memo(({ isLoading }: { isLoading: boolean }) => <PlaybackControls isLoading={isLoading} />);
 
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
@@ -35,6 +34,7 @@ function HomeContent() {
     "builder",
   );
 
+  // TODO: leverage react-query to refetch simulation recording when blueprint changes
   const simulateMutation = $api.useMutation("post", "/api/simulate");
 
   // Pause and reset time when switching from simulation to builder
@@ -112,7 +112,7 @@ function HomeContent() {
       {mode === "simulation" && (
         <div className="border-t border-border shadow-lg">
           <div className="p-4 max-w-7xl mx-auto">
-            <MemoizedPlaybackControls isLoading={isStale} />
+            <PlaybackControls isLoading={isStale} />
           </div>
         </div>
       )}

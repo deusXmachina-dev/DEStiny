@@ -103,17 +103,10 @@ const ChatMessage = ({ message }: { message: UIMessage }) => {
         const toolName = part.type.replace("tool-", "").replace(/_/g, " ");
         elements.push(
           <Tool key={`${message.id}-tool-${index}`} defaultOpen={false}>
-            <ToolHeader
-              title={toolName}
-              type={part.type}
-              state={part.state}
-            />
+            <ToolHeader title={toolName} type={part.type} state={part.state} />
             <ToolContent>
               {part.input != null && <ToolInput input={part.input} />}
-              <ToolOutput
-                output={part.output}
-                errorText={part.errorText}
-              />
+              <ToolOutput output={part.output} errorText={part.errorText} />
             </ToolContent>
           </Tool>,
         );
