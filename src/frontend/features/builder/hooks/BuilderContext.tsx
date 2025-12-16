@@ -49,6 +49,8 @@ interface BuilderContextValue {
   updateEntityName: (entityId: string, name: string) => void;
   setBlueprint: (blueprint: SimulationBlueprint) => void;
   fetchBlueprint: () => void;
+  clearEntities: () => void;
+  hasEntities: boolean;
 
   // Selection actions
   selectEntity: (entityId: string) => void;
@@ -231,6 +233,17 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     setSelectedEntityId(null);
   };
 
+  const clearEntities = async () => {
+    const result = await saveMutation.mutateAsync({ body: {
+      simParams: blueprint?.simParams ?? { initialTime: 0 },
+      entities: [],
+    } });
+    if (result) {
+      justFetchedRef.current = true;
+      setBlueprintState(result);
+    }
+  };
+
   const openEditor = (entityId: string) => {
     if (justClosedRef.current) {
       return;
@@ -264,9 +277,11 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     fetchBlueprint,
     selectEntity,
     clearSelection,
+    clearEntities,
     openEditor,
     closeEditor,
     isJustClosed,
+    hasEntities: (blueprint?.entities?.length ?? 0) > 0,
   };
 
   return (

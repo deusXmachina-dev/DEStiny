@@ -47,7 +47,7 @@ export function PlaybackControls({ isLoading }: PlaybackControlsProps) {
             onClick={() => clock.togglePlay()}
             size="icon"
             className="size-9"
-            title="Play/Pause"
+            title="Toggle with spacebar"
           >
             {isPlaying ? (
               <Pause className="size-4" />

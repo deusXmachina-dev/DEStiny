@@ -4,6 +4,7 @@ import {
   BuilderInteractionHandler,
   BuilderPanel,
   EntityEditor,
+  useBuilder,
 } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, usePlayback } from "@features/playback";
@@ -11,7 +12,7 @@ import { SimulationEntityUpdater } from "@features/simulation";
 import { SceneVisualization } from "@features/visualization/components/SceneVisualization";
 import { VisualizationProvider } from "@features/visualization/hooks/VisualizationContext";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
 import { Kbd } from "@/components/ui/kbd";
@@ -28,7 +29,8 @@ const MemoizedMetricsPanel = memo(MetricsPanel);
 const MemoizedBuilderPanel = memo(BuilderPanel);
 
 function HomeContent() {
-  const { clock, setRecording } = usePlayback();
+  const { clock, setRecording, hasRecording } = usePlayback();
+  const { clearEntities, hasEntities } = useBuilder();
   const [isStale, setIsStale] = useState(false);
   const [mode, setMode] = useLocalStorage<AppMode>(
     `destiny-app-mode`,
@@ -38,6 +40,13 @@ function HomeContent() {
   // Detect if running on Mac for keyboard shortcut display
   const isMac = typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
   const modifierKey = isMac ? "⌘" : "⌃";
+  const simulationEnabled = useMemo(() => hasRecording || hasEntities, [hasRecording, hasEntities]);
+
+  const handleClearEntities = useCallback(async () => {
+    setRecording(null);
+    await clearEntities();
+    setMode("builder");
+  }, []);
 
   // TODO: leverage react-query to refetch simulation recording when blueprint changes
   const simulateMutation = $api.useMutation("post", "/api/simulate");
@@ -65,18 +74,30 @@ function HomeContent() {
     }
   }, [mode]);
 
-  // Keyboard shortcuts for tab switching
+  // Keyboard shortcuts for tab switching and blueprint clearing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check for cmd+s (Mac) or ctrl+s (Windows/Linux) for Simulation
       if ((e.metaKey || e.ctrlKey) && (e.key === "s" || e.key === "S")) {
         e.preventDefault();
-        setMode("simulation");
+        if (simulationEnabled) {
+          setMode("simulation");
+        }
       }
       // Check for cmd+e (Mac) or ctrl+e (Windows/Linux) for Builder
       if ((e.metaKey || e.ctrlKey) && (e.key === "e" || e.key === "E")) {
         e.preventDefault();
         setMode("builder");
+      }
+      // Check for cmd+c (Mac) or ctrl+c (Windows/Linux) to clear blueprint
+      if ((e.metaKey || e.ctrlKey) && (e.key === "c" || e.key === "C")) {
+        e.preventDefault();
+        handleClearEntities();
+      }
+      // space to toggle play/pause
+      if (e.key === " ") {
+        e.preventDefault();
+        clock.togglePlay();
       }
     };
 
@@ -84,7 +105,7 @@ function HomeContent() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [setMode]);
+  }, [simulationEnabled, setMode, clock, handleClearEntities]);
 
   console.debug("HomeContent rerender");
 
@@ -94,6 +115,11 @@ function HomeContent() {
       <div className="flex-1 min-h-0 w-full flex">
         {/* Left Panel: Visualization (70%) */}
         <div className="w-[70%] h-full relative">
+          <button onClick={handleClearEntities} className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-md border bg-background/30 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm transition-all hover:bg-background/50">
+            <span className="text-muted-foreground">
+              Press <Kbd className="mx-1">{modifierKey}C</Kbd> to clear
+            </span>
+          </button>
           <VisualizationProvider interactive={mode === "builder"}>
             <SceneVisualization>
               {mode === "simulation" && !isStale && (
@@ -115,6 +141,7 @@ function HomeContent() {
             <div className="border-l border-b border-border p-4 flex justify-center">
               <TabsList className="h-10 p-[6px]">
                 <TabsTrigger
+                  disabled={!simulationEnabled}
                   value="simulation"
                   className="text-md p-4 font-mono"
                 >

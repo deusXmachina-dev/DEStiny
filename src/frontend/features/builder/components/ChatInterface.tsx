@@ -175,7 +175,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const suggestions: Array<{ name: string; prompt: string }> = [
     {
       name: "Simple Manufacturing",
-      prompt: "Create a simple manufacturing line with a source, manufacturing cell, and sink connected in sequence.",
+      prompt: "Create a manufacturing line with only a source, manufacturing cell, and sink connected in sequence. Do not add any additional entities or logic.",
     },
     {
       name: "Buffered Production",
