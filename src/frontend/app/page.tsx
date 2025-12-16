@@ -87,7 +87,7 @@ function HomeContent() {
         handleClearEntities();
       }
       // space to toggle play/pause
-      if (e.key === " ") {
+      if (e.key === " " && mode === "simulation") {
         e.preventDefault();
         clock.togglePlay();
       }
