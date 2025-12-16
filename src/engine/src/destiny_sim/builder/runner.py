@@ -4,7 +4,6 @@ Blueprint runner - executes simulations from blueprint definitions.
 
 from typing import Any, Dict, Type
 
-from destiny_sim.builder.entities import Human
 from destiny_sim.builder.entities.material_flow.buffer import Buffer
 from destiny_sim.builder.entities.material_flow.control import Control
 from destiny_sim.builder.entities.material_flow.manufacturing_cell import (
@@ -24,7 +23,6 @@ from destiny_sim.core.timeline import SimulationRecording
 
 # Registry of available builder entities by their entity_type
 _ENTITY_REGISTRY: Dict[SimulationEntityType, Type[BuilderEntity]] = {
-    Human.entity_type: Human,
     Source.entity_type: Source,
     Sink.entity_type: Sink,
     Buffer.entity_type: Buffer,
