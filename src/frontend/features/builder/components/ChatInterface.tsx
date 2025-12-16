@@ -84,6 +84,36 @@ function useBlueprintSyncOnToolComplete(
   }, [messages, fetchBlueprint]);
 }
 
+const LoadingDots = () => (
+  <Message from="assistant">
+    <MessageContent>
+      <div className="flex items-center gap-1.5 px-4 py-2">
+        <span
+          className="h-2 w-2 rounded-full bg-current opacity-40"
+          style={{
+            animation: "shimmer-dot 1.4s ease-in-out infinite",
+            animationDelay: "0s",
+          }}
+        />
+        <span
+          className="h-2 w-2 rounded-full bg-current opacity-40"
+          style={{
+            animation: "shimmer-dot 1.4s ease-in-out infinite",
+            animationDelay: "0.2s",
+          }}
+        />
+        <span
+          className="h-2 w-2 rounded-full bg-current opacity-40"
+          style={{
+            animation: "shimmer-dot 1.4s ease-in-out infinite",
+            animationDelay: "0.4s",
+          }}
+        />
+      </div>
+    </MessageContent>
+  </Message>
+);
+
 const ChatMessage = ({ message }: { message: UIMessage }) => {
   // Render parts in order, grouping consecutive text parts
   const renderParts = () => {
@@ -224,6 +254,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
+          {isLoading && <LoadingDots />}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
