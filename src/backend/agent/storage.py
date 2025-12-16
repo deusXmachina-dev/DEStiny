@@ -61,18 +61,8 @@ class BlueprintStorage:
     
     def clear_blueprint(self) -> None:
         """
-        Clear the current blueprint from storage.
+        Clears entities from the blueprint, keep simulation parameters.
         """
-        if self.SESSION_KEY in self.session:
-            del self.session[self.SESSION_KEY]
-            self.session.modified = True
-            # Explicitly save the session (required for streaming responses)
-            # Wrap in try-except to handle cases where save() might fail
-            # (e.g., in tests without database access)
-            if hasattr(self.session, 'save'):
-                try:
-                    self.session.save()
-                except Exception:
-                    # If save fails, session is still marked as modified
-                    # Django middleware will attempt to save it at end of request
-                    pass
+        blueprint = self.get_blueprint()
+        blueprint.entities = []
+        self.save_blueprint(blueprint)

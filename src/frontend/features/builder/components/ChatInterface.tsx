@@ -43,7 +43,8 @@ import {
 import { BACKEND_URL } from "@/config/api";
 import { cn } from "@/lib/utils";
 
-import { useBuilder } from "../../hooks/BuilderContext";
+import { useBuilder } from "../hooks/BuilderContext";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 
 interface ChatInterfaceProps {
   className?: string;
@@ -160,6 +161,21 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const chatId = useMemo(() => nanoid(), []);
   const { fetchBlueprint } = useBuilder();
 
+  const suggestions: Array<{ name: string; prompt: string }> = [
+    {
+      name: "Simple Manufacturing",
+      prompt: "Create a simple manufacturing line with a source, manufacturing cell, and sink connected in sequence. Use some sensible ",
+    },
+    {
+      name: "Buffered Production",
+      prompt: "Set up a production line with a source, manufacturing cell, buffer, another manufacturing cell, and sink",
+    },
+    {
+      name: "Quality Controlled Line",
+      prompt: "Build a manufacturing line with source, manufacturing cell, quality control (with OK and NOK outputs), buffer for OK items feeding another cell, and sinks for both OK and NOK items",
+    },
+  ];
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -211,7 +227,19 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <div className="w-full px-4 pb-4 pt-4">
+      <div className="grid shrink-0 gap-4 pt-4">
+        <Suggestions className="w-full px-4">
+          {suggestions.map((scenario) => (
+            <Suggestion
+              key={scenario.name}
+              onClick={() => sendMessage({ text: scenario.prompt })}
+              suggestion={scenario.prompt}
+            >
+              {scenario.name}
+            </Suggestion>
+          ))}
+        </Suggestions>
+      <div className="w-full px-4 pb-4">
         <PromptInput onSubmit={handleSubmit} multiple>
           <PromptInputHeader>
             <PromptInputAttachments>
@@ -220,6 +248,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
           </PromptInputHeader>
           <PromptInputBody>
             <PromptInputTextarea
+              placeholder="Start building your simulation..."
               onChange={(e) => setInput(e.target.value)}
               value={input}
             />
@@ -236,6 +265,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
             <ChatSubmitButton input={input} isLoading={isLoading} />
           </PromptInputFooter>
         </PromptInput>
+      </div>
       </div>
     </div>
   );

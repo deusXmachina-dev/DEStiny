@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/resizable";
 
 import { useBuilderSchemas } from "../hooks/useBuilderSchemas";
-import { ChatInterface } from "./ui/ChatInterface";
+import { ChatInterface } from "./ChatInterface";
 import { EntityPalette } from "./ui/EntityPalette";
 import { SimulationMetaMenu } from "./ui/SimulationMetaMenu";
 
@@ -25,15 +25,15 @@ function BuilderPanelContent() {
       </SidePanel.Header>
       <SidePanel.Content className="p-0">
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={25}>
+          <ResizablePanel defaultSize={30}>
             <EntityPalette
               schemas={schemas}
               isLoading={isLoading}
-              className="p-4"
+              className="p-4 pt-0"
             />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={75}>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={70}>
             <ChatInterface />
           </ResizablePanel>
         </ResizablePanelGroup>
