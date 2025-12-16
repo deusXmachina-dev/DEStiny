@@ -218,13 +218,3 @@
 .visualization-container {
   overscroll-behavior: none;
 }
-
-/* Three-dot loading shimmer animation */
-@keyframes shimmer-dot {
-  0%, 60%, 100% {
-    opacity: 0.4;
-  }
-  30% {
-    opacity: 1;
-  }
-}

@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 
 import { useBuilder } from "../hooks/BuilderContext";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { Shimmer } from "@/components/ai-elements/shimmer";
 
 interface ChatInterfaceProps {
   className?: string;
@@ -86,30 +87,10 @@ function useBlueprintSyncOnToolComplete(
 
 const LoadingDots = () => (
   <Message from="assistant">
-    <MessageContent>
-      <div className="flex items-center gap-1.5 px-4 py-2">
-        <span
-          className="h-2 w-2 rounded-full bg-current opacity-40"
-          style={{
-            animation: "shimmer-dot 1.4s ease-in-out infinite",
-            animationDelay: "0s",
-          }}
-        />
-        <span
-          className="h-2 w-2 rounded-full bg-current opacity-40"
-          style={{
-            animation: "shimmer-dot 1.4s ease-in-out infinite",
-            animationDelay: "0.2s",
-          }}
-        />
-        <span
-          className="h-2 w-2 rounded-full bg-current opacity-40"
-          style={{
-            animation: "shimmer-dot 1.4s ease-in-out infinite",
-            animationDelay: "0.4s",
-          }}
-        />
-      </div>
+    <MessageContent className="py-0">
+      <Shimmer duration={1.4} className="text-4xl leading-none -my-1">
+        ...
+      </Shimmer>
     </MessageContent>
   </Message>
 );
