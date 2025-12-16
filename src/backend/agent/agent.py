@@ -49,7 +49,7 @@ def _get_blueprint(ctx: Context) -> Dict[str, Any]:
     return get_blueprint(ctx.deps)
 
 
-@blueprint_agent.tool(sequential=True)
+@blueprint_agent.tool(name="add_entity", sequential=True)
 def _add_entity(
     ctx: Context,
     entity_type: str,
