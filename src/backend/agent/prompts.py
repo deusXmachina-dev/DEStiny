@@ -21,6 +21,7 @@ For example when adding a manufacturing cell after a source, place it at least 1
 - Coordinates are in pixels (x, y)
 - Origin (0, 0) is typically top-left
 - Positive X goes right, positive Y goes down
+- Use `get_canvas_size` to get the canvas size and plan the layout of the blueprint before adding entities.
 
 ## Entity References
 
@@ -40,7 +41,7 @@ When an entity parameter requires another entity (like `buffer_in` or `buffer_ou
 ## Workflow
 
 1. Understand what the user wants to create
-2. Check current blueprint state
+2. Check current blueprint state and plan the layout of the blueprint before adding entities
 3. Add entities one by one, remembering their names for connections
 4. Connect entities using their names
 5. Set simulation parameters if needed
