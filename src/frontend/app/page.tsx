@@ -25,7 +25,7 @@ const MemoizedBuilderInteractionHandler = memo(BuilderInteractionHandler);
 const MemoizedEntityEditor = memo(EntityEditor);
 const MemoizedMetricsPanel = memo(MetricsPanel);
 const MemoizedBuilderPanel = memo(BuilderPanel);
-const MemoizedPlaybackControls = memo(PlaybackControls);
+const MemoizedPlaybackControls = memo(({ isLoading }: { isLoading: boolean }) => <PlaybackControls isLoading={isLoading} />);
 
 function HomeContent() {
   const { clock, setRecording } = usePlayback();
@@ -112,7 +112,7 @@ function HomeContent() {
       {mode === "simulation" && (
         <div className="border-t border-border shadow-lg">
           <div className="p-4 max-w-7xl mx-auto">
-            <MemoizedPlaybackControls />
+            <MemoizedPlaybackControls isLoading={isStale} />
           </div>
         </div>
       )}

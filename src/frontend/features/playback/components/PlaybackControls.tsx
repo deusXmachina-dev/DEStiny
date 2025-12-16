@@ -1,7 +1,7 @@
 "use client";
 
 import { formatTime } from "@lib/utils";
-import { FastForward, Pause, Play, Rewind } from "lucide-react";
+import { FastForward, Loader2, Pause, Play, Rewind } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +17,16 @@ import { SPEED_OPTIONS } from "../constants";
 import { usePlayback } from "../hooks/PlaybackContext";
 import { usePlaybackState } from "../hooks/usePlaybackState";
 
-export function PlaybackControls() {
+interface PlaybackControlsProps {
+  isLoading: boolean;
+}
+
+export function PlaybackControls({ isLoading }: PlaybackControlsProps) {
   const { clock, duration, hasRecording } = usePlayback();
   // Poll time at 100ms intervals for slider display
   const { time: currentTime, isPlaying, speed } = usePlaybackState(100);
 
-  const disabled = !hasRecording;
+  const disabled = !hasRecording || isLoading;
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -39,6 +43,7 @@ export function PlaybackControls() {
             <Rewind className="size-4" />
           </Button>
           <Button
+            disabled={disabled}
             onClick={() => clock.togglePlay()}
             size="icon"
             className="size-9"
@@ -47,7 +52,11 @@ export function PlaybackControls() {
             {isPlaying ? (
               <Pause className="size-4" />
             ) : (
-              <Play className="size-4" />
+              isLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Play className="size-4" />
+              )
             )}
           </Button>
           <Button

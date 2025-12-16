@@ -23,6 +23,7 @@ export class BackgroundManager {
     this.theme = theme;
     // Add at index 0 so background renders behind all other children
     parentContainer.addChildAt(this.graphics, 0);
+    console.debug("BackgroundManager.constructor: added to parentContainer");
   }
 
   /**
