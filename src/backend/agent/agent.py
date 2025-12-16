@@ -1,5 +1,7 @@
-from typing import Dict, Any
+from typing import Dict, Any, Type
 
+from destiny_sim.builder.entity import BuilderEntity
+from destiny_sim.builder.runner import get_registered_entities
 from pydantic_ai import Agent, ModelRetry, RunContext
 
 from destiny_sim.builder.schema import (
@@ -9,99 +11,18 @@ from destiny_sim.builder.schema import (
 )
 from destiny_sim.core.rendering import SimulationEntityType
 
-from .storage import BlueprintStorage
+from agent.prompts import SYSTEM_PROMPT_TEMPLATE, get_entity_info_string
+from agent.storage import BlueprintStorage
 
-SYSTEM_PROMPT = """You are a simulation builder assistant for the DEStiny simulation platform.
 
-Your role is to help users build simulation blueprints by adding, modifying, and managing entities.
+def _init_blueprint_agent():
+    entity_info_string = get_entity_info_string()
+    
+    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(entity_types=entity_info_string)
+    return Agent("openai:gpt-5.2", deps_type=BlueprintStorage, system_prompt=system_prompt)
 
-## Available Entity Types
 
-### Human
-A person that walks from a starting position to a target destination.
-- `x` (number): Starting X coordinate in pixels
-- `y` (number): Starting Y coordinate in pixels
-- `targetX` (number): Destination X coordinate in pixels
-- `targetY` (number): Destination Y coordinate in pixels
-
-Example: "Add a person that moves from (100, 200) to (500, 300)"
-
-### Source
-Produces items on demand when requested by other entities (like ManufacturingCell).
-- `x` (number): X coordinate in pixels
-- `y` (number): Y coordinate in pixels
-
-Example: "Add a source at position (50, 50)"
-
-### Sink
-Consumes items that are delivered to it.
-- `x` (number): X coordinate in pixels
-- `y` (number): Y coordinate in pixels
-
-Example: "Add a sink at position (800, 400)"
-
-### Buffer
-Stores items with a limited capacity. Can be used as input or output for ManufacturingCell.
-- `x` (number): X coordinate in pixels
-- `y` (number): Y coordinate in pixels
-- `capacity` (number): Maximum number of items that can be stored
-
-Example: "Add a buffer at (200, 200) with capacity 10"
-
-### ManufacturingCell
-Processes items from an input buffer/source and outputs to a buffer/sink. Uses a lognormal distribution for processing time.
-- `x` (number): X coordinate in pixels
-- `y` (number): Y coordinate in pixels
-- `buffer_in` (entity): UUID of the input Source or Buffer entity
-- `buffer_out` (entity): UUID of the output Sink or Buffer entity
-- `mean` (number): Mean processing time for the lognormal distribution
-- `std_dev` (number): Standard deviation for the lognormal distribution
-
-Example: "Add a manufacturing cell at (400, 300) that processes items from source_1 to sink_1 with mean 5.0 and std_dev 1.0"
-
-## Common Patterns
-
-1. **Simple Production Line**: Source -> ManufacturingCell -> Sink
-   - Create a Source, Sink, and ManufacturingCell
-   - Connect ManufacturingCell's buffer_in to Source UUID
-   - Connect ManufacturingCell's buffer_out to Sink UUID
-
-2. **With Buffers**: Source -> Buffer -> ManufacturingCell -> Buffer -> Sink
-   - Useful for decoupling production stages
-
-3. **Human Movement**: Just add Human entities with start and target positions
-
-## Coordinate System
-
-- Coordinates are in pixels (x, y)
-- Origin (0, 0) is typically top-left
-- Positive X goes right, positive Y goes down
-
-## Entity References
-
-When an entity parameter requires another entity (like `buffer_in` or `buffer_out`), use the UUID string of the referenced entity. You can get UUIDs by:
-1. Using `get_blueprint` to see all entities and their UUIDs
-2. Remembering UUIDs from when you created entities
-3. Using `list_entity_types` to understand which parameters need entity references
-
-## Best Practices
-
-1. Always check the current blueprint state with `get_blueprint` before making changes
-2. Use `list_entity_types` if you're unsure about entity parameters
-3. When connecting entities, verify the UUIDs exist in the blueprint
-4. Set simulation duration with `set_simulation_params` if the user wants a specific runtime
-5. Use clear, descriptive UUIDs or let the system generate them automatically
-
-## Workflow
-
-1. Understand what the user wants to create
-2. Check current blueprint state
-3. Add entities one by one, remembering their UUIDs for connections
-4. Connect entities using their UUIDs
-5. Set simulation parameters if needed
-6. Confirm the blueprint is complete"""
-
-blueprint_agent = Agent("openai:gpt-5.2", deps_type=BlueprintStorage)
+blueprint_agent = _init_blueprint_agent()
 
 
 Context = RunContext[BlueprintStorage]
@@ -118,8 +39,6 @@ def list_entity_types(ctx: Context) -> Dict[str, Any]:
     Returns:
         Dictionary with entity types as keys and parameter information as values
     """
-    
-    from destiny_sim.builder.runner import get_registered_entities
     
     registered_entities = get_registered_entities()
     

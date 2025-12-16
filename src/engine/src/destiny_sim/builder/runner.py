@@ -50,7 +50,7 @@ def register_entity(entity_class: Type[BuilderEntity]) -> None:
     _ENTITY_REGISTRY[entity_type] = entity_class
 
 
-def get_registered_entities() -> Dict[str, Type[BuilderEntity]]:
+def get_registered_entities() -> Dict[SimulationEntityType, Type[BuilderEntity]]:
     """
     Get a copy of the entity registry.
     
