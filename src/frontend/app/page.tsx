@@ -14,6 +14,7 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { memo, useEffect, useState } from "react";
 
 import { ClientOnly } from "@/components/common/ClientOnly";
+import { Kbd } from "@/components/ui/kbd";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { $api } from "@/lib/api-client";
 
@@ -33,6 +34,10 @@ function HomeContent() {
     `destiny-app-mode`,
     "builder",
   );
+
+  // Detect if running on Mac for keyboard shortcut display
+  const isMac = typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+  const modifierKey = isMac ? "⌘" : "⌃";
 
   // TODO: leverage react-query to refetch simulation recording when blueprint changes
   const simulateMutation = $api.useMutation("post", "/api/simulate");
@@ -59,6 +64,27 @@ function HomeContent() {
       );
     }
   }, [mode]);
+
+  // Keyboard shortcuts for tab switching
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for cmd+s (Mac) or ctrl+s (Windows/Linux) for Simulation
+      if ((e.metaKey || e.ctrlKey) && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        setMode("simulation");
+      }
+      // Check for cmd+e (Mac) or ctrl+e (Windows/Linux) for Builder
+      if ((e.metaKey || e.ctrlKey) && (e.key === "e" || e.key === "E")) {
+        e.preventDefault();
+        setMode("builder");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [setMode]);
 
   console.debug("HomeContent rerender");
 
@@ -93,9 +119,11 @@ function HomeContent() {
                   className="text-md p-4 font-mono"
                 >
                   Simulation
+                  <Kbd className="ml-1">{modifierKey}S</Kbd>
                 </TabsTrigger>
                 <TabsTrigger value="builder" className="text-md p-4 font-mono">
-                  Builder
+                  Editor
+                  <Kbd className="ml-1">{modifierKey}E</Kbd>
                 </TabsTrigger>
               </TabsList>
             </div>
