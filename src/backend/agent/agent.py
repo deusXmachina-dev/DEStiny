@@ -3,7 +3,7 @@ from typing import Dict, Any
 from pydantic_ai import Agent, RunContext
 
 
-from agent.prompts import SYSTEM_PROMPT_TEMPLATE, get_entity_info_string
+from agent.prompts import INSTRUCTIONS_TEMPLATE, get_entity_info_string
 from agent.storage import BlueprintStorage
 from agent.tools import add_entity, clear_blueprint, get_blueprint, get_canvas_size, list_entity_types, remove_entity, rename_entity, set_simulation_params, update_entity_params
 
@@ -11,8 +11,8 @@ from agent.tools import add_entity, clear_blueprint, get_blueprint, get_canvas_s
 def _init_blueprint_agent():
     entity_info_string = get_entity_info_string()
     
-    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(entity_types=entity_info_string)
-    return Agent("openai:gpt-5.2", deps_type=BlueprintStorage, system_prompt=system_prompt)
+    instructions = INSTRUCTIONS_TEMPLATE.format(entity_types=entity_info_string)
+    return Agent("openai:gpt-5.2", deps_type=BlueprintStorage, instructions=instructions)
 
 
 blueprint_agent = _init_blueprint_agent()

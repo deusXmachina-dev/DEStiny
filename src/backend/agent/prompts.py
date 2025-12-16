@@ -4,7 +4,7 @@ from destiny_sim.builder.runner import get_registered_entities
 from destiny_sim.core.timeline import SimulationEntityType
 
 
-SYSTEM_PROMPT_TEMPLATE = """You are a simulation builder assistant for the DEStiny simulation platform.
+INSTRUCTIONS_TEMPLATE = """You are a simulation builder assistant for the DEStiny simulation platform.
 
 Your role is to help users build simulation blueprints by adding, modifying, and managing entities.
 
