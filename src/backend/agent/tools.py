@@ -205,7 +205,7 @@ def rename_entity(
         Dictionary with success message and updated entity info
     """
     blueprint = storage.get_blueprint()
-    entity = _get_entity_by_name(entity_name, blueprint, include_available_names=False)
+    entity = _get_entity_by_name(entity_name, blueprint)
 
     entity.name = new_name
     
