@@ -6,6 +6,9 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
+from destiny_sim.builder.entities.human import Human
+from destiny_sim.builder.runner import register_entity
+
 
 @pytest.fixture
 def api_client():
@@ -13,6 +16,12 @@ def api_client():
     client = Client()
     client.raise_request_exception = False
     return client
+
+
+@pytest.fixture
+def register_human():
+    register_entity(Human)
+
 
 
 def make_parameters(**kwargs):
@@ -57,7 +66,7 @@ class TestSchemaEndpoint:
         
         # Should have at least the 'human' entity type
         entity_types = [item["entityType"] for item in data]
-        assert "human" in entity_types
+        assert "sink" in entity_types
 
     def test_get_schema_entity_schema_structure(self, api_client):
         """Each entity schema should be a dictionary mapping parameters to types."""
@@ -133,7 +142,7 @@ class TestSimulateEndpoint:
         assert "state" in data["metrics"]
 
     @pytest.mark.django_db
-    def test_simulate_with_blueprint_override(self, api_client):
+    def test_simulate_with_blueprint_override(self, api_client, register_human):
         """Simulate endpoint should allow overriding session blueprint with request body."""
         # Set up a blueprint in session
         session_blueprint = {

@@ -32,9 +32,13 @@ def _entity(name: str, entity_name: str) -> BlueprintEntityParameter:
     return BlueprintEntityParameter(
         name=name, parameterType=BlueprintParameterType.ENTITY, value=entity_name
     )
+    
+@pytest.fixture
+def register_human():
+    register_entity(Human)
 
 
-def test_run_blueprint_with_human():
+def test_run_blueprint_with_human(register_human):
     """Test running a blueprint with a Human entity."""
     blueprint = Blueprint(
         simParams=SimParams(initialTime=0, duration=20),
@@ -73,7 +77,7 @@ def test_run_blueprint_with_human():
     assert len(human_segments) >= 1, "Should have at least initial position"
 
 
-def test_run_blueprint_multiple_entities():
+def test_run_blueprint_multiple_entities(register_human):
     """Test running a blueprint with multiple entities."""
     blueprint = Blueprint(
         simParams=SimParams(initialTime=0, duration=20),
@@ -107,7 +111,7 @@ def test_run_blueprint_multiple_entities():
     assert len(recording.motion_segments_by_entity) >= 2
 
 
-def test_run_blueprint_default_initial_time():
+def test_run_blueprint_default_initial_time(register_human):
     """Test that blueprint defaults initialTime to 0."""
     blueprint = Blueprint(
         simParams=SimParams(duration=10.0),
@@ -131,7 +135,7 @@ def test_run_blueprint_default_initial_time():
 
 
 
-def test_run_blueprint_without_duration():
+def test_run_blueprint_without_duration(register_human):
     """Test running blueprint without duration (runs until completion)."""
     blueprint = Blueprint(
         simParams=SimParams(initialTime=0),
@@ -183,7 +187,7 @@ def test_run_blueprint_unknown_entity_type():
         run_blueprint(blueprint)
 
 
-def test_run_blueprint_invalid_parameters():
+def test_run_blueprint_invalid_parameters(register_human):
     """Test that invalid parameters raise TypeError."""
     blueprint = Blueprint(
         simParams=SimParams(),
@@ -262,7 +266,7 @@ def test_register_entity_invalid():
         register_entity(NoTypeEntity)
 
 
-def test_get_registered_entities():
+def test_get_registered_entities(register_human):
     """Test getting the entity registry."""
     registry = get_registered_entities()
     
@@ -279,7 +283,7 @@ def test_get_registered_entities():
     assert "test" not in registry2
 
 
-def test_entity_reference_resolution():
+def test_entity_reference_resolution(register_human):
     """Test that entity references are correctly resolved."""
     # Create a test entity that accepts another entity
     class EntityWithReference(BuilderEntity):
