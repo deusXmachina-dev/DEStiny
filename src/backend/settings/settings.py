@@ -163,6 +163,10 @@ LOGS_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOGS_DIR, exist_ok=True)
 LOCAL_LOGS_FILE = os.path.join(LOGS_DIR, "local.log")
 
+# Log level configuration (defaults to INFO)
+# Valid values: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -180,7 +184,7 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "simple",
-            "level": "INFO",
+            "level": LOG_LEVEL,
         },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
@@ -188,23 +192,23 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 15,
             "backupCount": 10,
             "formatter": "verbose",
-            "level": "INFO",
+            "level": LOG_LEVEL,
         },
     },
     "loggers": {
         "simulation": {
             "handlers": ["console", "file"],
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "agent": {
             "handlers": ["console", "file"],
-            "level": "INFO",
+            "level": LOG_LEVEL,
             "propagate": False,
         },
         "django": {
             "handlers": ["console", "file"],
-            "level": "WARNING",
+            "level": "WARNING",  # Keep Django logs at WARNING to reduce noise
             "propagate": False,
         },
     },
