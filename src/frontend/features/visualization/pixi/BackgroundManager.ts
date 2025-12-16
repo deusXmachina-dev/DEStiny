@@ -30,11 +30,7 @@ export class BackgroundManager {
    * Update the background based on current transform and screen size.
    * Called by SceneManager when zoom/scroll changes.
    */
-  update(
-    zoom: number,
-    scrollOffset: ScrollOffset,
-    screenSize: ScreenSize,
-  ): void {
+  update(zoom: number, scrollOffset: ScrollOffset, screenSize: ScreenSize): void {
     const { width, height } = screenSize;
 
     // Skip if nothing changed
@@ -61,11 +57,7 @@ export class BackgroundManager {
       return;
     }
 
-    console.debug(
-      "BackgroundManager.update: drawing with screenSize",
-      width,
-      height,
-    );
+    console.debug("BackgroundManager.update: drawing with screenSize", width, height);
     this.draw(zoom, scrollOffset, screenSize);
   }
 
@@ -98,11 +90,7 @@ export class BackgroundManager {
   /**
    * Draw the checkerboard background.
    */
-  private draw(
-    zoom: number,
-    scrollOffset: ScrollOffset,
-    screenSize: ScreenSize,
-  ): void {
+  private draw(zoom: number, scrollOffset: ScrollOffset, screenSize: ScreenSize): void {
     const config = THEME_CONFIGS[this.theme];
     const g = this.graphics;
     const { width, height } = screenSize;
@@ -127,12 +115,7 @@ export class BackgroundManager {
     // Draw checkerboard tiles covering the visible area
     for (let y = startY; y < endY; y++) {
       for (let x = startX; x < endX; x++) {
-        g.rect(
-          x * config.tileSize,
-          y * config.tileSize,
-          config.tileSize,
-          config.tileSize,
-        );
+        g.rect(x * config.tileSize, y * config.tileSize, config.tileSize, config.tileSize);
         g.fill((x + y) % 2 === 0 ? config.tile : config.tileAlt);
       }
     }

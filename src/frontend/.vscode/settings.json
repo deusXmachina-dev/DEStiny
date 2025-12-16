@@ -3,9 +3,5 @@
   "vitest.commandLine": "bun test",
   "vitest.nodeEnv": {},
   "vitest.include": ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-  "vitest.exclude": [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/.{idea,git,cache,output,temp}/**"
-  ]
+  "vitest.exclude": ["**/node_modules/**", "**/dist/**", "**/.{idea,git,cache,output,temp}/**"]
 }

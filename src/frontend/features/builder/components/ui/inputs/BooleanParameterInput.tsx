@@ -1,13 +1,7 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import type { BlueprintEntityParameter, ParameterInfo } from "../../../types";
 import { createPrimitiveParameter, formatDisplayName } from "../../../utils";
@@ -19,13 +13,8 @@ interface BooleanParameterInputProps {
   onChange: (param: BlueprintEntityParameter) => void;
 }
 
-export const BooleanParameterInput = ({
-  name,
-  value,
-  onChange,
-}: BooleanParameterInputProps) => {
-  const currentValue =
-    value?.parameterType === "primitive" ? Boolean(value.value) : false;
+export const BooleanParameterInput = ({ name, value, onChange }: BooleanParameterInputProps) => {
+  const currentValue = value?.parameterType === "primitive" ? Boolean(value.value) : false;
 
   const handleChange = (selectedValue: string) => {
     onChange(createPrimitiveParameter(name, selectedValue === "true"));
@@ -36,10 +25,7 @@ export const BooleanParameterInput = ({
       <Label htmlFor={name} className="text-right">
         {formatDisplayName(name)}
       </Label>
-      <Select
-        value={currentValue ? "true" : "false"}
-        onValueChange={handleChange}
-      >
+      <Select value={currentValue ? "true" : "false"} onValueChange={handleChange}>
         <SelectTrigger className="col-span-3">
           <SelectValue />
         </SelectTrigger>

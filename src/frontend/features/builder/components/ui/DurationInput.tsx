@@ -29,12 +29,7 @@ function secondsToDuration(seconds: number): {
 /**
  * Converts DD:HH:MM:SS format to seconds
  */
-function durationToSeconds(
-  days: number,
-  hours: number,
-  minutes: number,
-  secs: number,
-): number {
+function durationToSeconds(days: number, hours: number, minutes: number, secs: number): number {
   return days * 86400 + hours * 3600 + minutes * 60 + secs;
 }
 
@@ -103,10 +98,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
     }
   };
 
-  const handleChange = (
-    field: "days" | "hours" | "minutes" | "secs",
-    newValue: string,
-  ) => {
+  const handleChange = (field: "days" | "hours" | "minutes" | "secs", newValue: string) => {
     // Only allow numbers or empty string
     if (newValue !== "" && !/^\d+$/.test(newValue)) {
       return;
@@ -134,10 +126,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
     e.target.select();
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    field: "days" | "hours" | "minutes" | "secs",
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: "days" | "hours" | "minutes" | "secs") => {
     if (e.key === "Tab" && !e.shiftKey) {
       // Tab forward - move to next field
       e.preventDefault();
@@ -151,9 +140,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
     }
   };
 
-  const getNextField = (
-    field: "days" | "hours" | "minutes" | "secs",
-  ): "days" | "hours" | "minutes" | "secs" => {
+  const getNextField = (field: "days" | "hours" | "minutes" | "secs"): "days" | "hours" | "minutes" | "secs" => {
     switch (field) {
       case "days":
         return "hours";
@@ -166,9 +153,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
     }
   };
 
-  const getPreviousField = (
-    field: "days" | "hours" | "minutes" | "secs",
-  ): "days" | "hours" | "minutes" | "secs" => {
+  const getPreviousField = (field: "days" | "hours" | "minutes" | "secs"): "days" | "hours" | "minutes" | "secs" => {
     switch (field) {
       case "days":
         return "secs"; // Wrap around
@@ -213,9 +198,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Day</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">
-          :
-        </span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-hours"
@@ -233,9 +216,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Hour</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">
-          :
-        </span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-minutes"
@@ -253,9 +234,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           />
           <span className={labelClassName}>Minute</span>
         </div>
-        <span className="text-muted-foreground text-lg font-medium pt-6">
-          :
-        </span>
+        <span className="text-muted-foreground text-lg font-medium pt-6">:</span>
         <div className="flex flex-col items-center gap-1.5">
           <Input
             id="duration-secs"
@@ -274,9 +253,7 @@ export function DurationInput({ value, onChange, error }: DurationInputProps) {
           <span className={labelClassName}>Second</span>
         </div>
       </div>
-      {error && (
-        <p className="text-xs text-destructive mt-2 text-center">{error}</p>
-      )}
+      {error && <p className="text-xs text-destructive mt-2 text-center">{error}</p>}
     </div>
   );
 }

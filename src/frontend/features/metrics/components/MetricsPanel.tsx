@@ -17,14 +17,8 @@ function MetricsPanelContent() {
   const { hasRecording, duration } = usePlayback();
   const { time: currentTime } = usePlaybackState(1000);
 
-  const {
-    displayedMetrics,
-    visibleMetrics,
-    metricOrder,
-    handleToggleVisibility,
-    handleMoveUp,
-    handleMoveDown,
-  } = useMetrics();
+  const { displayedMetrics, visibleMetrics, metricOrder, handleToggleVisibility, handleMoveUp, handleMoveDown } =
+    useMetrics();
 
   console.log("MetricsPanelContent rerender");
 
@@ -44,9 +38,7 @@ function MetricsPanelContent() {
 
       <SidePanel.Content className="space-y-4 pt-0">
         {!hasRecording ? (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            No recording loaded
-          </div>
+          <div className="flex items-center justify-center h-full text-muted-foreground">No recording loaded</div>
         ) : metricOrder.length === 0 ? (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             No metrics available in this recording

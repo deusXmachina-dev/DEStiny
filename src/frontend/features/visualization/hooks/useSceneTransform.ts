@@ -41,9 +41,7 @@ export function useSceneTransform(intervalMs = 100): SceneTransform {
 
       // Only update if something changed
       const hasChanged =
-        zoom !== last.zoom ||
-        scrollOffset.x !== last.scrollOffset.x ||
-        scrollOffset.y !== last.scrollOffset.y;
+        zoom !== last.zoom || scrollOffset.x !== last.scrollOffset.x || scrollOffset.y !== last.scrollOffset.y;
 
       if (hasChanged) {
         const newTransform = { zoom, scrollOffset };

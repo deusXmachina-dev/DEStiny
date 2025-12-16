@@ -1,11 +1,4 @@
-import {
-  Container,
-  FederatedPointerEvent,
-  Graphics,
-  Sprite,
-  Text,
-  Texture,
-} from "pixi.js";
+import { Container, FederatedPointerEvent, Graphics, Sprite, Text, Texture } from "pixi.js";
 
 import type { InteractionCallbacks } from "../hooks/VisualizationContext";
 import type { ProgressData, SimulationEntityState } from "../types";
@@ -150,10 +143,7 @@ export class EntityManager {
     this.container.destroy({ children: true });
   }
 
-  private collectEntityIds(
-    entities: SimulationEntityState[],
-    ids: Set<string> = new Set(),
-  ): Set<string> {
+  private collectEntityIds(entities: SimulationEntityState[], ids: Set<string> = new Set()): Set<string> {
     for (const entity of entities) {
       ids.add(entity.entityId);
       if (entity.children.length > 0) {
@@ -163,10 +153,7 @@ export class EntityManager {
     return ids;
   }
 
-  private updateEntityTree(
-    entities: SimulationEntityState[],
-    parent: Container,
-  ): void {
+  private updateEntityTree(entities: SimulationEntityState[], parent: Container): void {
     for (const entity of entities) {
       let container = this.entityMap.get(entity.entityId);
 
@@ -194,10 +181,7 @@ export class EntityManager {
     }
   }
 
-  private createEntity(
-    entity: SimulationEntityState,
-    parent: Container,
-  ): Container {
+  private createEntity(entity: SimulationEntityState, parent: Container): Container {
     const container = new Container();
     container.x = entity.x;
     container.y = entity.y;
@@ -236,9 +220,7 @@ export class EntityManager {
   }
 
   private updateNameText(container: Container, name: string | null): void {
-    const existingText = container.children.find(
-      (child) => child.label === "nameText",
-    ) as Text | undefined;
+    const existingText = container.children.find((child) => child.label === "nameText") as Text | undefined;
 
     if (name) {
       if (existingText) {
@@ -260,13 +242,10 @@ export class EntityManager {
     }
   }
 
-  private updateProgressBar(
-    container: Container,
-    progress: ProgressData | null,
-  ): void {
-    const existingProgressBar = container.children.find(
-      (child) => child.label === "progressBar",
-    ) as Graphics | undefined;
+  private updateProgressBar(container: Container, progress: ProgressData | null): void {
+    const existingProgressBar = container.children.find((child) => child.label === "progressBar") as
+      | Graphics
+      | undefined;
 
     if (progress) {
       const { value, minValue, maxValue } = progress;
@@ -291,13 +270,7 @@ export class EntityManager {
       graphics.fill({ color: 0x1a1a1a, alpha: 0.95 });
 
       // Draw subtle inner border
-      graphics.roundRect(
-        x + 0.5,
-        y + 0.5,
-        width - 1,
-        height - 1,
-        cornerRadius - 0.5,
-      );
+      graphics.roundRect(x + 0.5, y + 0.5, width - 1, height - 1, cornerRadius - 0.5);
       graphics.stroke({ color: 0x2a2a2a, width: 1, alpha: 0.6 });
 
       // Draw progress fill with rounded corners
@@ -315,13 +288,7 @@ export class EntityManager {
         graphics.fill({ color: 0x60a5fa, alpha: 0.6 }); // blue-400
 
         // Add subtle inner glow
-        graphics.roundRect(
-          x + 1,
-          y + 1,
-          fillWidth - 2,
-          height - 2,
-          cornerRadius - 1,
-        );
+        graphics.roundRect(x + 1, y + 1, fillWidth - 2, height - 2, cornerRadius - 1);
         graphics.stroke({ color: 0x93c5fd, width: 0.5, alpha: 0.4 }); // blue-300
       }
 
@@ -377,8 +344,7 @@ export class EntityManager {
       }
 
       const distance = Math.sqrt(
-        Math.pow(event.global.x - dragStartPos.x, 2) +
-          Math.pow(event.global.y - dragStartPos.y, 2),
+        Math.pow(event.global.x - dragStartPos.x, 2) + Math.pow(event.global.y - dragStartPos.y, 2),
       );
 
       if (distance > CLICK_THRESHOLD) {

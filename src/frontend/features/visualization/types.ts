@@ -5,8 +5,7 @@ import type { components } from "@/types/api";
  */
 
 // Use backend-provided enum for entity types; keep only FE-specific state here.
-export type SimulationEntityType =
-  components["schemas"]["SimulationEntityType"];
+export type SimulationEntityType = components["schemas"]["SimulationEntityType"];
 
 export interface ProgressData {
   value: number;

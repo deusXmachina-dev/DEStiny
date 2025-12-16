@@ -26,12 +26,7 @@ const ZOOM_SENSITIVITY = 0.001;
  */
 export const useSceneInteractions = () => {
   const { app } = useApplication();
-  const {
-    interactive,
-    getInteractionCallbacks,
-    getSceneManager,
-    sceneManagerReady,
-  } = useVisualization();
+  const { interactive, getInteractionCallbacks, getSceneManager, sceneManagerReady } = useVisualization();
 
   // Pan state
   const panStateRef = useRef<{
@@ -63,12 +58,7 @@ export const useSceneInteractions = () => {
   useEffect(() => {
     // Guard: ensure Pixi app is fully initialized
     // Use optional chaining before destructuring to handle proxy/incomplete objects
-    if (
-      !app?.stage ||
-      !app?.renderer?.screen ||
-      !app?.canvas ||
-      !sceneManagerReady
-    ) {
+    if (!app?.stage || !app?.renderer?.screen || !app?.canvas || !sceneManagerReady) {
       return;
     }
 
@@ -80,10 +70,8 @@ export const useSceneInteractions = () => {
     stage.hitArea = screen;
 
     // Helper function to calculate distance between two points
-    const getDistance = (
-      p1: { x: number; y: number },
-      p2: { x: number; y: number },
-    ): number => Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+    const getDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }): number =>
+      Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
     // ========== Wheel handling (prevents page scroll + handles zoom) ==========
     const handleCanvasWheel = (e: WheelEvent) => {
@@ -116,10 +104,7 @@ export const useSceneInteractions = () => {
 
       // Calculate zoom delta
       const zoomDelta = -event.deltaY * ZOOM_SENSITIVITY;
-      const newZoom = Math.max(
-        MIN_ZOOM,
-        Math.min(MAX_ZOOM, currentZoom + zoomDelta),
-      );
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + zoomDelta));
 
       if (newZoom === currentZoom) {
         return; // Zoom clamped, no change
@@ -240,10 +225,7 @@ export const useSceneInteractions = () => {
           const pointerPos = dndState.target.parent.toLocal(event.global);
 
           // Apply the offset so the sprite moves naturally
-          dndState.target.position.set(
-            pointerPos.x + dndState.offset.x,
-            pointerPos.y + dndState.offset.y,
-          );
+          dndState.target.position.set(pointerPos.x + dndState.offset.x, pointerPos.y + dndState.offset.y);
           return;
         }
       }
@@ -302,10 +284,7 @@ export const useSceneInteractions = () => {
 
           // Calculate zoom based on distance change
           const scale = currentDistance / pinchState.startDistance;
-          const newZoom = Math.max(
-            MIN_ZOOM,
-            Math.min(MAX_ZOOM, pinchState.startZoom * scale),
-          );
+          const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, pinchState.startZoom * scale));
 
           const centerScreenX = (p1.x + p2.x) / 2;
           const centerScreenY = (p1.y + p2.y) / 2;
@@ -348,11 +327,7 @@ export const useSceneInteractions = () => {
           if (dndState.target && dndState.entityId && dndState.isDragging) {
             // Invoke callback with new position
             const callbacks = getInteractionCallbacks();
-            callbacks.onEntityDragEnd?.(
-              dndState.entityId,
-              dndState.target.x,
-              dndState.target.y,
-            );
+            callbacks.onEntityDragEnd?.(dndState.entityId, dndState.target.x, dndState.target.y);
 
             // Reset drag state
             entityManager.endDrag();

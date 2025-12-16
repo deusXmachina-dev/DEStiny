@@ -22,12 +22,7 @@ interface SceneProps {
 
 export const Scene = ({ parentRef }: SceneProps) => {
   const { isLoaded, getTexture } = useAssets();
-  const {
-    theme: initialTheme,
-    interactive,
-    getInteractionCallbacks,
-    registerSceneManager,
-  } = useVisualization();
+  const { theme: initialTheme, interactive, getInteractionCallbacks, registerSceneManager } = useVisualization();
 
   // Refs for container and manager
   const containerRef = useRef<PixiContainer | null>(null);

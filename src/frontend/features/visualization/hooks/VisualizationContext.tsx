@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { createContext, ReactNode, useCallback, useContext, useRef, useState } from "react";
 
 import type { components } from "@/types/api";
 
@@ -15,8 +8,7 @@ import { SimulationTheme } from "../constants";
 import type { SceneManager } from "../pixi/SceneManager";
 import type { ScreenSize } from "../types";
 
-type CanvasDropEntityType =
-  components["schemas"]["BlueprintEntity"]["entityType"];
+type CanvasDropEntityType = components["schemas"]["BlueprintEntity"]["entityType"];
 type CanvasDropParameterInfo = components["schemas"]["ParameterInfo"];
 
 export interface InteractionCallbacks {
@@ -51,9 +43,7 @@ interface VisualizationContextValue {
   getSceneManager: () => SceneManager | null;
 }
 
-const VisualizationContext = createContext<
-  VisualizationContextValue | undefined
->(undefined);
+const VisualizationContext = createContext<VisualizationContextValue | undefined>(undefined);
 
 interface VisualizationProviderProps {
   children: ReactNode;
@@ -74,10 +64,7 @@ interface VisualizationProviderProps {
  *
  * @param interactive - Whether entities should be interactive (default: true)
  */
-export const VisualizationProvider = ({
-  children,
-  interactive = true,
-}: VisualizationProviderProps) => {
+export const VisualizationProvider = ({ children, interactive = true }: VisualizationProviderProps) => {
   const [theme, setTheme] = useState<SimulationTheme>("factory");
   const [screenSize, setScreenSize] = useState<ScreenSize>({
     width: 0,
@@ -87,17 +74,11 @@ export const VisualizationProvider = ({
   // Interaction callbacks - stored in ref to avoid re-renders
   const interactionCallbacksRef = useRef<InteractionCallbacks>({});
 
-  const registerInteractionCallbacks = useCallback(
-    (callbacks: InteractionCallbacks) => {
-      interactionCallbacksRef.current = callbacks;
-    },
-    [],
-  );
+  const registerInteractionCallbacks = useCallback((callbacks: InteractionCallbacks) => {
+    interactionCallbacksRef.current = callbacks;
+  }, []);
 
-  const getInteractionCallbacks = useCallback(
-    () => interactionCallbacksRef.current,
-    [],
-  );
+  const getInteractionCallbacks = useCallback(() => interactionCallbacksRef.current, []);
 
   // SceneManager for imperative scene transform updates (bypasses React re-renders)
   const sceneManagerRef = useRef<SceneManager | null>(null);
@@ -124,11 +105,7 @@ export const VisualizationProvider = ({
     sceneManagerReady,
   };
 
-  return (
-    <VisualizationContext.Provider value={value}>
-      {children}
-    </VisualizationContext.Provider>
-  );
+  return <VisualizationContext.Provider value={value}>{children}</VisualizationContext.Provider>;
 };
 
 /**
@@ -138,9 +115,7 @@ export const VisualizationProvider = ({
 export const useVisualization = (): VisualizationContextValue => {
   const context = useContext(VisualizationContext);
   if (!context) {
-    throw new Error(
-      "useVisualization must be used within a VisualizationProvider",
-    );
+    throw new Error("useVisualization must be used within a VisualizationProvider");
   }
   return context;
 };

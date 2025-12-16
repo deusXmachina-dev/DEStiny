@@ -1,8 +1,5 @@
 import type { SimulationRecording } from "@features/playback";
-import type {
-  ProgressData,
-  SimulationEntityState,
-} from "@features/visualization";
+import type { ProgressData, SimulationEntityState } from "@features/visualization";
 
 import { lerp } from "../utils";
 
@@ -42,80 +39,68 @@ export class SimulationEngine {
    * Returns a tree of root entities with their children attached.
    */
   getEntitiesAtTime(timeSeconds: number): SimulationEntityState[] {
-    const activeEntities = new Map<
-      string,
-      SimulationEntityState & { parentId: string | null }
-    >();
+    const activeEntities = new Map<string, SimulationEntityState & { parentId: string | null }>();
 
     // Calculate state for each entity
-    Object.entries(this.recording.motion_segments_by_entity).forEach(
-      ([id, segments]) => {
-        if (!segments || segments.length === 0) {
-          return;
+    Object.entries(this.recording.motion_segments_by_entity).forEach(([id, segments]) => {
+      if (!segments || segments.length === 0) {
+        return;
+      }
+
+      // Get cached index or start at 0
+      let index = this.segmentIndices[id] ?? 0;
+
+      // Optimization: Keep current valid index
+      // 1. If we are past the start of the NEXT segment, move forward
+      while (index < segments.length - 1) {
+        const nextSegment = segments[index + 1];
+        if (!nextSegment || nextSegment.startTime > timeSeconds) {
+          break;
         }
+        index++;
+      }
 
-        // Get cached index or start at 0
-        let index = this.segmentIndices[id] ?? 0;
-
-        // Optimization: Keep current valid index
-        // 1. If we are past the start of the NEXT segment, move forward
-        while (index < segments.length - 1) {
-          const nextSegment = segments[index + 1];
-          if (!nextSegment || nextSegment.startTime > timeSeconds) {
-            break;
-          }
-          index++;
+      // 2. If we are before the start of the CURRENT segment (e.g. rewind), move backward
+      while (index > 0) {
+        const currentSegment = segments[index];
+        if (!currentSegment || currentSegment.startTime <= timeSeconds) {
+          break;
         }
+        index--;
+      }
 
-        // 2. If we are before the start of the CURRENT segment (e.g. rewind), move backward
-        while (index > 0) {
-          const currentSegment = segments[index];
-          if (!currentSegment || currentSegment.startTime <= timeSeconds) {
-            break;
-          }
-          index--;
-        }
+      // Update cache
+      this.segmentIndices[id] = index;
 
-        // Update cache
-        this.segmentIndices[id] = index;
+      // 3. Check if the current segment is valid for rendering
+      const segment = segments[index];
+      if (!segment) {
+        return;
+      }
 
-        // 3. Check if the current segment is valid for rendering
-        const segment = segments[index];
-        if (!segment) {
-          return;
-        }
+      // Determine effective end time (null means indefinite)
+      const effectiveEndTime = segment.endTime ?? segment.startTime + this.recording.duration;
 
-        // Determine effective end time (null means indefinite)
-        const effectiveEndTime =
-          segment.endTime ?? segment.startTime + this.recording.duration;
+      // Only render if time is within [startTime, effectiveEndTime]
+      if (timeSeconds >= segment.startTime && timeSeconds <= effectiveEndTime) {
+        const segmentDuration = effectiveEndTime - segment.startTime;
+        const t = segmentDuration > 0 ? (timeSeconds - segment.startTime) / segmentDuration : 0;
 
-        // Only render if time is within [startTime, effectiveEndTime]
-        if (
-          timeSeconds >= segment.startTime &&
-          timeSeconds <= effectiveEndTime
-        ) {
-          const segmentDuration = effectiveEndTime - segment.startTime;
-          const t =
-            segmentDuration > 0
-              ? (timeSeconds - segment.startTime) / segmentDuration
-              : 0;
+        const progress = this.getProgressAtTime(id, timeSeconds);
 
-          const progress = this.getProgressAtTime(id, timeSeconds);
-
-          activeEntities.set(id, {
-            entityId: id,
-            entityType: segment.entityType,
-            x: lerp(segment.startX, segment.endX, t),
-            y: lerp(segment.startY, segment.endY, t),
-            angle: lerp(segment.startAngle, segment.endAngle, t),
-            children: [],
-            name: segment.name ?? null,
-            parentId: segment.parentId ?? null,
-            progress,
-          });
-        }
-      },
-    );
+        activeEntities.set(id, {
+          entityId: id,
+          entityType: segment.entityType,
+          x: lerp(segment.startX, segment.endX, t),
+          y: lerp(segment.startY, segment.endY, t),
+          angle: lerp(segment.startAngle, segment.endAngle, t),
+          children: [],
+          name: segment.name ?? null,
+          parentId: segment.parentId ?? null,
+          progress,
+        });
+      }
+    });
 
     // Reconstruct hierarchy
     return this.buildHierarchy(activeEntities);
@@ -125,10 +110,7 @@ export class SimulationEngine {
    * Get progress value for an entity at a given time.
    * Returns null if no progress segment exists or is active.
    */
-  private getProgressAtTime(
-    entityId: string,
-    timeSeconds: number,
-  ): ProgressData | null {
+  private getProgressAtTime(entityId: string, timeSeconds: number): ProgressData | null {
     const segments = this.recording.progress_segments_by_entity?.[entityId];
     if (!segments || segments.length === 0) {
       return null;
@@ -166,8 +148,7 @@ export class SimulationEngine {
     }
 
     // Determine effective end time (null means indefinite)
-    const effectiveEndTime =
-      segment.end_time ?? segment.start_time + this.recording.duration;
+    const effectiveEndTime = segment.end_time ?? segment.start_time + this.recording.duration;
 
     // Only return progress if time is within [start_time, effectiveEndTime]
     if (timeSeconds < segment.start_time || timeSeconds > effectiveEndTime) {
@@ -176,10 +157,7 @@ export class SimulationEngine {
 
     // Interpolate value
     const segmentDuration = effectiveEndTime - segment.start_time;
-    const t =
-      segmentDuration > 0
-        ? (timeSeconds - segment.start_time) / segmentDuration
-        : 0;
+    const t = segmentDuration > 0 ? (timeSeconds - segment.start_time) / segmentDuration : 0;
 
     const interpolatedValue = lerp(segment.start_value, segment.end_value, t);
 
@@ -194,10 +172,7 @@ export class SimulationEngine {
    * Build the parent-child hierarchy from flat entity map.
    */
   private buildHierarchy(
-    activeEntities: Map<
-      string,
-      SimulationEntityState & { parentId: string | null }
-    >,
+    activeEntities: Map<string, SimulationEntityState & { parentId: string | null }>,
   ): SimulationEntityState[] {
     const rootEntities: SimulationEntityState[] = [];
 

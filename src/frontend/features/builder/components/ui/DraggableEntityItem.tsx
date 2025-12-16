@@ -13,10 +13,7 @@ interface DraggableEntityItemProps {
   onDragStart: (e: React.DragEvent, schema: BuilderEntitySchema) => void;
 }
 
-export function DraggableEntityItem({
-  schema,
-  onDragStart,
-}: DraggableEntityItemProps) {
+export function DraggableEntityItem({ schema, onDragStart }: DraggableEntityItemProps) {
   const iconUrl = ASSET_MAP[schema.entityType];
   const dragImageRef = useRef<HTMLImageElement>(null);
   const [dimensions, setDimensions] = useState<{
@@ -31,11 +28,7 @@ export function DraggableEntityItem({
   const handleDragStart = (e: React.DragEvent) => {
     if (dragImageRef.current && dimensions) {
       // Use half the dimensions as the drag offset (center of image)
-      e.dataTransfer.setDragImage(
-        dragImageRef.current,
-        dimensions.width / 2,
-        dimensions.height / 2,
-      );
+      e.dataTransfer.setDragImage(dragImageRef.current, dimensions.width / 2, dimensions.height / 2);
     }
     onDragStart(e, schema);
   };

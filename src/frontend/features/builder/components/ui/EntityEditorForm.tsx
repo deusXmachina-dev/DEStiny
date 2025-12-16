@@ -2,18 +2,9 @@
 
 import { useState } from "react";
 
-import type {
-  BlueprintEntityParameter,
-  BuilderEntitySchema,
-  SimulationBlueprint,
-} from "../../types";
+import type { BlueprintEntityParameter, BuilderEntitySchema, SimulationBlueprint } from "../../types";
 import { createPrimitiveParameter, findBlueprintEntity } from "../../utils";
-import {
-  BooleanParameterInput,
-  EntityParameterInput,
-  NumberParameterInput,
-  StringParameterInput,
-} from "./inputs";
+import { BooleanParameterInput, EntityParameterInput, NumberParameterInput, StringParameterInput } from "./inputs";
 
 interface EntityEditorFormProps {
   entity: NonNullable<ReturnType<typeof findBlueprintEntity>>;
@@ -27,29 +18,20 @@ interface EntityEditorFormProps {
  * Form component for editing entity parameters.
  * Uses key prop to reset state when entity changes, avoiding cascading renders.
  */
-export const EntityEditorForm = ({
-  entity,
-  schema,
-  blueprint,
-  onSave,
-  formId,
-}: EntityEditorFormProps) => {
+export const EntityEditorForm = ({ entity, schema, blueprint, onSave, formId }: EntityEditorFormProps) => {
   // Initialize form values from entity parameters (dict of BlueprintEntityParameter)
   // Include name as a regular form value
-  const [formValues, setFormValues] = useState<
-    Record<string, BlueprintEntityParameter>
-  >(() => ({
+  const [formValues, setFormValues] = useState<Record<string, BlueprintEntityParameter>>(() => ({
     ...entity.parameters,
     name: createPrimitiveParameter("name", entity.name),
   }));
 
-  const handleParameterChange =
-    (key: string) => (param: BlueprintEntityParameter) => {
-      setFormValues((prev) => ({
-        ...prev,
-        [key]: param,
-      }));
-    };
+  const handleParameterChange = (key: string) => (param: BlueprintEntityParameter) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [key]: param,
+    }));
+  };
 
   const performSubmit = () => {
     onSave(formValues);

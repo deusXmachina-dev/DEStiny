@@ -18,15 +18,9 @@ interface UseMetricDataReturn {
  * Handles data transformation from parallel arrays to chart format and filters
  * data points based on the current playback time.
  */
-export function useTimeSeriesMetricData({
-  metric,
-  currentTime,
-}: UseMetricDataProps): UseMetricDataReturn {
+export function useTimeSeriesMetricData({ metric, currentTime }: UseMetricDataProps): UseMetricDataReturn {
   // Transform data from parallel arrays to Recharts format
-  const chartData = useMemo(
-    () => transformTimeSeriesMetricData(metric),
-    [metric],
-  );
+  const chartData = useMemo(() => transformTimeSeriesMetricData(metric), [metric]);
 
   // Calculate visible data based on current time
   const visibleData = useMemo(() => {

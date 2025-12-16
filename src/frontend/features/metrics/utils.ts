@@ -14,9 +14,7 @@ export function transformTimeSeriesMetricData(metric: {
       const val = value[i];
       return val !== undefined ? { timestamp: t, value: val } : null;
     })
-    .filter(
-      (item): item is { timestamp: number; value: number } => item !== null,
-    );
+    .filter((item): item is { timestamp: number; value: number } => item !== null);
 }
 
 /**

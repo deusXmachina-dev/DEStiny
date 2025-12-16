@@ -42,13 +42,7 @@ export const ZoomPanControls = () => {
           ({scrollOffset.x.toFixed(0)}, {scrollOffset.y.toFixed(0)})
         </span>
       </span>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        onClick={handleReset}
-        className="h-5 w-5"
-        title="Reset zoom and position"
-      >
+      <Button variant="ghost" size="icon-sm" onClick={handleReset} className="h-5 w-5" title="Reset zoom and position">
         <RotateCw className="h-3 w-3" />
       </Button>
     </div>

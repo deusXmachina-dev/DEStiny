@@ -1,22 +1,10 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 
 import { $api } from "@/lib/api-client";
 
-import type {
-  BlueprintEntity,
-  BlueprintEntityParameter,
-  ParameterInfo,
-  SimulationBlueprint,
-} from "../types";
+import type { BlueprintEntity, BlueprintEntityParameter, ParameterInfo, SimulationBlueprint } from "../types";
 import {
   createBlueprintEntity,
   getNextEntityName,
@@ -40,10 +28,7 @@ interface BuilderContextValue {
     y: number,
   ) => void;
   removeEntity: (entityId: string) => void;
-  updateEntity: (
-    entityId: string,
-    formValues: Record<string, BlueprintEntityParameter>,
-  ) => void;
+  updateEntity: (entityId: string, formValues: Record<string, BlueprintEntityParameter>) => void;
   updateSimParams: (params: Partial<SimulationBlueprint["simParams"]>) => void;
   moveEntity: (entityId: string, x: number, y: number) => void;
   updateEntityName: (entityId: string, name: string) => void;
@@ -62,9 +47,7 @@ interface BuilderContextValue {
   isJustClosed: () => boolean;
 }
 
-export const BuilderContext = createContext<BuilderContextValue | undefined>(
-  undefined,
-);
+export const BuilderContext = createContext<BuilderContextValue | undefined>(undefined);
 
 interface BuilderProviderProps {
   children: ReactNode;
@@ -83,9 +66,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const justClosedRef = useRef(false);
 
-  const [blueprint, setBlueprintState] = useState<SimulationBlueprint | null>(
-    null,
-  );
+  const [blueprint, setBlueprintState] = useState<SimulationBlueprint | null>(null);
 
   // Fetch blueprint from API
   const { refetch } = $api.useQuery("get", "/api/blueprint", {
@@ -154,34 +135,20 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     }
   };
 
-  const updateEntity = (
-    entityId: string,
-    formValues: Record<string, BlueprintEntityParameter>,
-  ) => {
+  const updateEntity = (entityId: string, formValues: Record<string, BlueprintEntityParameter>) => {
     if (!blueprint) {
       return;
     }
     // Extract name from formValues if present
     const nameParam = formValues.name;
-    const name =
-      nameParam?.parameterType === "primitive"
-        ? String(nameParam.value ?? "")
-        : undefined;
+    const name = nameParam?.parameterType === "primitive" ? String(nameParam.value ?? "") : undefined;
 
     // Remove name from formValues before updating parameters
     const { name: _, ...parameters } = formValues;
 
-    let updatedBlueprint = updateBlueprintEntityParameters(
-      blueprint,
-      entityId,
-      parameters,
-    );
+    let updatedBlueprint = updateBlueprintEntityParameters(blueprint, entityId, parameters);
     if (name !== undefined) {
-      updatedBlueprint = updateBlueprintEntityName(
-        updatedBlueprint,
-        entityId,
-        name,
-      );
+      updatedBlueprint = updateBlueprintEntityName(updatedBlueprint, entityId, name);
     }
     setBlueprintState(updatedBlueprint);
   };
@@ -195,9 +162,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     });
   };
 
-  const updateSimParams = (
-    params: Partial<SimulationBlueprint["simParams"]>,
-  ) => {
+  const updateSimParams = (params: Partial<SimulationBlueprint["simParams"]>) => {
     setBlueprintState((current) => {
       const currentSimParams = current?.simParams ?? { initialTime: 0 };
       const nextSimParams = { ...currentSimParams, ...params };
@@ -286,9 +251,7 @@ export const BuilderProvider = ({ children }: BuilderProviderProps) => {
     hasEntities: (blueprint?.entities?.length ?? 0) > 0,
   };
 
-  return (
-    <BuilderContext.Provider value={value}>{children}</BuilderContext.Provider>
-  );
+  return <BuilderContext.Provider value={value}>{children}</BuilderContext.Provider>;
 };
 
 /**

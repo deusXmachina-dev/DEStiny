@@ -14,8 +14,7 @@ const createEmptyMetrics = () => ({
 
 // Helper to create a recording with defaults
 const createRecording = (
-  overrides: Partial<SimulationRecording> &
-    Pick<SimulationRecording, "duration">,
+  overrides: Partial<SimulationRecording> & Pick<SimulationRecording, "duration">,
 ): SimulationRecording => ({
   motion_segments_by_entity: {},
   metrics: createEmptyMetrics(),
@@ -24,8 +23,7 @@ const createRecording = (
 
 // Helper to create a motion segment with defaults
 const createSegment = (
-  overrides: Partial<SimulationMotionSegment> &
-    Pick<SimulationMotionSegment, "entityId" | "entityType">,
+  overrides: Partial<SimulationMotionSegment> & Pick<SimulationMotionSegment, "entityId" | "entityType">,
 ): SimulationMotionSegment => ({
   startTime: 0,
   endTime: 10,

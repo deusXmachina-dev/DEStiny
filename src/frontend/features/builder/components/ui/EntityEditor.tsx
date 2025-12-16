@@ -16,14 +16,7 @@ import { EntityEditorForm } from "./EntityEditorForm";
  * Coordinates dialog state, data loading, and delegates to dialog/form components.
  */
 export const EntityEditor = () => {
-  const {
-    blueprint,
-    selectedEntityId,
-    isEditorOpen,
-    closeEditor,
-    updateEntity,
-    removeEntity,
-  } = useBuilder();
+  const { blueprint, selectedEntityId, isEditorOpen, closeEditor, updateEntity, removeEntity } = useBuilder();
   const { schemas } = useBuilderSchemas();
 
   // Load entity data when dialog opens
@@ -68,12 +61,7 @@ export const EntityEditor = () => {
 
   return (
     <Dialog open={isEditorOpen} onOpenChange={(open) => !open && closeEditor()}>
-      <EntityEditorDialog
-        entity={entity}
-        formId={formId}
-        onDelete={handleDelete}
-        onClose={closeEditor}
-      >
+      <EntityEditorDialog entity={entity} formId={formId} onDelete={handleDelete} onClose={closeEditor}>
         {/* Key prop ensures form state resets when entity changes, avoiding cascading renders */}
         <EntityEditorForm
           key={selectedEntityId}

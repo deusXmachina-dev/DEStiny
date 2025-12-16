@@ -22,14 +22,8 @@ interface NumberParameterInputProps {
   onSubmit?: () => void;
 }
 
-export const NumberParameterInput = ({
-  name,
-  value,
-  onChange,
-  onSubmit,
-}: NumberParameterInputProps) => {
-  const currentValue =
-    value?.parameterType === "primitive" ? Number(value.value) : 0;
+export const NumberParameterInput = ({ name, value, onChange, onSubmit }: NumberParameterInputProps) => {
+  const currentValue = value?.parameterType === "primitive" ? Number(value.value) : 0;
 
   // Internal state for intermediate typing states (empty, "-", ".", etc.)
   const [inputValue, setInputValue] = useState<string>(String(currentValue));

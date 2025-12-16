@@ -40,13 +40,10 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
       },
     [recording?.metrics],
   );
-  const [config, setConfig] = useLocalStorage<MetricsConfig>(
-    `destiny-metrics-config-${simulationName}`,
-    {
-      visibleMetrics: [],
-      metricOrder: [],
-    },
-  );
+  const [config, setConfig] = useLocalStorage<MetricsConfig>(`destiny-metrics-config-${simulationName}`, {
+    visibleMetrics: [],
+    metricOrder: [],
+  });
 
   // Initialize config when metrics change
   useEffect(() => {
@@ -61,9 +58,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
     }
 
     // Initialize if config is empty or metrics changed
-    const hasAllMetrics = metricNames.every((name) =>
-      config.metricOrder.includes(name),
-    );
+    const hasAllMetrics = metricNames.every((name) => config.metricOrder.includes(name));
     if (config.metricOrder.length === 0 || !hasAllMetrics) {
       setConfig({
         visibleMetrics: metricNames,
@@ -73,10 +68,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
   }, [metrics, config.metricOrder, setConfig]);
 
   // Derive Set from config for fast lookups
-  const visibleMetrics = useMemo(
-    () => new Set(config.visibleMetrics),
-    [config.visibleMetrics],
-  );
+  const visibleMetrics = useMemo(() => new Set(config.visibleMetrics), [config.visibleMetrics]);
 
   // Handler to toggle visibility of a metric
   const handleToggleVisibility = (metricName: string) => {
@@ -129,12 +121,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
   // Filter and sort metrics based on visibility and order
   const displayedMetrics = useMemo(() => {
     // Flatten all metrics into a single array
-    const allMetrics: Metric[] = [
-      ...metrics.counter,
-      ...metrics.gauge,
-      ...metrics.sample,
-      ...metrics.state,
-    ];
+    const allMetrics: Metric[] = [...metrics.counter, ...metrics.gauge, ...metrics.sample, ...metrics.state];
 
     // Filter by visibility and sort by metricOrder
     return config.metricOrder
@@ -153,9 +140,7 @@ export function MetricsProvider({ children }: MetricsProviderProps) {
     handleMoveDown,
   };
 
-  return (
-    <MetricsContext.Provider value={value}>{children}</MetricsContext.Provider>
-  );
+  return <MetricsContext.Provider value={value}>{children}</MetricsContext.Provider>;
 }
 
 export function useMetrics(): MetricsContextValue {

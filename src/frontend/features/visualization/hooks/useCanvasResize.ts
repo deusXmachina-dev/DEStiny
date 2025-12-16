@@ -23,12 +23,9 @@ import { useVisualization } from "./VisualizationContext";
  *
  * @param containerRef - Ref to the container div that wraps the canvas
  */
-export const useCanvasResize = (
-  containerRef: RefObject<HTMLDivElement | null>,
-) => {
+export const useCanvasResize = (containerRef: RefObject<HTMLDivElement | null>) => {
   const { app } = useApplication();
-  const { setScreenSize, getSceneManager, sceneManagerReady } =
-    useVisualization();
+  const { setScreenSize, getSceneManager, sceneManagerReady } = useVisualization();
   const mutation = $api.useMutation("post", "/api/blueprint/canvas-size");
 
   useEffect(() => {

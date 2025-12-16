@@ -4,12 +4,7 @@ import { formatTime } from "@lib/utils";
 import { useMemo } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 import { useTimeSeriesMetricData } from "../../hooks";
 import type { TimeSeriesMetric } from "../../index";
@@ -28,11 +23,7 @@ interface AreaChartWithStepsProps {
   currentTime?: number;
 }
 
-export function AreaChartWithSteps({
-  metric,
-  maxDuration = 600,
-  currentTime = maxDuration,
-}: AreaChartWithStepsProps) {
+export function AreaChartWithSteps({ metric, maxDuration = 600, currentTime = maxDuration }: AreaChartWithStepsProps) {
   // Transform data and calculate visible data
   const { chartData, visibleData } = useTimeSeriesMetricData({
     metric,
@@ -49,18 +40,10 @@ export function AreaChartWithSteps({
 
   // Format badge value
   const badgeValue =
-    currentValue !== null
-      ? Number.isInteger(currentValue)
-        ? currentValue
-        : currentValue?.toFixed(1)
-      : null;
+    currentValue !== null ? (Number.isInteger(currentValue) ? currentValue : currentValue?.toFixed(1)) : null;
 
   return (
-    <ChartLayout
-      title={metric.name}
-      badge={badgeValue}
-      isEmpty={!chartData || chartData.length === 0}
-    >
+    <ChartLayout title={metric.name} badge={badgeValue} isEmpty={!chartData || chartData.length === 0}>
       <ChartContainer config={chartConfig}>
         <AreaChart
           accessibilityLayer
@@ -83,13 +66,7 @@ export function AreaChartWithSteps({
             tickFormatter={(value) => formatTime(value)}
             domain={[0, maxDuration]}
           />
-          <YAxis
-            type="number"
-            width={35}
-            tickLine={false}
-            axisLine={false}
-            allowDecimals={false}
-          />
+          <YAxis type="number" width={35} tickLine={false} axisLine={false} allowDecimals={false} />
           <ChartTooltip
             content={
               <ChartTooltipContent

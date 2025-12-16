@@ -6,10 +6,7 @@ import { BackgroundManager } from "./BackgroundManager";
 import type { GetInteractionCallbacksFn, GetTextureFn } from "./EntityManager";
 import { EntityManager } from "./EntityManager";
 
-export type TransformListener = (
-  zoom: number,
-  scrollOffset: ScrollOffset,
-) => void;
+export type TransformListener = (zoom: number, scrollOffset: ScrollOffset) => void;
 
 export interface SceneManagerConfig {
   container: Container;
@@ -48,10 +45,7 @@ export class SceneManager {
     this.setSceneContainer(config.container);
 
     // Create BackgroundManager
-    this.backgroundManager = new BackgroundManager(
-      config.container,
-      config.theme,
-    );
+    this.backgroundManager = new BackgroundManager(config.container, config.theme);
 
     // Create EntityManager
     this.entityManager = new EntityManager(
@@ -151,8 +145,7 @@ export class SceneManager {
   setTransform(zoom: number, offset: ScrollOffset): void {
     const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom));
     const zoomChanged = clampedZoom !== this.zoom;
-    const offsetChanged =
-      offset.x !== this.scrollOffset.x || offset.y !== this.scrollOffset.y;
+    const offsetChanged = offset.x !== this.scrollOffset.x || offset.y !== this.scrollOffset.y;
 
     if (!zoomChanged && !offsetChanged) {
       return;
@@ -224,10 +217,6 @@ export class SceneManager {
     if (!this.backgroundManager) {
       return;
     }
-    this.backgroundManager.update(
-      this.zoom,
-      this.scrollOffset,
-      this.screenSize,
-    );
+    this.backgroundManager.update(this.zoom, this.scrollOffset, this.screenSize);
   }
 }

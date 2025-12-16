@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  BuilderInteractionHandler,
-  BuilderPanel,
-  EntityEditor,
-  useBuilder,
-} from "@features/builder";
+import { BuilderInteractionHandler, BuilderPanel, EntityEditor, useBuilder } from "@features/builder";
 import { MetricsPanel } from "@features/metrics";
 import { PlaybackControls, usePlayback } from "@features/playback";
 import { SimulationEntityUpdater } from "@features/simulation";
@@ -32,20 +27,12 @@ function HomeContent() {
   const { clock, setRecording, hasRecording } = usePlayback();
   const { clearEntities, hasEntities } = useBuilder();
   const [isStale, setIsStale] = useState(false);
-  const [mode, setMode] = useLocalStorage<AppMode>(
-    `destiny-app-mode`,
-    "builder",
-  );
+  const [mode, setMode] = useLocalStorage<AppMode>(`destiny-app-mode`, "builder");
 
   // Detect if running on Mac for keyboard shortcut display
-  const isMac =
-    typeof window !== "undefined" &&
-    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+  const isMac = typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
   const modifierKey = isMac ? "⌘" : "⌃";
-  const simulationEnabled = useMemo(
-    () => hasRecording || hasEntities,
-    [hasRecording, hasEntities],
-  );
+  const simulationEnabled = useMemo(() => hasRecording || hasEntities, [hasRecording, hasEntities]);
 
   const handleClearEntities = useCallback(async () => {
     setRecording(null);
@@ -130,9 +117,7 @@ function HomeContent() {
           </button>
           <VisualizationProvider interactive={mode === "builder"}>
             <SceneVisualization>
-              {mode === "simulation" && !isStale && (
-                <MemoizedSimulationEntityUpdater />
-              )}
+              {mode === "simulation" && !isStale && <MemoizedSimulationEntityUpdater />}
               {mode === "builder" && <MemoizedBuilderInteractionHandler />}
             </SceneVisualization>
             {mode === "builder" && <MemoizedEntityEditor />}
@@ -148,11 +133,7 @@ function HomeContent() {
           >
             <div className="border-l border-b border-border p-4 flex justify-center">
               <TabsList className="h-10 p-[6px]">
-                <TabsTrigger
-                  disabled={!simulationEnabled}
-                  value="simulation"
-                  className="text-md p-4 font-mono"
-                >
+                <TabsTrigger disabled={!simulationEnabled} value="simulation" className="text-md p-4 font-mono">
                   Simulation
                   <Kbd className="ml-1">{modifierKey}S</Kbd>
                 </TabsTrigger>

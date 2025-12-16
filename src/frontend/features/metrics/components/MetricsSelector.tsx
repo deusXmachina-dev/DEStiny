@@ -30,10 +30,7 @@ export function MetricsSelector({
           const isLast = index === metricOrder.length - 1;
 
           return (
-            <div
-              key={metricName}
-              className="flex items-center gap-2 p-2 rounded-md hover:bg-accent/50 group"
-            >
+            <div key={metricName} className="flex items-center gap-2 p-2 rounded-md hover:bg-accent/50 group">
               {/* Visibility Toggle */}
               <Toggle
                 pressed={isVisible}
@@ -42,11 +39,7 @@ export function MetricsSelector({
                 variant="outline"
                 aria-label={`Toggle visibility for ${metricName}`}
               >
-                {isVisible ? (
-                  <Eye className="h-3.5 w-3.5" />
-                ) : (
-                  <EyeOff className="h-3.5 w-3.5" />
-                )}
+                {isVisible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
               </Toggle>
 
               {/* Metric Name */}

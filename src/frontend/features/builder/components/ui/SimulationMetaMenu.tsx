@@ -17,11 +17,7 @@ export function SimulationMetaMenu() {
   useEffect(() => {
     const blueprintDuration = blueprint?.simParams?.duration;
     // Default to 1 hour (3600 seconds) if no duration is set
-    setDuration(
-      blueprintDuration === null || blueprintDuration === undefined
-        ? 3600
-        : blueprintDuration,
-    );
+    setDuration(blueprintDuration === null || blueprintDuration === undefined ? 3600 : blueprintDuration);
     setError(undefined);
   }, [blueprint]);
 
@@ -48,25 +44,12 @@ export function SimulationMetaMenu() {
   };
 
   return (
-    <ConfigureSelect
-      title="Simulation Duration"
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <ConfigureSelect title="Simulation Duration" open={open} onOpenChange={setOpen}>
       <form onSubmit={handleApply} className="space-y-3">
-        <DurationInput
-          value={duration}
-          onChange={handleDurationChange}
-          error={error}
-        />
+        <DurationInput value={duration} onChange={handleDurationChange} error={error} />
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setOpen(false)}
-          >
+          <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button type="submit" size="sm">

@@ -25,10 +25,7 @@ const extractNumericParameter = (
 /**
  * Create both x and y position parameters as a record.
  */
-const createPositionParameters = (
-  x: number,
-  y: number,
-): Record<"x" | "y", BlueprintEntityParameter> => ({
+const createPositionParameters = (x: number, y: number): Record<"x" | "y", BlueprintEntityParameter> => ({
   x: createPrimitiveParameter("x", x),
   y: createPrimitiveParameter("y", y),
 });
@@ -36,10 +33,7 @@ const createPositionParameters = (
 /**
  * Create a primitive parameter as a BlueprintEntityParameter.
  */
-export const createPrimitiveParameter = (
-  name: string,
-  value: ParameterValue,
-): BlueprintEntityParameter => ({
+export const createPrimitiveParameter = (name: string, value: ParameterValue): BlueprintEntityParameter => ({
   name,
   parameterType: "primitive" as BlueprintParameterType,
   value,
@@ -48,10 +42,7 @@ export const createPrimitiveParameter = (
 /**
  * Create an entity parameter as a BlueprintEntityParameter.
  */
-export const createEntityParameter = (
-  name: string,
-  entityName: string,
-): BlueprintEntityParameter => ({
+export const createEntityParameter = (name: string, entityName: string): BlueprintEntityParameter => ({
   name,
   parameterType: "entity" as BlueprintParameterType,
   value: entityName,
@@ -61,9 +52,7 @@ export const createEntityParameter = (
  * Convert blueprint entities to simulation entity states for rendering.
  * Extracts x, y, and angle from entity parameters.
  */
-export const blueprintToEntityStates = (
-  blueprint: SimulationBlueprint | null,
-): SimulationEntityState[] => {
+export const blueprintToEntityStates = (blueprint: SimulationBlueprint | null): SimulationEntityState[] => {
   if (!blueprint) {
     return [];
   }
@@ -100,17 +89,12 @@ export const formatDisplayName = (name: string): string => {
  * Format: "{EntityType} {number}" (e.g., "Source 1", "Buffer 2")
  * Uses gap-aware logic: finds the first available number starting from 1.
  */
-export const getNextEntityName = (
-  entityType: string,
-  blueprint: SimulationBlueprint,
-): string => {
+export const getNextEntityName = (entityType: string, blueprint: SimulationBlueprint): string => {
   // Format entity type: replace underscores with spaces and capitalize first letter
   const capitalizedType = formatDisplayName(entityType);
 
   // Get all existing entities of the same type
-  const existingEntities = blueprint.entities.filter(
-    (entity) => entity.entityType === entityType,
-  );
+  const existingEntities = blueprint.entities.filter((entity) => entity.entityType === entityType);
 
   // Extract numbers from existing names
   // Pattern: "{Type} {number}" - extract the number part
@@ -210,10 +194,7 @@ export const updateBlueprintEntityPosition = (
 /**
  * Remove an entity from the blueprint by its name.
  */
-export const removeBlueprintEntity = (
-  blueprint: SimulationBlueprint,
-  entityName: string,
-): SimulationBlueprint => ({
+export const removeBlueprintEntity = (blueprint: SimulationBlueprint, entityName: string): SimulationBlueprint => ({
   ...blueprint,
   entities: blueprint.entities.filter((entity) => entity.name !== entityName),
 });
@@ -261,11 +242,7 @@ export const updateBlueprintEntityName = (
     let hasChanges = false;
 
     for (const [paramName, param] of Object.entries(entity.parameters)) {
-      if (
-        param.parameterType === "entity" &&
-        typeof param.value === "string" &&
-        param.value === oldName
-      ) {
+      if (param.parameterType === "entity" && typeof param.value === "string" && param.value === oldName) {
         // Update the reference to point to the new name
         updatedParameters[paramName] = {
           ...param,
@@ -340,5 +317,4 @@ export const parseNumberValue = (value: string): number => {
  * Finalize a number input value, converting intermediate states to 0.
  * Used on blur and form submission.
  */
-export const finalizeNumberValue = (value: string): number =>
-  parseNumberValue(value);
+export const finalizeNumberValue = (value: string): number => parseNumberValue(value);

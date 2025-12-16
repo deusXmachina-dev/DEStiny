@@ -11,11 +11,7 @@ interface LogoProps {
   href?: string;
 }
 
-export const Logo: React.FC<LogoProps> = ({
-  className,
-  collapsed = false,
-  href = "/",
-}) => {
+export const Logo: React.FC<LogoProps> = ({ className, collapsed = false, href = "/" }) => {
   const logoElement = (
     <div className={cn("flex items-center", className)}>
       <Image

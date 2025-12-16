@@ -1,24 +1,10 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import type {
-  BlueprintEntityParameter,
-  ParameterInfo,
-  SimulationBlueprint,
-} from "../../../types";
-import {
-  createEntityParameter,
-  formatDisplayName,
-  getAvailableEntitiesForParameter,
-} from "../../../utils";
+import type { BlueprintEntityParameter, ParameterInfo, SimulationBlueprint } from "../../../types";
+import { createEntityParameter, formatDisplayName, getAvailableEntitiesForParameter } from "../../../utils";
 
 interface EntityParameterInputProps {
   name: string;
@@ -37,17 +23,10 @@ export const EntityParameterInput = ({
   excludeName,
   onChange,
 }: EntityParameterInputProps) => {
-  const currentValue =
-    value?.parameterType === "entity" && typeof value.value === "string"
-      ? value.value
-      : "";
+  const currentValue = value?.parameterType === "entity" && typeof value.value === "string" ? value.value : "";
 
   // Get available entities using utility function
-  const availableEntities = getAvailableEntitiesForParameter(
-    blueprint,
-    paramInfo.allowedEntityTypes,
-    excludeName,
-  );
+  const availableEntities = getAvailableEntitiesForParameter(blueprint, paramInfo.allowedEntityTypes, excludeName);
 
   const handleChange = (entityName: string) => {
     onChange(createEntityParameter(name, entityName));
@@ -64,9 +43,7 @@ export const EntityParameterInput = ({
         </SelectTrigger>
         <SelectContent>
           {availableEntities.length === 0 ? (
-            <div className="px-2 py-1.5 text-sm text-muted-foreground">
-              No entities available
-            </div>
+            <div className="px-2 py-1.5 text-sm text-muted-foreground">No entities available</div>
           ) : (
             availableEntities.map((entity) => (
               <SelectItem key={entity.name} value={entity.name}>

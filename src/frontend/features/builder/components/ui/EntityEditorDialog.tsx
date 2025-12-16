@@ -1,13 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import type { BlueprintEntity } from "../../types";
 import { formatDisplayName } from "../../utils";
@@ -41,12 +35,8 @@ export const EntityEditorDialog = ({
   return (
     <DialogContent className="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>
-          Edit Entity: {formatDisplayName(entity.entityType)}
-        </DialogTitle>
-        <DialogDescription>
-          Modify the parameters for this entity or remove it from the blueprint.
-        </DialogDescription>
+        <DialogTitle>Edit Entity: {formatDisplayName(entity.entityType)}</DialogTitle>
+        <DialogDescription>Modify the parameters for this entity or remove it from the blueprint.</DialogDescription>
       </DialogHeader>
       {children}
       <DialogFooter className="flex-row justify-between">

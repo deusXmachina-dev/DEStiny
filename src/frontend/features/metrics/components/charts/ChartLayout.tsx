@@ -15,13 +15,7 @@ interface ChartLayoutProps {
  * Shared layout component for metric charts.
  * Provides consistent card structure, header with optional badge, and empty state handling.
  */
-export function ChartLayout({
-  title,
-  badge,
-  badgeStyle,
-  isEmpty,
-  children,
-}: ChartLayoutProps) {
+export function ChartLayout({ title, badge, badgeStyle, isEmpty, children }: ChartLayoutProps) {
   if (isEmpty) {
     return (
       <Card>
@@ -29,9 +23,7 @@ export function ChartLayout({
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-[200px] text-muted-foreground">
-            No data to display
-          </div>
+          <div className="flex items-center justify-center h-[200px] text-muted-foreground">No data to display</div>
         </CardContent>
       </Card>
     );

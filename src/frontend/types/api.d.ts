@@ -158,9 +158,7 @@ export interface components {
        * Allowedentitytypes
        * @description For ENTITY type parameters, optionally restrict which entity types are valid. If None, all entity types are allowed.
        */
-      allowedEntityTypes?:
-        | components["schemas"]["SimulationEntityType"][]
-        | null;
+      allowedEntityTypes?: components["schemas"]["SimulationEntityType"][] | null;
     };
     /**
      * ParameterType

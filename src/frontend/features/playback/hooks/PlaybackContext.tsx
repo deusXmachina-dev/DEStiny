@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 
 import { setDefaultWithDevOverride } from "@/lib/utils";
 
@@ -29,9 +22,7 @@ interface PlaybackContextValue {
   clock: PlaybackClock;
 }
 
-const PlaybackContext = createContext<PlaybackContextValue | undefined>(
-  undefined,
-);
+const PlaybackContext = createContext<PlaybackContextValue | undefined>(undefined);
 
 /**
  * PlaybackProvider - Core simulation playback state and controls.
@@ -46,8 +37,7 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
 
   // Compute duration from recording
   const duration = recording?.duration || 0;
-  const hasRecording =
-    Object.keys(recording?.motion_segments_by_entity ?? {}).length > 0;
+  const hasRecording = Object.keys(recording?.motion_segments_by_entity ?? {}).length > 0;
   // Memoized clock - stable reference for the lifetime of the provider
   const clock = useMemo(() => {
     const c = new PlaybackClock();
@@ -75,11 +65,7 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
     clock,
   };
 
-  return (
-    <PlaybackContext.Provider value={value}>
-      {children}
-    </PlaybackContext.Provider>
-  );
+  return <PlaybackContext.Provider value={value}>{children}</PlaybackContext.Provider>;
 };
 
 /**

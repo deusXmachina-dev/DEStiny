@@ -26,10 +26,7 @@ export const formatTime = (seconds: number): string => {
 /**
  * Utility function to set different default values for development and production
  */
-export const setDefaultWithDevOverride = (
-  productionValue: any,
-  developmentValue: any,
-): any => {
+export const setDefaultWithDevOverride = (productionValue: any, developmentValue: any): any => {
   if (process.env.NODE_ENV === "development") {
     return developmentValue;
   }

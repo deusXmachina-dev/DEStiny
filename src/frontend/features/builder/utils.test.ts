@@ -114,8 +114,6 @@ describe("getNextEntityName", () => {
     };
 
     expect(getNextEntityName("grid_node", blueprint)).toBe("Grid node 1");
-    expect(getNextEntityName("manufacturing_cell", blueprint)).toBe(
-      "Manufacturing cell 1",
-    );
+    expect(getNextEntityName("manufacturing_cell", blueprint)).toBe("Manufacturing cell 1");
   });
 });

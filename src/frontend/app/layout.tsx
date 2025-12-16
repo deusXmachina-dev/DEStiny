@@ -17,8 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DEStiny - Simulation Platform",
-  description:
-    "DEStiny is a simulation platform for running your discrete event simulations.",
+  description: "DEStiny is a simulation platform for running your discrete event simulations.",
 };
 
 export default function RootLayout({
@@ -28,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

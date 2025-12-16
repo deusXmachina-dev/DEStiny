@@ -13,14 +13,8 @@ interface StringParameterInputProps {
   onSubmit?: () => void;
 }
 
-export const StringParameterInput = ({
-  name,
-  value,
-  onChange,
-  onSubmit,
-}: StringParameterInputProps) => {
-  const currentValue =
-    value?.parameterType === "primitive" ? String(value.value ?? "") : "";
+export const StringParameterInput = ({ name, value, onChange, onSubmit }: StringParameterInputProps) => {
+  const currentValue = value?.parameterType === "primitive" ? String(value.value ?? "") : "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(createPrimitiveParameter(name, e.target.value));

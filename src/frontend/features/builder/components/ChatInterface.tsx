@@ -6,16 +6,8 @@ import { DefaultChatTransport } from "ai";
 import { nanoid } from "nanoid";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
+import { Conversation, ConversationContent, ConversationScrollButton } from "@/components/ai-elements/conversation";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputActionAddAttachments,
@@ -35,13 +27,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
-import {
-  Tool,
-  ToolContent,
-  ToolHeader,
-  ToolInput,
-  ToolOutput,
-} from "@/components/ai-elements/tool";
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { BACKEND_URL } from "@/config/api";
 import { cn } from "@/lib/utils";
 
@@ -51,14 +37,10 @@ interface ChatInterfaceProps {
   className?: string;
 }
 
-const isToolPart = (part: { type: string }): part is ToolUIPart =>
-  part.type.startsWith("tool-");
+const isToolPart = (part: { type: string }): part is ToolUIPart => part.type.startsWith("tool-");
 
 // Sync blueprint when any tool completes
-function useBlueprintSyncOnToolComplete(
-  messages: UIMessage[],
-  fetchBlueprint: () => void,
-) {
+function useBlueprintSyncOnToolComplete(messages: UIMessage[], fetchBlueprint: () => void) {
   const processedToolsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -68,11 +50,7 @@ function useBlueprintSyncOnToolComplete(
       }
 
       for (const part of message.parts) {
-        if (
-          isToolPart(part) &&
-          part.state === "output-available" &&
-          part.toolCallId
-        ) {
+        if (isToolPart(part) && part.state === "output-available" && part.toolCallId) {
           // Use toolCallId to uniquely identify each tool call
           // Only fetch once per completed tool call
           if (!processedToolsRef.current.has(part.toolCallId)) {
@@ -105,11 +83,7 @@ const ChatMessage = ({ message }: { message: UIMessage }) => {
       if (currentTextParts.length > 0) {
         const textContent = currentTextParts.join("");
         if (textContent) {
-          elements.push(
-            <MessageResponse key={`${message.id}-text-${elements.length}`}>
-              {textContent}
-            </MessageResponse>,
-          );
+          elements.push(<MessageResponse key={`${message.id}-text-${elements.length}`}>{textContent}</MessageResponse>);
         }
         currentTextParts = [];
       }
@@ -149,22 +123,11 @@ const ChatMessage = ({ message }: { message: UIMessage }) => {
 };
 
 // Submit button component that can access attachments context
-const ChatSubmitButton = ({
-  input,
-  isLoading,
-}: {
-  input: string;
-  isLoading: boolean;
-}) => {
+const ChatSubmitButton = ({ input, isLoading }: { input: string; isLoading: boolean }) => {
   const attachments = usePromptInputAttachments();
   const hasContent = input.trim() || attachments.files.length > 0;
 
-  return (
-    <PromptInputSubmit
-      disabled={!hasContent || isLoading}
-      status={isLoading ? "submitted" : "ready"}
-    />
-  );
+  return <PromptInputSubmit disabled={!hasContent || isLoading} status={isLoading ? "submitted" : "ready"} />;
 };
 
 const ChatInterface = ({ className }: ChatInterfaceProps) => {
@@ -205,10 +168,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
 
   useBlueprintSyncOnToolComplete(messages, fetchBlueprint);
 
-  const handleSubmit = (
-    message: PromptInputMessage,
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = (message: PromptInputMessage, event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const hasText = Boolean(message.text?.trim());
     const hasAttachments = Boolean(message.files?.length);
@@ -227,12 +187,7 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const isLoading = status === "submitted" || status === "streaming";
 
   return (
-    <div
-      className={cn(
-        "relative flex size-full flex-col divide-y overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn("relative flex size-full flex-col divide-y overflow-hidden", className)}>
       <Conversation>
         <ConversationContent>
           {messages.map((message) => (

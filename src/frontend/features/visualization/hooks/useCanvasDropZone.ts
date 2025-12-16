@@ -17,11 +17,8 @@ import { useVisualization } from "./VisualizationContext";
  * @param containerRef - Ref to the container div that wraps the canvas
  * @returns Event handlers to spread onto the container div
  */
-export const useCanvasDropZone = (
-  containerRef: RefObject<HTMLDivElement | null>,
-) => {
-  const { getInteractionCallbacks, getSceneManager, sceneManagerReady } =
-    useVisualization();
+export const useCanvasDropZone = (containerRef: RefObject<HTMLDivElement | null>) => {
+  const { getInteractionCallbacks, getSceneManager, sceneManagerReady } = useVisualization();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -53,10 +50,7 @@ export const useCanvasDropZone = (
           return;
         }
 
-        const { x: worldX, y: worldY } = sceneManager.screenToWorld(
-          screenX,
-          screenY,
-        );
+        const { x: worldX, y: worldY } = sceneManager.screenToWorld(screenX, screenY);
 
         // Invoke registered callback with world coordinates
         const callbacks = getInteractionCallbacks();

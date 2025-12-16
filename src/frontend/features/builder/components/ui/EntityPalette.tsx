@@ -12,11 +12,7 @@ interface EntityPaletteProps {
   className?: string;
 }
 
-export function EntityPalette({
-  schemas,
-  isLoading,
-  className,
-}: EntityPaletteProps) {
+export function EntityPalette({ schemas, isLoading, className }: EntityPaletteProps) {
   const handleDragStart = (e: React.DragEvent, schema: BuilderEntitySchema) => {
     e.dataTransfer.effectAllowed = "copy";
     e.dataTransfer.setData(
@@ -28,25 +24,13 @@ export function EntityPalette({
     );
   };
   return (
-    <div
-      className={cn(
-        "grid grid-cols-2 auto-rows-min gap-2 h-full overflow-y-auto",
-        className,
-      )}
-    >
+    <div className={cn("grid grid-cols-2 auto-rows-min gap-2 h-full overflow-y-auto", className)}>
       {isLoading
         ? Array.from({ length: 8 }).map((_, index) => (
-            <Skeleton
-              key={`entity-palette-skeleton-${index}`}
-              className="h-14 w-auto"
-            />
+            <Skeleton key={`entity-palette-skeleton-${index}`} className="h-14 w-auto" />
           ))
         : schemas.map((schema, index) => (
-            <DraggableEntityItem
-              key={`${schema.entityType}-${index}`}
-              schema={schema}
-              onDragStart={handleDragStart}
-            />
+            <DraggableEntityItem key={`${schema.entityType}-${index}`} schema={schema} onDragStart={handleDragStart} />
           ))}
     </div>
   );

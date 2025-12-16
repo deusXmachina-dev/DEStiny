@@ -4,13 +4,7 @@ import { formatTime } from "@lib/utils";
 import { FastForward, Loader2, Pause, Play, Rewind } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 
 import { SPEED_OPTIONS } from "../constants";
@@ -70,9 +64,7 @@ export function PlaybackControls({ isLoading }: PlaybackControlsProps) {
 
         {/* Center: Timeline */}
         <div className="flex items-center gap-3 flex-1">
-          <span className="text-sm min-w-[45px] font-mono">
-            {formatTime(currentTime)}
-          </span>
+          <span className="text-sm min-w-[45px] font-mono">{formatTime(currentTime)}</span>
           <Slider
             disabled={disabled}
             id="timeline-slider"
@@ -87,19 +79,13 @@ export function PlaybackControls({ isLoading }: PlaybackControlsProps) {
             }}
             className="flex-1"
           />
-          <span className="text-sm min-w-[45px] font-mono">
-            {formatTime(duration)}
-          </span>
+          <span className="text-sm min-w-[45px] font-mono">{formatTime(duration)}</span>
         </div>
 
         {/* Right: Speed Select */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium font-mono">Speed:</span>
-          <Select
-            disabled={disabled}
-            value={speed.toString()}
-            onValueChange={(val) => clock.setSpeed(parseFloat(val))}
-          >
+          <Select disabled={disabled} value={speed.toString()} onValueChange={(val) => clock.setSpeed(parseFloat(val))}>
             <SelectTrigger className="w-[90px] font-mono">
               <SelectValue />
             </SelectTrigger>

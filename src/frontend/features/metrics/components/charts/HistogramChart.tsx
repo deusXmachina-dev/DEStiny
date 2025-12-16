@@ -3,12 +3,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
 import { useTimeSeriesMetricData } from "../../hooks";
 import type { TimeSeriesMetric } from "../../index";
@@ -27,11 +22,7 @@ interface HistogramChartProps {
   currentTime?: number;
 }
 
-export function HistogramChart({
-  metric,
-  maxDuration = 600,
-  currentTime = maxDuration,
-}: HistogramChartProps) {
+export function HistogramChart({ metric, maxDuration = 600, currentTime = maxDuration }: HistogramChartProps) {
   // Transform data and calculate visible data
   const { chartData, visibleData } = useTimeSeriesMetricData({
     metric,
@@ -64,10 +55,7 @@ export function HistogramChart({
     }
 
     // Calculate number of bins (using Sturges' formula or default to 15)
-    const binCount = Math.min(
-      Math.max(Math.ceil(Math.log2(values.length) + 1), 10),
-      20,
-    );
+    const binCount = Math.min(Math.max(Math.ceil(Math.log2(values.length) + 1), 10), 20);
 
     // Calculate bin width
     const binWidth = (max - min) / binCount;
@@ -118,10 +106,7 @@ export function HistogramChart({
   }, [visibleData]);
 
   // Calculate total count for badge
-  const totalCount = useMemo(
-    () => histogramData.reduce((sum, bin) => sum + bin.count, 0),
-    [histogramData],
-  );
+  const totalCount = useMemo(() => histogramData.reduce((sum, bin) => sum + bin.count, 0), [histogramData]);
 
   return (
     <ChartLayout
@@ -142,21 +127,8 @@ export function HistogramChart({
           }}
         >
           <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="label"
-            tickLine={false}
-            axisLine={false}
-            angle={-45}
-            textAnchor="end"
-            height={80}
-          />
-          <YAxis
-            type="number"
-            width={35}
-            tickLine={false}
-            axisLine={false}
-            allowDecimals={false}
-          />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} angle={-45} textAnchor="end" height={80} />
+          <YAxis type="number" width={35} tickLine={false} axisLine={false} allowDecimals={false} />
           <ChartTooltip
             content={
               <ChartTooltipContent
@@ -173,12 +145,7 @@ export function HistogramChart({
               />
             }
           />
-          <Bar
-            dataKey="count"
-            fill="var(--color-count)"
-            radius={[4, 4, 0, 0]}
-            isAnimationActive={false}
-          />
+          <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} isAnimationActive={false} />
         </BarChart>
       </ChartContainer>
     </ChartLayout>

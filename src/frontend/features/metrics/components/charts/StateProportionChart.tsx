@@ -4,11 +4,7 @@ import { formatTime } from "@lib/utils";
 import { useMemo } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
 
 import type { StateMetric } from "../../index";
 import { calculateStateProportions } from "../../utils";
@@ -22,13 +18,7 @@ interface StateProportionChartProps {
 // Generate chart config with colors for each state
 // Using chart color variables for consistency
 const generateChartConfig = (states: string[]): ChartConfig => {
-  const colorVars = [
-    "var(--chart-1)",
-    "var(--chart-2)",
-    "var(--chart-3)",
-    "var(--chart-4)",
-    "var(--chart-5)",
-  ];
+  const colorVars = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
   const config: ChartConfig = {};
   states.forEach((state, index) => {
     config[state] = {
@@ -39,21 +29,12 @@ const generateChartConfig = (states: string[]): ChartConfig => {
   return config;
 };
 
-export function StateProportionChart({
-  metric,
-  currentTime,
-}: StateProportionChartProps) {
+export function StateProportionChart({ metric, currentTime }: StateProportionChartProps) {
   // Calculate state proportions
-  const proportions = useMemo(
-    () => calculateStateProportions(metric, currentTime || 0),
-    [metric, currentTime],
-  );
+  const proportions = useMemo(() => calculateStateProportions(metric, currentTime || 0), [metric, currentTime]);
 
   // Generate chart config for colors
-  const chartConfig = useMemo(
-    () => generateChartConfig(metric.data.possible_states),
-    [metric.data.possible_states],
-  );
+  const chartConfig = useMemo(() => generateChartConfig(metric.data.possible_states), [metric.data.possible_states]);
 
   // Check if there's any data
   const hasData = proportions.some((p) => p.duration > 0);
@@ -156,10 +137,7 @@ export function StateProportionChart({
             isAnimationActive={false}
           >
             {pieData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={chartConfig[entry.name]?.color || "var(--chart-1)"}
-              />
+              <Cell key={`cell-${index}`} fill={chartConfig[entry.name]?.color || "var(--chart-1)"} />
             ))}
           </Pie>
         </PieChart>
@@ -172,10 +150,7 @@ export function StateProportionChart({
             const percentage = (p.proportion * 100).toFixed(1);
             return (
               <div key={p.state} className="flex items-center gap-1.5 text-xs">
-                <div
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
+                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
                 <span className="text-muted-foreground">
                   {p.state}: {percentage}%
                 </span>
