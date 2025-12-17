@@ -132,7 +132,8 @@ const ChatSubmitButton = ({ input, isLoading }: { input: string; isLoading: bool
 
 const ChatInterface = ({ className }: ChatInterfaceProps) => {
   const [input, setInput] = useState("");
-  const chatId = useMemo(() => nanoid(), []);
+  const [resetKey, setResetKey] = useState(0);
+  const prevStatusRef = useRef<string | undefined>(undefined);
   const { fetchBlueprint } = useBuilder();
 
   const suggestions: Array<{ name: string; prompt: string }> = [
@@ -153,6 +154,11 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
     },
   ];
 
+  // Regenerate chatId when resetKey changes (intentional dependency for error recovery)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const chatId = useMemo(() => nanoid(), [resetKey]);
+
+  // Regenerate transport when resetKey changes (intentional dependency for error recovery)
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -161,10 +167,18 @@ const ChatInterface = ({ className }: ChatInterfaceProps) => {
           // this is here to ensure the session cookie is sent to the backend
           fetch(url, { ...options, credentials: "include" }),
       }),
-    [],
+      [],
   );
 
   const { messages, sendMessage, status } = useChat({ id: chatId, transport });
+
+  // Reset chat when transitioning to error state (only once per error)
+  useEffect(() => {
+    if (status === "error" && prevStatusRef.current !== "error") {
+      setResetKey((prev) => prev + 1);
+    }
+    prevStatusRef.current = status;
+  }, [status]);
 
   useBlueprintSyncOnToolComplete(messages, fetchBlueprint);
 

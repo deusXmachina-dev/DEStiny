@@ -12,7 +12,7 @@ def _init_blueprint_agent():
     entity_info_string = get_entity_info_string()
     
     instructions = INSTRUCTIONS_TEMPLATE.format(entity_types=entity_info_string)
-    return Agent("openai:gpt-5.2", deps_type=BlueprintStorage, instructions=instructions)
+    return Agent("openai:gpt-5.2", deps_type=BlueprintStorage, instructions=instructions, retries=10)
 
 
 blueprint_agent = _init_blueprint_agent()
