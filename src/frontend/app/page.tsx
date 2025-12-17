@@ -134,7 +134,7 @@ function HomeContent() {
             <div className="border-l border-b border-border p-4 flex justify-center">
               <TabsList className="h-10 p-[6px]">
                 <TabsTrigger disabled={!simulationEnabled} value="simulation" className="text-md p-4 font-mono">
-                  Simulation
+                  Viewer
                   <Kbd className="ml-1">{modifierKey}X</Kbd>
                 </TabsTrigger>
                 <TabsTrigger value="builder" className="text-md p-4 font-mono">
