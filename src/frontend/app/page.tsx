@@ -70,7 +70,7 @@ function HomeContent() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check for cmd+s (Mac) or ctrl+s (Windows/Linux) for Simulation
-      if ((e.metaKey || e.ctrlKey) && (e.key === "s" || e.key === "S")) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "x" || e.key === "X")) {
         e.preventDefault();
         if (simulationEnabled) {
           setMode("simulation");
@@ -82,7 +82,7 @@ function HomeContent() {
         setMode("builder");
       }
       // Check for cmd+c (Mac) or ctrl+c (Windows/Linux) to clear blueprint
-      if ((e.metaKey || e.ctrlKey) && (e.key === "c" || e.key === "C")) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
         e.preventDefault();
         handleClearEntities();
       }
@@ -112,7 +112,7 @@ function HomeContent() {
             className="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 rounded-md border bg-background/30 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm transition-all hover:bg-background/50"
           >
             <span className="text-muted-foreground">
-              Press <Kbd className="mx-1">{modifierKey}C</Kbd> to clear
+              Press <Kbd className="mx-1">{modifierKey}K</Kbd> to clear
             </span>
           </button>
           <VisualizationProvider interactive={mode === "builder"}>
@@ -135,7 +135,7 @@ function HomeContent() {
               <TabsList className="h-10 p-[6px]">
                 <TabsTrigger disabled={!simulationEnabled} value="simulation" className="text-md p-4 font-mono">
                   Simulation
-                  <Kbd className="ml-1">{modifierKey}S</Kbd>
+                  <Kbd className="ml-1">{modifierKey}X</Kbd>
                 </TabsTrigger>
                 <TabsTrigger value="builder" className="text-md p-4 font-mono">
                   Editor
